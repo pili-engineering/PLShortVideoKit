@@ -22,5 +22,7 @@ Pod::Spec.new do |s|
   s.vendored_libraries		= 'Pod/Library/*.a'
   s.vendored_framework		= "Pod/Library/PLShortVideoKit.framework"
   s.resources				= "Pod/Library/PLShortVideoKit.framework/PLShortVideoKit.bundle"
+ 
+  s.dependency 'Qiniu', '7.1.5'
 
 end
