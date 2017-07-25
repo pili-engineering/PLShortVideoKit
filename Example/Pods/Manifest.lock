@@ -1,0 +1,46 @@
+PODS:
+  - AFNetworking (3.1.0):
+    - AFNetworking/NSURLSession (= 3.1.0)
+    - AFNetworking/Reachability (= 3.1.0)
+    - AFNetworking/Security (= 3.1.0)
+    - AFNetworking/Serialization (= 3.1.0)
+    - AFNetworking/UIKit (= 3.1.0)
+  - AFNetworking/NSURLSession (3.1.0):
+    - AFNetworking/Reachability
+    - AFNetworking/Security
+    - AFNetworking/Serialization
+  - AFNetworking/Reachability (3.1.0)
+  - AFNetworking/Security (3.1.0)
+  - AFNetworking/Serialization (3.1.0)
+  - AFNetworking/UIKit (3.1.0):
+    - AFNetworking/NSURLSession
+  - Crashlytics (3.8.4):
+    - Fabric (~> 1.6.3)
+  - Fabric (1.6.11)
+  - HappyDNS (0.3.10)
+  - Masonry (1.0.2)
+  - PLPlayerKit (2.4.3):
+    - HappyDNS (~> 0.3.10)
+  - Qiniu (7.1.5):
+    - AFNetworking (~> 3)
+    - HappyDNS (~> 0.3)
+
+DEPENDENCIES:
+  - Crashlytics (= 3.8.4)
+  - Fabric (= 1.6.11)
+  - Masonry (= 1.0.2)
+  - PLPlayerKit (= 2.4.3)
+  - Qiniu (= 7.1.5)
+
+SPEC CHECKSUMS:
+  AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
+  Crashlytics: 79e236942ca1e7fc641df1feb9a275360a78ab6a
+  Fabric: 5911403591946b8228ab1c51d98f1d7137e863c6
+  HappyDNS: 06a9fed2796663fd87626dbf02552933265bf059
+  Masonry: 7c429b56da9d4ee0bbb3ed77a5ea710d6a5df39e
+  PLPlayerKit: 6575f900d3a1c3680e3fd8907338683d0eedcd79
+  Qiniu: 77a3dba411556a383d72d17e842345a9d4c83252
+
+PODFILE CHECKSUM: 8a7479ba8ff4d4da23ebdf51a470794299d4fc4b
+
+COCOAPODS: 1.2.1
