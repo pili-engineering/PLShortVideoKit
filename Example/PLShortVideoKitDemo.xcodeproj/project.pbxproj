@@ -65,8 +65,6 @@
 		0A57EBB41E7596CC00FC5BF8 /* record_close_normal.png in Resources */ = {isa = PBXBuildFile; fileRef = 0A57EBB31E7596CC00FC5BF8 /* record_close_normal.png */; };
 		0A63402A1F15C9C9005ADF6C /* MovieTransCodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A6340291F15C9C9005ADF6C /* MovieTransCodeViewController.m */; };
 		0A6340311F15E8CC005ADF6C /* PLSSelectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A6340301F15E8CC005ADF6C /* PLSSelectionView.m */; };
-		0A8FCB6E1F26E81D002FE352 /* PLShortVideoKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A8FCB6D1F26E81D002FE352 /* PLShortVideoKit.framework */; };
-		0A8FCB701F26E82B002FE352 /* PLShortVideoKit.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 0A8FCB6F1F26E82B002FE352 /* PLShortVideoKit.bundle */; };
 		0A928BE31EE75703007D2250 /* PLSAudioVolumeView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A928BE21EE75703007D2250 /* PLSAudioVolumeView.m */; };
 		0A928BE61EE75ECB007D2250 /* icon_volume.png in Resources */ = {isa = PBXBuildFile; fileRef = 0A928BE51EE75ECB007D2250 /* icon_volume.png */; };
 		0A9435811E6CA2E2008845A3 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A9435801E6CA2E2008845A3 /* main.m */; };
@@ -84,7 +82,6 @@
 		0A9CB4ED1EF042FB00EABA76 /* btn_close_sound@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0A9CB4E91EF042FB00EABA76 /* btn_close_sound@3x.png */; };
 		0A9CB4EE1EF042FB00EABA76 /* btn_sound@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0A9CB4EA1EF042FB00EABA76 /* btn_sound@2x.png */; };
 		0A9CB4EF1EF042FB00EABA76 /* btn_sound@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0A9CB4EB1EF042FB00EABA76 /* btn_sound@3x.png */; };
-		0ACA9ECA1F274B9700E180CD /* libMuseProcessor.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AD526211EADE2EB00CE4B90 /* libMuseProcessor.a */; };
 		0ACE7C361ED8B072002FF4C9 /* PLSClipMovieView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE7C2C1ED8B072002FF4C9 /* PLSClipMovieView.m */; };
 		0ACE7C371ED8B072002FF4C9 /* PLSDeleteButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE7C2E1ED8B072002FF4C9 /* PLSDeleteButton.m */; };
 		0ACE7C381ED8B072002FF4C9 /* PLSEditVideoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE7C301ED8B072002FF4C9 /* PLSEditVideoCell.m */; };
@@ -390,8 +387,6 @@
 		0A6340291F15C9C9005ADF6C /* MovieTransCodeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MovieTransCodeViewController.m; sourceTree = "<group>"; };
 		0A63402F1F15E8CC005ADF6C /* PLSSelectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLSSelectionView.h; sourceTree = "<group>"; };
 		0A6340301F15E8CC005ADF6C /* PLSSelectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLSSelectionView.m; sourceTree = "<group>"; };
-		0A8FCB6D1F26E81D002FE352 /* PLShortVideoKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = PLShortVideoKit.framework; sourceTree = "<group>"; };
-		0A8FCB6F1F26E82B002FE352 /* PLShortVideoKit.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = PLShortVideoKit.bundle; path = PLShortVideoKit.framework/PLShortVideoKit.bundle; sourceTree = "<group>"; };
 		0A928BE11EE75703007D2250 /* PLSAudioVolumeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLSAudioVolumeView.h; sourceTree = "<group>"; };
 		0A928BE21EE75703007D2250 /* PLSAudioVolumeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLSAudioVolumeView.m; sourceTree = "<group>"; };
 		0A928BE51EE75ECB007D2250 /* icon_volume.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon_volume.png; path = images/icon_volume.png; sourceTree = "<group>"; };
@@ -424,7 +419,6 @@
 		0ACE7C321ED8B072002FF4C9 /* PLSProgressBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLSProgressBar.m; sourceTree = "<group>"; };
 		0ACE7C331ED8B072002FF4C9 /* UIImage+PLSClip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+PLSClip.h"; sourceTree = "<group>"; };
 		0ACE7C341ED8B072002FF4C9 /* UIImage+PLSClip.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+PLSClip.m"; sourceTree = "<group>"; };
-		0AD526211EADE2EB00CE4B90 /* libMuseProcessor.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libMuseProcessor.a; sourceTree = "<group>"; };
 		0AD7D3141EA329A400144411 /* btn_record_a.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = btn_record_a.png; path = images/btn_record_a.png; sourceTree = "<group>"; };
 		0AE85A5C1EE6F5E900EE8E6D /* music.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = music.png; path = images/music.png; sourceTree = "<group>"; };
 		0AE8AC931F063E3E006166E2 /* PLSClipAudioView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLSClipAudioView.h; sourceTree = "<group>"; };
@@ -919,10 +913,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0ACA9ECA1F274B9700E180CD /* libMuseProcessor.a in Frameworks */,
 				0A3A8E8A1F208321002311A8 /* opencv2.framework in Frameworks */,
 				C3F91F4B1F1CBD4900698322 /* libKwSDK.a in Frameworks */,
-				0A8FCB6E1F26E81D002FE352 /* PLShortVideoKit.framework in Frameworks */,
 				C3F91F481F1CBD4900698322 /* libGPUImage.a in Frameworks */,
 				C3F91F961F1CBD4900698322 /* libfaceTrackerSDK.a in Frameworks */,
 				F360B89E036039A66815D9FE /* libPods-PLShortVideoKitDemo.a in Frameworks */,
@@ -967,7 +959,6 @@
 			children = (
 				C3F91D2D1F1CBD4900698322 /* KiwiFaceSDK */,
 				0A2722F71F17E8D400E30BD6 /* Stalker */,
-				0AD526201EADE2EB00CE4B90 /* Librarys */,
 				0ACE7C281ED8B072002FF4C9 /* UI+Tools */,
 				0A9435821E6CA2E2008845A3 /* AppDelegate.h */,
 				0A9435831E6CA2E2008845A3 /* AppDelegate.m */,
@@ -1095,16 +1086,6 @@
 				0A6340301F15E8CC005ADF6C /* PLSSelectionView.m */,
 			);
 			path = "UI+Tools";
-			sourceTree = "<group>";
-		};
-		0AD526201EADE2EB00CE4B90 /* Librarys */ = {
-			isa = PBXGroup;
-			children = (
-				0A8FCB6F1F26E82B002FE352 /* PLShortVideoKit.bundle */,
-				0A8FCB6D1F26E81D002FE352 /* PLShortVideoKit.framework */,
-				0AD526211EADE2EB00CE4B90 /* libMuseProcessor.a */,
-			);
-			path = Librarys;
 			sourceTree = "<group>";
 		};
 		32B90CBBA587775FFC5C4D5B /* Pods */ = {
@@ -2012,7 +1993,6 @@
 				0A0692501E8A3B590035CB7B /* btn_camera_done_a@3x.png in Resources */,
 				C3F91F221F1CBD4900698322 /* brannanScreen.png in Resources */,
 				0A94358C1E6CA2E2008845A3 /* Assets.xcassets in Resources */,
-				0A8FCB701F26E82B002FE352 /* PLShortVideoKit.bundle in Resources */,
 				C3F91F271F1CBD4900698322 /* earlybirdMap.png in Resources */,
 				0A0692471E8A3B590035CB7B /* btn_bar_next_a@2x.png in Resources */,
 				C3F91FBC1F1CBD4A00698322 /* gesturesSticker_sys@3x.png in Resources */,
@@ -2081,7 +2061,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		B051BAB51EADFEF900385FF0 /* ShellScript */ = {

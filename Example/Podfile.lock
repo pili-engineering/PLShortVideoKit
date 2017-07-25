@@ -21,6 +21,7 @@ PODS:
   - Masonry (1.0.2)
   - PLPlayerKit (2.4.3):
     - HappyDNS (~> 0.3.10)
+  - PLShortVideoKit (1.1.1)
   - Qiniu (7.1.5):
     - AFNetworking (~> 3)
     - HappyDNS (~> 0.3)
@@ -30,7 +31,12 @@ DEPENDENCIES:
   - Fabric (= 1.6.11)
   - Masonry (= 1.0.2)
   - PLPlayerKit (= 2.4.3)
+  - PLShortVideoKit (from `../`)
   - Qiniu (= 7.1.5)
+
+EXTERNAL SOURCES:
+  PLShortVideoKit:
+    :path: "../"
 
 SPEC CHECKSUMS:
   AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
@@ -39,8 +45,9 @@ SPEC CHECKSUMS:
   HappyDNS: 06a9fed2796663fd87626dbf02552933265bf059
   Masonry: 7c429b56da9d4ee0bbb3ed77a5ea710d6a5df39e
   PLPlayerKit: 6575f900d3a1c3680e3fd8907338683d0eedcd79
+  PLShortVideoKit: 59133d380b2790e1f372ba94de20c329fdc2e698
   Qiniu: 77a3dba411556a383d72d17e842345a9d4c83252
 
-PODFILE CHECKSUM: 8a7479ba8ff4d4da23ebdf51a470794299d4fc4b
+PODFILE CHECKSUM: 2e49f7929a66ad7b782a62eca795a139e84c6eed
 
-COCOAPODS: 1.2.1
+COCOAPODS: 1.1.1
