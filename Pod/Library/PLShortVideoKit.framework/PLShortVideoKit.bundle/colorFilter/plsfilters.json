@@ -1,0 +1,169 @@
+{
+    "filters": [
+                {
+                "name": "normal",
+                "dir": "normal",
+                "category": "default"
+                },
+                {
+                "name": "1960s",
+                "dir": "1960s",
+                "category": "default"
+                },
+                {
+                "name": "camomile",
+                "dir": "camomile",
+                "category": "default"
+                },
+                {
+                "name": "candy",
+                "dir": "candy",
+                "category": "default"
+                },
+                {
+                "name": "cold",
+                "dir": "cold",
+                "category": "default"
+                },
+                {
+                "name": "dark",
+                "dir": "dark",
+                "category": "default"
+                },
+                {
+                "name": "dreamy",
+                "dir": "dreamy",
+                "category": "default"
+                },
+                {
+                "name": "elegance",
+                "dir": "elegance",
+                "category": "default"
+                },
+                {
+                "name": "frog",
+                "dir": "frog",
+                "category": "default"
+                },
+                {
+                "name": "funky",
+                "dir": "funky",
+                "category": "default"
+                },
+                {
+                "name": "good",
+                "dir": "good",
+                "category": "default"
+                },
+                {
+                "name": "gray",
+                "dir": "gray",
+                "category": "default"
+                },
+                {
+                "name": "habana",
+                "dir": "habana",
+                "category": "default"
+                },
+                {
+                "name": "happy",
+                "dir": "happy",
+                "category": "default"
+                },
+                {
+                "name": "harvest",
+                "dir": "harvest",
+                "category": "default"
+                },
+                {
+                "name": "kc",
+                "dir": "kc",
+                "category": "default"
+                },
+                {
+                "name": "lyon",
+                "dir": "lyon",
+                "category": "default"
+                },
+                {
+                "name": "lzp",
+                "dir": "lzp",
+                "category": "default"
+                },
+                {
+                "name": "miss",
+                "dir": "miss",
+                "category": "default"
+                },
+                {
+                "name": "misty",
+                "dir": "misty",
+                "category": "default"
+                },
+                {
+                "name": "pailide",
+                "dir": "pailide",
+                "category": "default"
+                },
+                {
+                "name": "pink",
+                "dir": "pink",
+                "category": "default"
+                },
+                {
+                "name": "pld",
+                "dir": "pld",
+                "category": "default"
+                },
+                {
+                "name": "print",
+                "dir": "print",
+                "category": "default"
+                },
+                {
+                "name": "purple",
+                "dir": "purple",
+                "category": "default"
+                },
+                {
+                "name": "railway",
+                "dir": "railway",
+                "category": "default"
+                },
+                {
+                "name": "red",
+                "dir": "red",
+                "category": "default"
+                },
+                {
+                "name": "retro",
+                "dir": "retro",
+                "category": "default"
+                },
+                {
+                "name": "sunny",
+                "dir": "sunny",
+                "category": "default"
+                },
+                {
+                "name": "tasty",
+                "dir": "tasty",
+                "category": "default"
+                },
+                {
+                "name": "turkish",
+                "dir": "turkish",
+                "category": "default"
+                },
+                {
+                "name": "waltz",
+                "dir": "waltz",
+                "category": "default"
+                },
+                {
+                "name": "west",
+                "dir": "west",
+                "category": "default"
+                },
+                ]
+}
