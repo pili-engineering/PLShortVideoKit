@@ -17,5 +17,10 @@
   "requires_arc": true,
   "vendored_libraries": "Pod/Library/*.a",
   "vendored_frameworks": "Pod/Library/PLShortVideoKit.framework",
-  "resources": "Pod/Library/PLShortVideoKit.framework/PLShortVideoKit.bundle"
+  "resources": "Pod/Library/PLShortVideoKit.framework/PLShortVideoKit.bundle",
+  "dependencies": {
+    "Qiniu": [
+      "7.1.5"
+    ]
+  }
 }
