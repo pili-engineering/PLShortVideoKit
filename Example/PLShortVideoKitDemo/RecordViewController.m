@@ -15,7 +15,7 @@
 #import "PhotoAlbumViewController.h"
 #import "PLSEditVideoCell.h"
 #import "PLSFilterGroup.h"
-
+#import "PLSViewRecorderManager.h"
 #import "KWSDK.h"
 #import "Global.h"
 #import "KWSmiliesStickerRenderer.h"
@@ -35,12 +35,15 @@
 PLShortVideoRecorderDelegate,
 UICollectionViewDelegate,
 UICollectionViewDataSource,
-UICollectionViewDelegateFlowLayout
+UICollectionViewDelegateFlowLayout,
+PLSViewRecorderManagerDelegate
 >
 
 @property (strong, nonatomic) PLShortVideoRecorder *shortVideoRecorder;
+@property (strong, nonatomic) PLSViewRecorderManager *viewRecorderManager;
 @property (strong, nonatomic) PLSProgressBar *progressBar;
 @property (strong, nonatomic) UIButton *recordButton;
+@property (strong, nonatomic) UIButton *viewRecordButton;
 @property (strong, nonatomic) PLSDeleteButton *deleteButton;
 @property (strong, nonatomic) UIButton *endButton;
 
@@ -152,7 +155,7 @@ UICollectionViewDelegateFlowLayout
     
     self.shortVideoRecorder.delegate = self;
     
-    self.shortVideoRecorder.maxDuration = 60.0f; // 设置最长录制时长
+    self.shortVideoRecorder.maxDuration = 30.0f; // 设置最长录制时长
     
     // 默认关闭内部滤镜
     if (self.isUseFilterWhenRecording) {
@@ -178,6 +181,7 @@ UICollectionViewDelegateFlowLayout
     }
 }
 
+
 - (void)setupBaseToolboxView {
     self.baseToolboxView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, PLS_SCREEN_WIDTH, PLS_BaseToolboxView_HEIGHT)];
     self.baseToolboxView.backgroundColor = [UIColor clearColor];
@@ -190,6 +194,17 @@ UICollectionViewDelegateFlowLayout
     [backButton setBackgroundImage:[UIImage imageNamed:@"btn_camera_cancel_b"] forState:UIControlStateHighlighted];
     [backButton addTarget:self action:@selector(backButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
     [self.baseToolboxView addSubview:backButton];
+    
+    // 录屏按钮
+    self.viewRecordButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    self.viewRecordButton.frame = CGRectMake(PLS_SCREEN_WIDTH - 265, 10, 35, 35);
+    [self.viewRecordButton setTitle:@"录屏" forState:UIControlStateNormal];
+    [self.viewRecordButton setTitle:@"完成" forState:UIControlStateSelected];
+    self.viewRecordButton.selected = NO;
+    [self.viewRecordButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    self.viewRecordButton.titleLabel.font = [UIFont systemFontOfSize:14];
+    [self.viewRecordButton addTarget:self action:@selector(viewRecorderButtonClick:) forControlEvents:UIControlEventTouchUpInside];
+    [self.baseToolboxView addSubview:self.viewRecordButton];
     
     // 全屏／正方形录制模式
     self.squareRecordButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -338,6 +353,9 @@ UICollectionViewDelegateFlowLayout
 
 // 返回上一层
 - (void)backButtonEvent:(id)sender {
+    if (self.viewRecordButton.isSelected) {
+        [self.viewRecorderManager cancelRecording];
+    }
     if ([self.shortVideoRecorder getFilesCount] > 0) {
         self.alertView = [[UIAlertView alloc] initWithTitle:@"提醒" message:[NSString stringWithFormat:@"放弃这个视频(共%ld个视频段)?", (long)[self.shortVideoRecorder getFilesCount]] delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
         self.alertView.tag = PLS_CLOSE_CONTROLLER_ALERTVIEW_TAG;
@@ -376,6 +394,30 @@ UICollectionViewDelegateFlowLayout
             self.shortVideoRecorder.previewView.frame = CGRectMake(0, 0, PLS_SCREEN_WIDTH, PLS_SCREEN_HEIGHT);
             self.progressBar.frame = CGRectMake(0, CGRectGetHeight(self.recordToolboxView.frame) - 10, PLS_SCREEN_WIDTH, 10);
         });
+    }
+}
+
+//录制 self.view
+- (void)viewRecorderButtonClick:(id)sender {
+    if (!self.viewRecorderManager) {
+        self.viewRecorderManager = [[PLSViewRecorderManager alloc] initWithRecordedView:self.view];
+        self.viewRecorderManager.delegate = self;
+    }
+    
+    if (self.viewRecordButton.isSelected) {
+        self.viewRecordButton.selected = NO;
+        [self.viewRecorderManager stopRecording];
+        
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillResignActiveNotification object:nil];
+    }
+    else {
+        self.viewRecordButton.selected = YES;
+        [self.viewRecorderManager startRecording];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(applicationWillResignActive:)
+                                                     name:UIApplicationWillResignActiveNotification
+                                                   object:nil];
     }
 }
 
@@ -432,6 +474,8 @@ UICollectionViewDelegateFlowLayout
 - (void)endButtonEvent:(id)sender {
     AVAsset *asset = self.shortVideoRecorder.assetRepresentingAllFiles;
     [self playEvent:asset];
+    [self.viewRecorderManager cancelRecording];
+    self.viewRecordButton.selected = NO;
 }
 
 // 取消录制
@@ -444,6 +488,33 @@ UICollectionViewDelegateFlowLayout
 - (void)importMovieButtonEvent:(id)sender {
     PhotoAlbumViewController *photoAlbumViewController = [[PhotoAlbumViewController alloc] init];
     [self presentViewController:photoAlbumViewController animated:YES completion:nil];
+}
+
+#pragma mark - Notification
+- (void)applicationWillResignActive:(NSNotification *)notification {
+    if (self.viewRecordButton.selected) {
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillResignActiveNotification object:nil];
+        self.viewRecordButton.selected = NO;        
+        [self.viewRecorderManager cancelRecording];
+    }
+}
+
+#pragma mark - PLSViewRecorderManagerDelegate
+- (void)viewRecorderManager:(PLSViewRecorderManager *)manager didFinishRecordingToAsset:(AVAsset *)asset totalDuration:(CGFloat)totalDuration {
+    self.viewRecordButton.selected = NO;
+    // 设置音视频、水印等编辑信息
+    NSMutableDictionary *outputSettings = [[NSMutableDictionary alloc] init];
+    // 待编辑的原始视频素材
+    NSMutableDictionary *plsMovieSettings = [[NSMutableDictionary alloc] init];
+    plsMovieSettings[PLSAssetKey] = asset;
+    plsMovieSettings[PLSStartTimeKey] = [NSNumber numberWithFloat:0.f];
+    plsMovieSettings[PLSDurationKey] = [NSNumber numberWithFloat:totalDuration];
+    plsMovieSettings[PLSVolumeKey] = [NSNumber numberWithFloat:1.0f];
+    outputSettings[PLSMovieSettingsKey] = plsMovieSettings;
+    
+    EditViewController *videoEditViewController = [[EditViewController alloc] init];
+    videoEditViewController.settings = outputSettings;
+    [self presentViewController:videoEditViewController animated:YES completion:nil];
 }
 
 #pragma mark - UIAlertViewDelegate
@@ -632,6 +703,8 @@ UICollectionViewDelegateFlowLayout
 
     AVAsset *asset = self.shortVideoRecorder.assetRepresentingAllFiles;
     [self playEvent:asset];
+    [self.viewRecorderManager cancelRecording];
+    self.viewRecordButton.selected = NO;
 }
 
 #pragma mark -- 下一步
