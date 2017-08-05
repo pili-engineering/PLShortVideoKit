@@ -101,6 +101,7 @@
 		0AECA4F41E884CD200AF2931 /* btn_back.png in Resources */ = {isa = PBXBuildFile; fileRef = 0AECA4F31E884CD200AF2931 /* btn_back.png */; };
 		0AECA4F61E884D0900AF2931 /* video_play.png in Resources */ = {isa = PBXBuildFile; fileRef = 0AECA4F51E884D0900AF2931 /* video_play.png */; };
 		0AECA5001E88A60C00AF2931 /* RecordViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AECA4FF1E88A60C00AF2931 /* RecordViewController.m */; };
+		0AF54B8B1F35D1ED0048797F /* PLSViewRecorderManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AF54B8A1F35D1ED0048797F /* PLSViewRecorderManager.m */; };
 		C3F91F191F1CBD4900698322 /* filters.json in Resources */ = {isa = PBXBuildFile; fileRef = C3F91D391F1CBD4900698322 /* filters.json */; };
 		C3F91F1A1F1CBD4900698322 /* 1977blowout.png in Resources */ = {isa = PBXBuildFile; fileRef = C3F91D3B1F1CBD4900698322 /* 1977blowout.png */; };
 		C3F91F1B1F1CBD4900698322 /* 1977map.png in Resources */ = {isa = PBXBuildFile; fileRef = C3F91D3C1F1CBD4900698322 /* 1977map.png */; };
@@ -436,6 +437,8 @@
 		0AECA4F31E884CD200AF2931 /* btn_back.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = btn_back.png; path = images/btn_back.png; sourceTree = "<group>"; };
 		0AECA4F51E884D0900AF2931 /* video_play.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = video_play.png; path = images/video_play.png; sourceTree = "<group>"; };
 		0AECA4FF1E88A60C00AF2931 /* RecordViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RecordViewController.m; sourceTree = "<group>"; };
+		0AF54B891F35D1ED0048797F /* PLSViewRecorderManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLSViewRecorderManager.h; sourceTree = "<group>"; };
+		0AF54B8A1F35D1ED0048797F /* PLSViewRecorderManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLSViewRecorderManager.m; sourceTree = "<group>"; };
 		29048327CD6F75BD8D75B80B /* Pods-PLShortVideoKitDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PLShortVideoKitDemo.debug.xcconfig"; path = "Pods/Target Support Files/Pods-PLShortVideoKitDemo/Pods-PLShortVideoKitDemo.debug.xcconfig"; sourceTree = "<group>"; };
 		57AEAFA0012D959C08AB23AE /* libPods-PLShortVideoKitDemo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PLShortVideoKitDemo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		85B60FAE619932ED649E6840 /* Pods-PLShortVideoKitDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PLShortVideoKitDemo.release.xcconfig"; path = "Pods/Target Support Files/Pods-PLShortVideoKitDemo/Pods-PLShortVideoKitDemo.release.xcconfig"; sourceTree = "<group>"; };
@@ -1066,6 +1069,8 @@
 		0ACE7C281ED8B072002FF4C9 /* UI+Tools */ = {
 			isa = PBXGroup;
 			children = (
+				0AF54B891F35D1ED0048797F /* PLSViewRecorderManager.h */,
+				0AF54B8A1F35D1ED0048797F /* PLSViewRecorderManager.m */,
 				0ACE7C2B1ED8B072002FF4C9 /* PLSClipMovieView.h */,
 				0ACE7C2C1ED8B072002FF4C9 /* PLSClipMovieView.m */,
 				0ACE7C2D1ED8B072002FF4C9 /* PLSDeleteButton.h */,
@@ -2136,6 +2141,7 @@
 				0AE8AC951F063E3E006166E2 /* PLSClipAudioView.m in Sources */,
 				C3F91F941F1CBD4900698322 /* SSZipArchive.m in Sources */,
 				C3F91F4A1F1CBD4900698322 /* KWSDK_UI.m in Sources */,
+				0AF54B8B1F35D1ED0048797F /* PLSViewRecorderManager.m in Sources */,
 				C3F91F671F1CBD4900698322 /* row_common.cc in Sources */,
 				C3F91F4C1F1CBD4900698322 /* compare.cc in Sources */,
 				C3F91F971F1CBD4900698322 /* KWDistortionCell.m in Sources */,

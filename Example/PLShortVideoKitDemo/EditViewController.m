@@ -133,8 +133,8 @@ PLSAVAssetExportSessionDelegate
     [self.view addSubview:self.shortVideoEditor.player.preview];
     // 播放预览时，加水印
     [self.shortVideoEditor.player setWaterMarkWithImage:watermarkImage position:CGPointMake(10, 65)];
-    CMTime start = CMTimeMake([self.movieSettings[PLSStartTimeKey] floatValue], 1);
-    CMTime duration = CMTimeMake([self.movieSettings[PLSDurationKey] floatValue], 1);
+    CMTime start = CMTimeMake([self.movieSettings[PLSStartTimeKey] floatValue] * 1e9, 1e9);
+    CMTime duration = CMTimeMake([self.movieSettings[PLSDurationKey] floatValue] * 1e9, 1e9);
     self.shortVideoEditor.player.timeRange = CMTimeRangeMake(start, duration);
     self.shortVideoEditor.audioPlayer.loopEnabled = YES;
     
@@ -164,7 +164,7 @@ PLSAVAssetExportSessionDelegate
         [self.shortVideoEditor.audioPlayer play];
     }];
     [self startPlaybackTimeChecker];
-    [self.shortVideoEditor.player seekToTime:CMTimeMake([self.movieSettings[PLSStartTimeKey] floatValue], 1) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
+    [self.shortVideoEditor.player seekToTime:CMTimeMake([self.movieSettings[PLSStartTimeKey] floatValue] * 1e9, 1e9) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
     [self.shortVideoEditor.player play];
     [self.shortVideoEditor.audioPlayer play];
 }
@@ -521,7 +521,7 @@ PLSAVAssetExportSessionDelegate
     self.audioSettings[PLSDurationKey] = [NSNumber numberWithFloat:CMTimeGetSeconds(musicTimeRange.duration)];
     
     // 从 CMTimeGetSeconds(musicTimeRange.start) 开始播放
-    [self.shortVideoEditor.audioPlayer seekToTime:CMTimeMake(CMTimeGetSeconds(musicTimeRange.start), 1) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
+    [self.shortVideoEditor.audioPlayer seekToTime:CMTimeMake(CMTimeGetSeconds(musicTimeRange.start) * 1e9, 1e9) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
     [self.shortVideoEditor.audioPlayer play];
 }
 
@@ -540,7 +540,8 @@ PLSAVAssetExportSessionDelegate
 - (void)restart {
     // 影片
     [self.shortVideoEditor.player setItemByAsset:self.movieSettings[PLSAssetKey]];
-    [self.shortVideoEditor.player seekToTime:CMTimeMake([self.movieSettings[PLSStartTimeKey] floatValue], 1) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
+    [self.shortVideoEditor.player seekToTime:CMTimeMake([self.movieSettings[PLSStartTimeKey] floatValue] * 1e9, 1e9) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
+    self.shortVideoEditor.player.volume = [self.movieSettings[PLSVolumeKey] floatValue];
     [self.shortVideoEditor.player play];
     
     // 音频重播
@@ -558,7 +559,7 @@ PLSAVAssetExportSessionDelegate
     return pixelBuffer;
 }
 
-#pragma mark --  PLSAVAssetExportSessionDelegate 合成视频文件的回调
+#pragma mark --  PLSAVAssetExportSessionDelegate 合成视频文件给视频数据加滤镜效果的回调
 - (CVPixelBufferRef)assetExportSession:(PLSAVAssetExportSession *)assetExportSession didOutputPixelBuffer:(CVPixelBufferRef)pixelBuffer {
     // 视频数据可用来做滤镜处理，将滤镜效果写入视频文件中
     
@@ -575,7 +576,7 @@ PLSAVAssetExportSessionDelegate
 #pragma mark -- UIButton 按钮响应事件
 #pragma mark -- 裁剪背景音乐
 - (void)clipMusicButtonEvent:(id)sender {
-    CMTimeRange currentMusicTimeRange = CMTimeRangeMake(CMTimeMake([self.audioSettings[PLSStartTimeKey] floatValue], 1), CMTimeMake([self.audioSettings[PLSDurationKey] floatValue], 1));
+    CMTimeRange currentMusicTimeRange = CMTimeRangeMake(CMTimeMake([self.audioSettings[PLSStartTimeKey] floatValue] * 1e9, 1e9), CMTimeMake([self.audioSettings[PLSDurationKey] floatValue] * 1e9, 1e9));
     
     PLSClipAudioView *clipAudioView = [[PLSClipAudioView alloc] initWithMuiscURL:self.audioSettings[PLSURLKey] timeRange:currentMusicTimeRange];
     clipAudioView.delegate = self;
@@ -599,6 +600,7 @@ PLSAVAssetExportSessionDelegate
     } else {
         self.shortVideoEditor.player.volume = 1.0f;
     }
+    self.movieSettings[PLSVolumeKey] = [NSNumber numberWithFloat:self.shortVideoEditor.player.volume];
 }
 
 #pragma mark -- 返回

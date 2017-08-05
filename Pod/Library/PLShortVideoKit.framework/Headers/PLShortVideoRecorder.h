@@ -172,11 +172,46 @@
 @property (readonly, nonatomic) BOOL isRecording;
 
 /**
+ @brief 是否开启音视频采集
+ 
+ @since      v1.2.0
+ */
+@property (assign, nonatomic, readonly) BOOL captureEnabled;
+
+/**
  @abstract   初始化方法
  
  @since      v1.0.0
  */
-- (nonnull instancetype)initWithVideoConfiguration:(PLSVideoConfiguration *__nonnull)videoCaptureConfiguration audioConfiguration:(PLSAudioConfiguration *__nonnull)audioConfiguration;
+- (nonnull instancetype)initWithVideoConfiguration:(PLSVideoConfiguration *__nonnull)videoConfiguration audioConfiguration:(PLSAudioConfiguration *__nonnull)audioConfiguration;
+
+/**
+ @abstract   初始化方法
+ 
+ @since      v1.2.0
+ 
+ @discussion 是否使用 SDK 内部的音视频采集，默认为 YES，当设置为 NO 时，可通过以下两个接口导入音视频数据
+    - (void)writePixelBuffer:(CVPixelBufferRef _Nonnull)pixelBuffer timeStamp:(CMTime)timeStamp;
+    - (void)writeAudioBuffer:(AudioBuffer *_Nonnull)audioBuffer asbd:(AudioStreamBasicDescription *_Nonnull)asbd timeStamp:(CMTime)timeStamp;
+ */
+- (nonnull instancetype)initWithVideoConfiguration:(PLSVideoConfiguration *__nonnull)videoConfiguration audioConfiguration:(PLSAudioConfiguration *__nonnull)audioConfiguration captureEnabled:(BOOL)captureEnabled;
+
+/**
+ @abstract   写入视频数据，当 captureEnabled 为 NO 时，可通过该接口导入视频数据
+ 
+ @warning 目前仅支持 kCVPixelFormatType_32BGRA 格式的 pixelBuffer
+
+ @since      v1.2.0
+ */
+- (void)writePixelBuffer:(CVPixelBufferRef _Nonnull)pixelBuffer timeStamp:(CMTime)timeStamp;
+
+/**
+ @abstract   写入音频数据，当 captureEnabled 为 NO 时，可通过该接口导入音频数据
+ 
+ @since      v1.2.0
+ */
+- (void)writeSampleBuffer:(CMSampleBufferRef _Nonnull)sampleBuffer;
+
 
 /**
  @brief 开始录制视频
@@ -400,25 +435,15 @@
 - (void)toggleCamera;
 
 /**
- * 开启摄像头 session
+ * 开启音视频采集
  *
- * @discussion 这个方法一般不需要调用，但当你的 App 中需要同时使用到 AVCaptureSession 时，在调用过 - (void)stopCaptureSession 方法后，
- * 如果要重新启用摄像头，可以调用这个方法
- *
- * @see - (void)stopCaptureSession
- 
  @since      v1.0.0
  */
 - (void)startCaptureSession;
 
 /**
- * 停止摄像头 session
+ * 停止音视频采集
  *
- * @discussion 这个方法一般不需要调用，但当你的 App 中需要同时使用到 AVCaptureSession 时，当你需要暂且切换到你自己定制的摄像头做别的操作时，
- * 你需要调用这个方法来暂停当前 PLShortVideoRecorder 对 captureSession 的占用。当需要恢复时，调用 - (void)startCaptureSession 方法。
- *
- * @see - (void)startCaptureSession
- 
  @since      v1.0.0
  */
 - (void)stopCaptureSession;
