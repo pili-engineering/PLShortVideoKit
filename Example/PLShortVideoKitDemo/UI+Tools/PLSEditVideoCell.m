@@ -19,7 +19,7 @@
         _iconImageView.layer.masksToBounds = YES;
         [self addSubview:_iconImageView];
         
-        _iconPromptLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, CGRectGetMaxY(_iconImageView.frame)+8, CGRectGetMaxX(_iconImageView.bounds), 15)];
+        _iconPromptLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, CGRectGetMaxY(_iconImageView.frame)+2, CGRectGetMaxX(_iconImageView.bounds), 15)];
         _iconPromptLabel.textAlignment = 1;
         _iconPromptLabel.font = [UIFont systemFontOfSize:11];
         _iconPromptLabel.textColor = [UIColor whiteColor];

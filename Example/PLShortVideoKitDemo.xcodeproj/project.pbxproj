@@ -61,6 +61,7 @@
 		0A398F9F1ED6698F00996229 /* cut_bar_progress@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0A398F9C1ED6698F00996229 /* cut_bar_progress@2x.png */; };
 		0A398FA01ED6698F00996229 /* cut_bar_progress@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0A398F9D1ED6698F00996229 /* cut_bar_progress@3x.png */; };
 		0A3A8E8A1F208321002311A8 /* opencv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A3A8E891F208321002311A8 /* opencv2.framework */; };
+		0A4C4C8F1F3DB5F2003F63CF /* PLShortVideoKit.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 0A4C4C8E1F3DB5F2003F63CF /* PLShortVideoKit.bundle */; };
 		0A52C1931E9C987900561F37 /* EditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A52C1921E9C987900561F37 /* EditViewController.m */; };
 		0A57EBB41E7596CC00FC5BF8 /* record_close_normal.png in Resources */ = {isa = PBXBuildFile; fileRef = 0A57EBB31E7596CC00FC5BF8 /* record_close_normal.png */; };
 		0A63402A1F15C9C9005ADF6C /* MovieTransCodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A6340291F15C9C9005ADF6C /* MovieTransCodeViewController.m */; };
@@ -381,6 +382,7 @@
 		0A398F9C1ED6698F00996229 /* cut_bar_progress@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "cut_bar_progress@2x.png"; path = "images/cut_bar_progress@2x.png"; sourceTree = "<group>"; };
 		0A398F9D1ED6698F00996229 /* cut_bar_progress@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "cut_bar_progress@3x.png"; path = "images/cut_bar_progress@3x.png"; sourceTree = "<group>"; };
 		0A3A8E891F208321002311A8 /* opencv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = opencv2.framework; sourceTree = "<group>"; };
+		0A4C4C8E1F3DB5F2003F63CF /* PLShortVideoKit.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = PLShortVideoKit.bundle; path = PLSBundleResource/PLShortVideoKit.bundle; sourceTree = "<group>"; };
 		0A52C1911E9C987900561F37 /* EditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditViewController.h; sourceTree = "<group>"; };
 		0A52C1921E9C987900561F37 /* EditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditViewController.m; sourceTree = "<group>"; };
 		0A57EBB31E7596CC00FC5BF8 /* record_close_normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = record_close_normal.png; path = images/record_close_normal.png; sourceTree = "<group>"; };
@@ -960,6 +962,7 @@
 		0A94357E1E6CA2E2008845A3 /* PLShortVideoKitDemo */ = {
 			isa = PBXGroup;
 			children = (
+				0A4C4C8E1F3DB5F2003F63CF /* PLShortVideoKit.bundle */,
 				C3F91D2D1F1CBD4900698322 /* KiwiFaceSDK */,
 				0A2722F71F17E8D400E30BD6 /* Stalker */,
 				0ACE7C281ED8B072002FF4C9 /* UI+Tools */,
@@ -1998,6 +2001,7 @@
 				0A0692501E8A3B590035CB7B /* btn_camera_done_a@3x.png in Resources */,
 				C3F91F221F1CBD4900698322 /* brannanScreen.png in Resources */,
 				0A94358C1E6CA2E2008845A3 /* Assets.xcassets in Resources */,
+				0A4C4C8F1F3DB5F2003F63CF /* PLShortVideoKit.bundle in Resources */,
 				C3F91F271F1CBD4900698322 /* earlybirdMap.png in Resources */,
 				0A0692471E8A3B590035CB7B /* btn_bar_next_a@2x.png in Resources */,
 				C3F91FBC1F1CBD4A00698322 /* gesturesSticker_sys@3x.png in Resources */,

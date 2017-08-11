@@ -541,6 +541,25 @@ PLSViewRecorderManagerDelegate
     }
 }
 
+#pragma mark -- 鉴权回调
+- (void)shortVideoRecorder:(PLShortVideoRecorder *__nonnull)recorder didGetCameraAuthorizationStatus:(PLSAuthorizationStatus)status {
+    if (status == PLSAuthorizationStatusAuthorized) {
+        [recorder startCaptureSession];
+    }
+    else if (status == PLSAuthorizationStatusDenied) {
+        NSLog(@"Error: user denies access to camera");
+    }
+}
+    
+- (void)shortVideoRecorder:(PLShortVideoRecorder *__nonnull)recorder didGetMicrophoneAuthorizationStatus:(PLSAuthorizationStatus)status {
+    if (status == PLSAuthorizationStatusAuthorized) {
+        [recorder startCaptureSession];
+    }
+    else if (status == PLSAuthorizationStatusDenied) {
+        NSLog(@"Error: user denies access to microphone");
+    }
+}
+
 #pragma mark -- PLShortVideoRecorderDelegate 视频录制回调
 #pragma mark - 视频数据回调
 /// @abstract 获取到摄像头原数据时的回调, 便于开发者做滤镜等处理，需要注意的是这个回调在 camera 数据的输出线程，请不要做过于耗时的操作，否则可能会导致帧率下降

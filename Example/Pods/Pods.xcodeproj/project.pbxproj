@@ -316,8 +316,8 @@
 		7C0A025FC0290AE002206B69BDC14839 /* MASConstraintMaker.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MASConstraintMaker.m; path = Masonry/MASConstraintMaker.m; sourceTree = "<group>"; };
 		7C612535E8537D4A8F040B0715E0A6B2 /* Qiniu.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Qiniu.xcconfig; sourceTree = "<group>"; };
 		7F1C5E05B85F47250DA3DA1814CF8BDD /* AFURLSessionManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AFURLSessionManager.h; path = AFNetworking/AFURLSessionManager.h; sourceTree = "<group>"; };
+		7F656665841A439250668C824F11565F /* PLShortVideoKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PLShortVideoKit.framework; path = Pod/Library/PLShortVideoKit.framework; sourceTree = "<group>"; };
 		809C7E66E0B4D17B1860A3C5B5254AF4 /* UIRefreshControl+AFNetworking.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIRefreshControl+AFNetworking.m"; path = "UIKit+AFNetworking/UIRefreshControl+AFNetworking.m"; sourceTree = "<group>"; };
-		824176212B7D2769E87C9D87162F72CB /* PLShortVideoKit.bundle */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "wrapper.plug-in"; path = PLShortVideoKit.bundle; sourceTree = "<group>"; };
 		83CF2B6C95F58B229F81C1DCEBDA9B2E /* Masonry.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = Masonry.h; path = Masonry/Masonry.h; sourceTree = "<group>"; };
 		845204A8FD8EA90EA0200B4AC78FFE5B /* AFURLSessionManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AFURLSessionManager.m; path = AFNetworking/AFURLSessionManager.m; sourceTree = "<group>"; };
 		85972CFD71A4DA9520C2B39300A523C2 /* QNALAssetFile.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = QNALAssetFile.m; path = QiniuSDK/Common/QNALAssetFile.m; sourceTree = "<group>"; };
@@ -346,6 +346,7 @@
 		A146654B2C06904D0E1F6E5BC523452A /* AFSecurityPolicy.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AFSecurityPolicy.h; path = AFNetworking/AFSecurityPolicy.h; sourceTree = "<group>"; };
 		A4A78E5A576CDDF089002FA7301D2AD8 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.3.sdk/System/Library/Frameworks/SystemConfiguration.framework; sourceTree = DEVELOPER_DIR; };
 		A53DEEB021AC11D0CA80B38551BAE786 /* Fabric.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = Fabric.h; path = iOS/Fabric.framework/Headers/Fabric.h; sourceTree = "<group>"; };
+		A5DA605BB7809F7BE0E2E10099F40B64 /* libMuseProcessor.a */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = archive.ar; name = libMuseProcessor.a; path = Pod/Library/libMuseProcessor.a; sourceTree = "<group>"; };
 		A70167FD9D479FE47C9AB1748A67809E /* QNConfiguration.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = QNConfiguration.h; path = QiniuSDK/Storage/QNConfiguration.h; sourceTree = "<group>"; };
 		A77C94B69B20DCCE43853E0A7B34A052 /* Pods-PLShortVideoKitDemo-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-PLShortVideoKitDemo-frameworks.sh"; sourceTree = "<group>"; };
 		A886D4EB7EDAF310CBECA8115D00E856 /* AFURLResponseSerialization.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AFURLResponseSerialization.h; path = AFNetworking/AFURLResponseSerialization.h; sourceTree = "<group>"; };
@@ -370,7 +371,6 @@
 		C68DCCB81E99640474094596F8B0D48B /* QNResolvUtil.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = QNResolvUtil.h; path = HappyDNS/Local/QNResolvUtil.h; sourceTree = "<group>"; };
 		C798BB5AF4A181075BCA15F11B1B7F72 /* QNRefresher.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = QNRefresher.m; path = HappyDNS/QNRefresher.m; sourceTree = "<group>"; };
 		C907ADEBB9042947957C4C3056B9BDF7 /* libssl.a */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = archive.ar; name = libssl.a; path = Pod/Library/lib/libssl.a; sourceTree = "<group>"; };
-		C925D5E26A2BA513759827C83B3379F6 /* PLShortVideoKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PLShortVideoKit.framework; path = Pod/Library/PLShortVideoKit.framework; sourceTree = "<group>"; };
 		CA53E8AD3D86A976A9D9656818061D06 /* MASViewConstraint.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MASViewConstraint.m; path = Masonry/MASViewConstraint.m; sourceTree = "<group>"; };
 		CA902F3E0E1EB49C9DB3BF339CB54F92 /* QNResumeUpload.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = QNResumeUpload.h; path = QiniuSDK/Storage/QNResumeUpload.h; sourceTree = "<group>"; };
 		CC29C5FB7C5A212FEB20E4C6D53A1BE2 /* QNUploadOption.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = QNUploadOption.h; path = QiniuSDK/Storage/QNUploadOption.h; sourceTree = "<group>"; };
@@ -404,7 +404,6 @@
 		E815ED06357ACF4A9F00DB1F1453EA52 /* UIRefreshControl+AFNetworking.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIRefreshControl+AFNetworking.h"; path = "UIKit+AFNetworking/UIRefreshControl+AFNetworking.h"; sourceTree = "<group>"; };
 		E85B958CDE197D758D7ABB90F0C604C0 /* AFURLRequestSerialization.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AFURLRequestSerialization.m; path = AFNetworking/AFURLRequestSerialization.m; sourceTree = "<group>"; };
 		E8A09EF9641D0ADF98055C8B6FD267F6 /* QiniuSDK.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = QiniuSDK.h; path = QiniuSDK/QiniuSDK.h; sourceTree = "<group>"; };
-		E9056E862C9B0317687C4ED62AA14C5A /* libMuseProcessor.a */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = archive.ar; name = libMuseProcessor.a; path = Pod/Library/libMuseProcessor.a; sourceTree = "<group>"; };
 		E90DFCD5D98E3FEDFBC67BC5E3B4721B /* QNUpToken.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = QNUpToken.h; path = QiniuSDK/Storage/QNUpToken.h; sourceTree = "<group>"; };
 		EEF861ACC11AE03B38366C1EEF93C0E8 /* QNPHAssetResource.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = QNPHAssetResource.h; path = QiniuSDK/Common/QNPHAssetResource.h; sourceTree = "<group>"; };
 		F201AA4B502193C3BC7F077249CB519A /* PLPlayer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = PLPlayer.h; path = Pod/Library/include/PLPlayerKit/PLPlayer.h; sourceTree = "<group>"; };
@@ -468,15 +467,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		0AF3E0593F401CC9E056C469EA70AA9C /* Library */ = {
-			isa = PBXGroup;
-			children = (
-				294EE5F16FB7F7B4FC4EFA7EDE18934D /* PLShortVideoKit.framework */,
-			);
-			name = Library;
-			path = Library;
-			sourceTree = "<group>";
-		};
 		0B65FFCE167F0501213A45E6101270EB /* AFNetworking */ = {
 			isa = PBXGroup;
 			children = (
@@ -556,6 +546,15 @@
 			path = Masonry;
 			sourceTree = "<group>";
 		};
+		1EFF605953EB5C379383FFD3E35367B4 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A5DA605BB7809F7BE0E2E10099F40B64 /* libMuseProcessor.a */,
+				7F656665841A439250668C824F11565F /* PLShortVideoKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		25763A321735D17C44AD93B9651ABD88 /* Security */ = {
 			isa = PBXGroup;
 			children = (
@@ -582,23 +581,6 @@
 			);
 			name = "Support Files";
 			path = "../Target Support Files/HappyDNS";
-			sourceTree = "<group>";
-		};
-		294EE5F16FB7F7B4FC4EFA7EDE18934D /* PLShortVideoKit.framework */ = {
-			isa = PBXGroup;
-			children = (
-				824176212B7D2769E87C9D87162F72CB /* PLShortVideoKit.bundle */,
-			);
-			name = PLShortVideoKit.framework;
-			path = PLShortVideoKit.framework;
-			sourceTree = "<group>";
-		};
-		29E277894F47A7C60B6C71DB213B4950 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				30456DE226F3B1C71A1CAA54FF574FD7 /* Pod */,
-			);
-			name = Resources;
 			sourceTree = "<group>";
 		};
 		2E08EB7BDB6F425C18C67CE76655A3EF /* UIKit */ = {
@@ -639,23 +621,6 @@
 			path = "../Target Support Files/AFNetworking";
 			sourceTree = "<group>";
 		};
-		30456DE226F3B1C71A1CAA54FF574FD7 /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				0AF3E0593F401CC9E056C469EA70AA9C /* Library */,
-			);
-			name = Pod;
-			path = Pod;
-			sourceTree = "<group>";
-		};
-		3073E0362F28E113A8AC98262A762359 /* Development Pods */ = {
-			isa = PBXGroup;
-			children = (
-				37EAC1FDCCBE6AE955192662083348D7 /* PLShortVideoKit */,
-			);
-			name = "Development Pods";
-			sourceTree = "<group>";
-		};
 		334EE71C7FEA547C1DB82859CADD7EDE /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -664,14 +629,12 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		37EAC1FDCCBE6AE955192662083348D7 /* PLShortVideoKit */ = {
+		400FE5226C96FBBC76568A5083AE5B9F /* Development Pods */ = {
 			isa = PBXGroup;
 			children = (
-				98E55B2079403FADE2065F6ACC6ED06C /* Frameworks */,
-				29E277894F47A7C60B6C71DB213B4950 /* Resources */,
+				E94CDA6AF27E725F8ABC3154A01FB80D /* PLShortVideoKit */,
 			);
-			name = PLShortVideoKit;
-			path = ../..;
+			name = "Development Pods";
 			sourceTree = "<group>";
 		};
 		406DB74B372FFAB2D611DFA5D4751930 /* Fabric */ = {
@@ -835,7 +798,7 @@
 			isa = PBXGroup;
 			children = (
 				93A4A3777CF96A4AAC1D13BA6DCCEA73 /* Podfile */,
-				3073E0362F28E113A8AC98262A762359 /* Development Pods */,
+				400FE5226C96FBBC76568A5083AE5B9F /* Development Pods */,
 				0F75DF6C7C5F002280EC53F48E80B587 /* Frameworks */,
 				1334739F09FA723B565C245EA4A7012D /* Pods */,
 				B723870E6C555B232AFEEBBF36039164 /* Products */,
@@ -852,15 +815,6 @@
 				845204A8FD8EA90EA0200B4AC78FFE5B /* AFURLSessionManager.m */,
 			);
 			name = NSURLSession;
-			sourceTree = "<group>";
-		};
-		98E55B2079403FADE2065F6ACC6ED06C /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				E9056E862C9B0317687C4ED62AA14C5A /* libMuseProcessor.a */,
-				C925D5E26A2BA513759827C83B3379F6 /* PLShortVideoKit.framework */,
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		9AAFA23496FA9BD1E71050A3F7C089B0 /* Serialization */ = {
@@ -920,6 +874,15 @@
 			);
 			name = Crashlytics;
 			path = Crashlytics;
+			sourceTree = "<group>";
+		};
+		E94CDA6AF27E725F8ABC3154A01FB80D /* PLShortVideoKit */ = {
+			isa = PBXGroup;
+			children = (
+				1EFF605953EB5C379383FFD3E35367B4 /* Frameworks */,
+			);
+			name = PLShortVideoKit;
+			path = ../..;
 			sourceTree = "<group>";
 		};
 		F23BEC2C3AC229EAA1038501C33506FD /* PLPlayerKit */ = {

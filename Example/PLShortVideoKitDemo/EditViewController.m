@@ -344,7 +344,7 @@ PLSAVAssetExportSessionDelegate
     
     
     NSDictionary *dic = @{
-                          @"audioName"  : @"无",
+                          @"audioName"  : @"None",
                           @"audioUrl"   : @"NULL",
                           };
     [array addObject:dic];
