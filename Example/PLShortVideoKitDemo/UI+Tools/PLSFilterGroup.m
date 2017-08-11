@@ -74,11 +74,13 @@
     for (int i = 0; i < array.count; i++) {
         NSDictionary *filter = array[i];
         NSString *name = [filter objectForKey:@"name"];
-        NSString *coverImagePath = [filtersPath stringByAppendingString:[NSString stringWithFormat:@"/%@/thumb.png", name]];
-        NSString *colorImagePath = [filtersPath stringByAppendingString:[NSString stringWithFormat:@"/%@/filter.png", name]];
+        NSString *dir = [filter objectForKey:@"dir"];
+        NSString *coverImagePath = [filtersPath stringByAppendingString:[NSString stringWithFormat:@"/%@/thumb.png", dir]];
+        NSString *colorImagePath = [filtersPath stringByAppendingString:[NSString stringWithFormat:@"/%@/filter.png", dir]];
         
         NSDictionary *dic = @{
                               @"name"            : name,
+                              @"dir"             : dir,
                               @"coverImagePath"  : coverImagePath,
                               @"colorImagePath"  : colorImagePath
                               };
