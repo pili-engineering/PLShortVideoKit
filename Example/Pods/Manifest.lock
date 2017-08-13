@@ -23,9 +23,19 @@ PODS:
     - HappyDNS (~> 0.3.10)
   - PLShortVideoKit (1.2.1):
     - Qiniu (= 7.1.5)
+  - PreDemObjc (1.0.0):
+    - HappyDNS
+    - PreDemObjc/no-arc (= 1.0.0)
+    - Qiniu
+    - QNNetDiag
+  - PreDemObjc/no-arc (1.0.0):
+    - HappyDNS
+    - Qiniu
+    - QNNetDiag
   - Qiniu (7.1.5):
     - AFNetworking (~> 3)
     - HappyDNS (~> 0.3)
+  - QNNetDiag (0.0.6)
 
 DEPENDENCIES:
   - Crashlytics (= 3.8.4)
@@ -33,6 +43,7 @@ DEPENDENCIES:
   - Masonry (= 1.0.2)
   - PLPlayerKit (= 2.4.3)
   - PLShortVideoKit (from `../`)
+  - PreDemObjc
   - Qiniu (= 7.1.5)
 
 EXTERNAL SOURCES:
@@ -47,8 +58,10 @@ SPEC CHECKSUMS:
   Masonry: 7c429b56da9d4ee0bbb3ed77a5ea710d6a5df39e
   PLPlayerKit: 6575f900d3a1c3680e3fd8907338683d0eedcd79
   PLShortVideoKit: 0e023377b6d5803ed7d4aa6040f07c48743da832
+  PreDemObjc: 5c108c53ebfc2f10bb90f6723473aa4a66e9948f
   Qiniu: 77a3dba411556a383d72d17e842345a9d4c83252
+  QNNetDiag: 6f7bbafa34c1b020e51d440f25044fe5ee10145d
 
-PODFILE CHECKSUM: 2e49f7929a66ad7b782a62eca795a139e84c6eed
+PODFILE CHECKSUM: 57eee0dbf81ecda8a2c52f56e8b30e5eedd10519
 
-COCOAPODS: 1.2.1
+COCOAPODS: 1.3.1
