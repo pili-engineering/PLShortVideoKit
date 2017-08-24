@@ -23,12 +23,12 @@ PODS:
     - HappyDNS (~> 0.3.10)
   - PLShortVideoKit (1.2.1):
     - Qiniu (= 7.1.5)
-  - PreDemObjc (1.0.0):
+  - PreDemObjc (1.0.1):
     - HappyDNS
-    - PreDemObjc/no-arc (= 1.0.0)
+    - PreDemObjc/no-arc (= 1.0.1)
     - Qiniu
     - QNNetDiag
-  - PreDemObjc/no-arc (1.0.0):
+  - PreDemObjc/no-arc (1.0.1):
     - HappyDNS
     - Qiniu
     - QNNetDiag
@@ -58,7 +58,7 @@ SPEC CHECKSUMS:
   Masonry: 7c429b56da9d4ee0bbb3ed77a5ea710d6a5df39e
   PLPlayerKit: 6575f900d3a1c3680e3fd8907338683d0eedcd79
   PLShortVideoKit: 0e023377b6d5803ed7d4aa6040f07c48743da832
-  PreDemObjc: 5c108c53ebfc2f10bb90f6723473aa4a66e9948f
+  PreDemObjc: 7dd829ae9db991ce2a89ed0febfc5e70ebb5da9a
   Qiniu: 77a3dba411556a383d72d17e842345a9d4c83252
   QNNetDiag: 6f7bbafa34c1b020e51d440f25044fe5ee10145d
 
