@@ -66,6 +66,19 @@ typedef enum {
     PLSVideoFillModePreserveAspectRatioAndFill
 } PLSVideoFillModeType;
 
+/**
+ @typedef    PLSPreviewOrientation
+ @abstract   预览视图的方向。
+ 
+ @since      v1.2.1
+ */
+typedef NS_ENUM(NSInteger, PLSPreviewOrientation) {
+    PLSPreviewOrientationPortrait           = 1,
+    PLSPreviewOrientationPortraitUpsideDown = 2,
+    PLSPreviewOrientationLandscapeRight     = 3,
+    PLSPreviewOrientationLandscapeLeft      = 4,
+};
+
 #pragma mark - Audio SampleRate
 
 /**

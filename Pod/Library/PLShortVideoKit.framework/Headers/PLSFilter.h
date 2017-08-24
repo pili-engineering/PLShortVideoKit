@@ -12,13 +12,27 @@
 @interface PLSFilter : NSObject
 
 /**
+ @abstract 色彩图片的路径
+ 
+ @since      v1.3.0
+ */
+@property (strong, nonatomic) NSString *colorImagePath;
+
+/**
+ @abstract 初始化滤镜实例
+ 
+ @since      v1.3.0
+ */
+- (instancetype)init;
+
+/**
  @abstract 使用色彩图片初始化滤镜实例
  
  @param colorImagePath    色彩图片的路径
  
  @since      v1.1.0
  */
-- (instancetype)initWithColorImagePath:(NSString *)colorImagePath;
+- (instancetype)initWithColorImagePath:(NSString *)colorImagePath __deprecated;
 
 /**
  @abstract 处理图像，加滤镜效果

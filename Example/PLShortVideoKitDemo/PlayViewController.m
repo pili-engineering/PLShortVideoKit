@@ -50,36 +50,41 @@ PLPlayerDelegate
     // 配置工具视图
     [self setupToolboxUI];
     
-    // 播放器初始化
-    [self initPlayer];
+    if (self.actionType == PLSActionTypePlayer) {
+        // 播放器初始化
+        [self initPlayer];
+        
+        // 单指单击，播放视频
+        UITapGestureRecognizer *singleFingerOne = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleFingerToPlayVideoEvent:)];
+        singleFingerOne.numberOfTouchesRequired = 1; // 手指数
+        singleFingerOne.numberOfTapsRequired = 1; // tap次数
+        [self.view addGestureRecognizer:singleFingerOne];
+    }
+    if (self.actionType == PLSActionTypeGif) {
+        // 演示 gif 动图
+        PLSGifComposer *gifComposer = [[PLSGifComposer alloc] initWithImagesArray:_imagesArray];
+        UIImage *imageData = _imagesArray[0];
+        [gifComposer loadGifWithFrame:CGRectMake(0, 0, PLS_SCREEN_WIDTH, imageData.size.height/imageData.size.width * PLS_SCREEN_WIDTH) superView:self.view repeatCount:0];
+    }
     
-    // 单指单击，播放视频
-    UITapGestureRecognizer *singleFingerOne = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleFingerToPlayVideoEvent:)];
-    singleFingerOne.numberOfTouchesRequired = 1; // 手指数
-    singleFingerOne.numberOfTapsRequired = 1; // tap次数
-    [self.view addGestureRecognizer:singleFingerOne];
-    
-    self.progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleBar];
-    self.progressView.progress = 0.0;
-    self.progressView.hidden = YES;
-    self.progressView.trackTintColor = [UIColor blackColor];
-    self.progressView.progressTintColor = [UIColor whiteColor];
-    self.progressView.center = self.view.center;
-    [self.view addSubview:self.progressView];
-    
-    [self prepareUpload];
+    // 文件上传（可上传视频、Gif 等）
+    [self setupFileUpload];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
-    [self.player play];
+    if (self.actionType == PLSActionTypePlayer) {
+        [self.player play];
+    }
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     
-    [self.player stop];
+    if (self.actionType == PLSActionTypePlayer) {
+        [self.player stop];
+    }
 }
 
 #pragma mark -- 视图配置
@@ -142,13 +147,30 @@ PLPlayerDelegate
 }
 
 #pragma mark -- 视频上传准备
+- (void)setupFileUpload {
+    self.progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleBar];
+    self.progressView.progress = 0.0;
+    self.progressView.hidden = YES;
+    self.progressView.trackTintColor = [UIColor blackColor];
+    self.progressView.progressTintColor = [UIColor whiteColor];
+    self.progressView.center = self.view.center;
+    [self.view addSubview:self.progressView];
+    
+    [self prepareUpload];
+}
+
 - (void)prepareUpload {
     self.progressView.hidden = YES;
     self.progressView.progress = 0;
     
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     formatter.dateFormat = @"yyyyMMddHHmmss";
-    NSString *key = [NSString stringWithFormat:@"short_video_%@.mp4", [formatter stringFromDate:[NSDate date]]];
+    NSString *key;
+    if (_imagesArray.count == 0) {
+        key = [NSString stringWithFormat:@"short_video_%@.mp4", [formatter stringFromDate:[NSDate date]]];
+    } else {
+        key = [NSString stringWithFormat:@"short_video_%@.gif", [formatter stringFromDate:[NSDate date]]];
+    }
     PLSUploaderConfiguration * uploadConfig = [[PLSUploaderConfiguration alloc] initWithToken:kUploadToken videoKey:key https:YES recorder:nil];
     self.shortVideoUploader = [[PLShortVideoUploader alloc] initWithConfiguration:uploadConfig];
     self.shortVideoUploader.delegate = self;
@@ -245,6 +267,8 @@ PLPlayerDelegate
 }
 
 - (void)dealloc {
+    NSLog(@"dealloc: %@", [[self class] description]);
+
     self.player = nil;
     self.player.delegate = nil;
     

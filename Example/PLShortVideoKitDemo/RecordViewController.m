@@ -67,6 +67,9 @@ PLSViewRecorderManagerDelegate
 @property (strong, nonatomic) NSMutableArray<NSDictionary *> *filtersArray;
 @property (assign, nonatomic) NSInteger filterIndex;
 
+// 录制前是否开启自动检测设备方向调整视频拍摄的角度（竖屏、横屏）
+@property (assign, nonatomic) BOOL isUseAutoCheckDeviceOrientationBeforeRecording;
+
 @end
 
 @implementation RecordViewController
@@ -75,7 +78,10 @@ PLSViewRecorderManagerDelegate
     self = [super init];
     if (self) {
         // 录制时默认关闭滤镜
-        self.isUseFilterWhenRecording = NO;
+        self.isUseFilterWhenRecording = YES;
+        
+        // 录制前默认打开自动检测设备方向调整视频拍摄的角度（竖屏、横屏）
+        self.isUseAutoCheckDeviceOrientationBeforeRecording = YES;
         
         if (self.isUseFilterWhenRecording) {
             // 滤镜
@@ -142,20 +148,51 @@ PLSViewRecorderManagerDelegate
     
     PLSVideoConfiguration *videoConfiguration = [PLSVideoConfiguration defaultConfiguration];
     videoConfiguration.position = AVCaptureDevicePositionFront;
-    videoConfiguration.videoSize = CGSizeMake(480, 854);
     videoConfiguration.videoFrameRate = 25;
     videoConfiguration.averageVideoBitRate = 1024*1000;
-    
+    videoConfiguration.videoSize = CGSizeMake(480, 854);
+    videoConfiguration.videoOrientation = AVCaptureVideoOrientationPortrait;
+
     PLSAudioConfiguration *audioConfiguration = [PLSAudioConfiguration defaultConfiguration];
     
     self.shortVideoRecorder = [[PLShortVideoRecorder alloc] initWithVideoConfiguration:videoConfiguration audioConfiguration:audioConfiguration];
-    
     self.shortVideoRecorder.previewView.frame = CGRectMake(0, 0, PLS_SCREEN_WIDTH, PLS_SCREEN_HEIGHT);
     [self.view addSubview:self.shortVideoRecorder.previewView];
     
     self.shortVideoRecorder.delegate = self;
     
     self.shortVideoRecorder.maxDuration = 30.0f; // 设置最长录制时长
+    
+    // 录制前是否开启自动检测设备方向调整视频拍摄的角度（竖屏、横屏）
+    if (self.isUseAutoCheckDeviceOrientationBeforeRecording) {
+        UIView *deviceOrientationView = [[UIView alloc] init];
+        deviceOrientationView.frame = CGRectMake(0, 0, PLS_SCREEN_WIDTH/2, 44);
+        deviceOrientationView.center = CGPointMake(PLS_SCREEN_WIDTH/2, 44/2);
+        deviceOrientationView.backgroundColor = [UIColor grayColor];
+        deviceOrientationView.alpha = 0.7;
+        [self.view addSubview:deviceOrientationView];
+        self.shortVideoRecorder.adaptationRecording = YES; // 根据设备方向自动确定横屏 or 竖屏拍摄效果
+        [self.shortVideoRecorder setDeviceOrientationBlock:^(PLSPreviewOrientation deviceOrientation){
+            NSLog(@"deviceOrientation : %ld", (long)deviceOrientation);
+            
+            if (deviceOrientation == PLSPreviewOrientationPortrait) {
+                deviceOrientationView.frame = CGRectMake(0, 0, PLS_SCREEN_WIDTH/2, 44);
+                deviceOrientationView.center = CGPointMake(PLS_SCREEN_WIDTH/2, 44/2);
+                
+            } else if (deviceOrientation == PLSPreviewOrientationPortraitUpsideDown) {
+                deviceOrientationView.frame = CGRectMake(0, 0, PLS_SCREEN_WIDTH/2, 44);
+                deviceOrientationView.center = CGPointMake(PLS_SCREEN_WIDTH/2, PLS_SCREEN_HEIGHT - 44/2);
+                
+            } else if (deviceOrientation == PLSPreviewOrientationLandscapeRight) {
+                deviceOrientationView.frame = CGRectMake(0, 0, 44, PLS_SCREEN_HEIGHT/2);
+                deviceOrientationView.center = CGPointMake(PLS_SCREEN_WIDTH - 44/2, PLS_SCREEN_HEIGHT/2);
+                
+            } else if (deviceOrientation == PLSPreviewOrientationLandscapeLeft) {
+                deviceOrientationView.frame = CGRectMake(0, 0, 44, PLS_SCREEN_HEIGHT/2);
+                deviceOrientationView.center = CGPointMake(44/2, PLS_SCREEN_HEIGHT/2);
+            }
+        }];
+    }
     
     // 默认关闭内部滤镜
     if (self.isUseFilterWhenRecording) {
@@ -175,12 +212,11 @@ PLSViewRecorderManagerDelegate
         
         // 展示多种滤镜的 UICollectionView
         CGRect frame = self.editVideoCollectionView.frame;
-        self.editVideoCollectionView.frame = CGRectMake(0, 200, frame.size.width, frame.size.height);
+        self.editVideoCollectionView.frame = CGRectMake(0, 260, frame.size.width, frame.size.height);
         [self.view addSubview:self.editVideoCollectionView];
         [self.editVideoCollectionView reloadData];
     }
 }
-
 
 - (void)setupBaseToolboxView {
     self.baseToolboxView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, PLS_SCREEN_WIDTH, PLS_BaseToolboxView_HEIGHT)];
@@ -264,7 +300,7 @@ PLSViewRecorderManagerDelegate
     self.deleteButton.style = PLSDeleteButtonStyleNormal;
     self.deleteButton.frame = CGRectMake(15, PLS_SCREEN_HEIGHT - 80, 50, 50);
     self.deleteButton.center = center;
-    [self.deleteButton setBackgroundImage:[UIImage imageNamed:@"btn_del_a"] forState:UIControlStateNormal];
+    [self.deleteButton setImage:[UIImage imageNamed:@"btn_del_a"] forState:UIControlStateNormal];
     [self.deleteButton addTarget:self action:@selector(deleteButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
     [self.recordToolboxView addSubview:self.deleteButton];
     self.deleteButton.hidden = YES;
@@ -550,7 +586,7 @@ PLSViewRecorderManagerDelegate
         NSLog(@"Error: user denies access to camera");
     }
 }
-    
+
 - (void)shortVideoRecorder:(PLShortVideoRecorder *__nonnull)recorder didGetMicrophoneAuthorizationStatus:(PLSAuthorizationStatus)status {
     if (status == PLSAuthorizationStatusAuthorized) {
         [recorder startCaptureSession];
@@ -560,11 +596,18 @@ PLSViewRecorderManagerDelegate
     }
 }
 
-#pragma mark -- PLShortVideoRecorderDelegate 视频录制回调
 #pragma mark - 视频数据回调
 /// @abstract 获取到摄像头原数据时的回调, 便于开发者做滤镜等处理，需要注意的是这个回调在 camera 数据的输出线程，请不要做过于耗时的操作，否则可能会导致帧率下降
 - (CVPixelBufferRef)shortVideoRecorder:(PLShortVideoRecorder *)recorder cameraSourceDidGetPixelBuffer:(CVPixelBufferRef)pixelBuffer {
     //此处可以做美颜/滤镜等处理
+    
+    // 是否在录制时使用滤镜，默认是关闭的，NO
+    if (self.isUseFilterWhenRecording) {
+        PLSFilter *filter = self.filterGroup.currentFilter;
+        pixelBuffer = [filter process:pixelBuffer];
+    }
+    
+    
     /* 横竖屏时更新sdk内置UI 坐标 */
     [_kwSdkUI resetScreemMode];
     
@@ -655,13 +698,10 @@ PLSViewRecorderManagerDelegate
     /*********** 视频帧渲染 ***********/
     [self.kwSdkUI.kwSdk.renderer processPixelBuffer:pixelBuffer withRotation:cvMobileRotate mirrored:NO];
     
-    // 是否在录制时使用滤镜，默认是关闭的，NO
-//    if (self.isUseFilterWhenRecording) {
-//        PLSFilter *filter = self.filterGroup.currentFilter;
-//        pixelBuffer = [filter process:pixelBuffer];
-//    }
     return pixelBuffer;
 }
+
+#pragma mark -- PLShortVideoRecorderDelegate 视频录制回调
 
 // 开始录制一段视频时
 - (void)shortVideoRecorder:(PLShortVideoRecorder *)recorder didStartRecordingToOutputFileAtURL:(NSURL *)fileURL {
@@ -759,6 +799,8 @@ PLSViewRecorderManagerDelegate
 
 #pragma mark -- dealloc
 - (void)dealloc {
+    NSLog(@"dealloc: %@", [[self class] description]);
+
     self.shortVideoRecorder.delegate = nil;
     self.shortVideoRecorder = nil;
     
