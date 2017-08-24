@@ -7,8 +7,7 @@
 //
 
 #import "AppDelegate.h"
-#import <Fabric/Fabric.h>
-#import <Crashlytics/Crashlytics.h>
+#import <PreDemObjc/PREDemObjc.h>
 
 @interface AppDelegate ()
 
@@ -18,8 +17,9 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    [PREDManager startWithAppKey:@"000000010004qpc2443vpvai"
+                   serviceDomain:@"http://pili-dem-push.qbox.net"];
     // Override point for customization after application launch.
-    [Fabric with:@[[Crashlytics class]]];
     return YES;
 }
 
