@@ -75,7 +75,7 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    [self.shortVideoEditor.player seekToTime:CMTimeMake(self.startTime, 1) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
+    [self.shortVideoEditor.player seekToTime:CMTimeMake(self.startTime * 1e9, 1e9) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
     [self.shortVideoEditor.player play];
     [self startPlaybackTimeChecker];
 }
@@ -239,6 +239,8 @@
 
 #pragma mark -- dealloc
 - (void)dealloc {
+    NSLog(@"dealloc: %@", [[self class] description]);
+
     if (self.playbackTimeCheckerTimer) {
         [self.playbackTimeCheckerTimer invalidate];
         self.playbackTimeCheckerTimer = nil;

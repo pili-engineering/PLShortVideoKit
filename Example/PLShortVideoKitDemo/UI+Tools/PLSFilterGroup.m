@@ -15,20 +15,28 @@
 @end
 
 @implementation PLSFilterGroup
+@synthesize filterIndex = _filterIndex;
+
+- (void)setFilterIndex:(NSInteger)filterIndex {    
+    _filterIndex = filterIndex;
+    NSString *colorImagePath = _colorFilterArray[filterIndex];
+    self.currentFilter.colorImagePath = colorImagePath;
+}
+
+- (NSInteger)filterIndex {
+    return _filterIndex;
+}
 
 - (instancetype)init {
     self = [super init];
     if (self) {
         _colorFilterArray = [[NSMutableArray alloc] init];
         _filtersInfo = [[NSMutableArray alloc] init];
+        self.currentFilter = [[PLSFilter alloc] init];
         
         [self setFilterModeOn:YES];
     }
     return self;
-}
-
-- (PLSFilter *)currentFilter {
-    return _colorFilterArray[_filterIndex];
 }
 
 - (void)setFilterModeOn:(BOOL)filterModeOn {
@@ -38,21 +46,10 @@
         [_colorFilterArray removeAllObjects];
     }
     
-    // WARNINGS:
-    // 为防止 dispatch_async 异步操作导致 _colorFilterArray 为空，进而导致 -[__NSArrayM objectAtIndex:] crash
-    // 先给 _colorFilterArray 填充1个元素，该元素对应的滤镜为 normal
-    NSString *colorImagePath = [_filtersInfo[0] objectForKey:@"colorImagePath"];
-    PLSFilter *filter = [[PLSFilter alloc] initWithColorImagePath:colorImagePath];
-    [_colorFilterArray addObject:filter];
-    
-    // 从 1 开始取元素直至 count - 1
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        for (int i = 1; i < _filtersInfo.count; i++) {
-            NSString *colorImagePath = [_filtersInfo[i] objectForKey:@"colorImagePath"];
-            PLSFilter *filter = [[PLSFilter alloc] initWithColorImagePath:colorImagePath];
-            [_colorFilterArray addObject:filter];
-        }
-    });
+    for (int i = 0; i < _filtersInfo.count; i++) {
+        NSString *colorImagePath = [_filtersInfo[i] objectForKey:@"colorImagePath"];
+        [_colorFilterArray addObject:colorImagePath];
+    }
 }
 
 - (void)loadFilters {
@@ -92,6 +89,7 @@
 - (void)dealloc {
     _colorFilterArray = nil;
     _filtersInfo = nil;
+    self.currentFilter = nil;
 }
 
 @end

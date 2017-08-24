@@ -567,7 +567,7 @@ static NSString * const reuseIdentifier = @"Cell";
 }
 
 - (void)dealloc {
-    
+    NSLog(@"dealloc: %@", [[self class] description]);
 }
 
 @end

@@ -82,6 +82,13 @@
 @property (assign, nonatomic) CMTimeRange timeRange;
 
 /**
+ @brief 初始化音频播放器
+ 
+ @since      v1.3.0
+ */
++ (PLSEditPlayer *_Nullable)audioPlayer;
+
+/**
  @brief 通过 stringPath 加载 AVPlayerItem
  
  @since      v1.1.0

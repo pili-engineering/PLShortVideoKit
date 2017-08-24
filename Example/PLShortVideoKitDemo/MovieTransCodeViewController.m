@@ -324,6 +324,8 @@ PLSSelectionViewDelegate
 
 #pragma mark -- dealloc
 - (void)dealloc {
+    NSLog(@"dealloc: %@", [[self class] description]);
+
     if ([self.activityIndicatorView isAnimating]) {
         [self.activityIndicatorView stopAnimating];
         self.activityIndicatorView = nil;

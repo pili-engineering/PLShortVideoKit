@@ -41,8 +41,6 @@
 		0A24C5E11EE912E500B2314E /* plsmusics.json in Resources */ = {isa = PBXBuildFile; fileRef = 0A24C5D81EE912E500B2314E /* plsmusics.json */; };
 		0A24C5E21EE912E500B2314E /* Road_to_Moscow.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 0A24C5D91EE912E500B2314E /* Road_to_Moscow.mp3 */; };
 		0A24C5ED1EE951B900B2314E /* movie.png in Resources */ = {isa = PBXBuildFile; fileRef = 0A24C5EC1EE951B900B2314E /* movie.png */; };
-		0A2722FD1F17E8D400E30BD6 /* NSObject+Stalker.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A2722F91F17E8D400E30BD6 /* NSObject+Stalker.m */; };
-		0A2722FE1F17E8D400E30BD6 /* STStalker.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A2722FC1F17E8D400E30BD6 /* STStalker.m */; };
 		0A2731EE1E75D2B0005D0CE1 /* end_disable.png in Resources */ = {isa = PBXBuildFile; fileRef = 0A2731ED1E75D2B0005D0CE1 /* end_disable.png */; };
 		0A2731FF1E75E36B005D0CE1 /* progressbar_front.png in Resources */ = {isa = PBXBuildFile; fileRef = 0A2731FE1E75E36B005D0CE1 /* progressbar_front.png */; };
 		0A2732311E75F99D005D0CE1 /* btn_play_bg_a.png in Resources */ = {isa = PBXBuildFile; fileRef = 0A2732301E75F99D005D0CE1 /* btn_play_bg_a.png */; };
@@ -101,8 +99,16 @@
 		0AECA4F21E88466300AF2931 /* PlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AECA4F11E88466300AF2931 /* PlayViewController.m */; };
 		0AECA4F41E884CD200AF2931 /* btn_back.png in Resources */ = {isa = PBXBuildFile; fileRef = 0AECA4F31E884CD200AF2931 /* btn_back.png */; };
 		0AECA4F61E884D0900AF2931 /* video_play.png in Resources */ = {isa = PBXBuildFile; fileRef = 0AECA4F51E884D0900AF2931 /* video_play.png */; };
-		0AECA5001E88A60C00AF2931 /* RecordViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AECA4FF1E88A60C00AF2931 /* RecordViewController.m */; };
-		0AF54B8B1F35D1ED0048797F /* PLSViewRecorderManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AF54B8A1F35D1ED0048797F /* PLSViewRecorderManager.m */; };
+		C39EA3E01F4EC6950007D1C3 /* PLSFormatGifView.m in Sources */ = {isa = PBXBuildFile; fileRef = C39EA3DF1F4EC6950007D1C3 /* PLSFormatGifView.m */; };
+		C39EA3E31F4EC6AC0007D1C3 /* GifFormatViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C39EA3E21F4EC6AB0007D1C3 /* GifFormatViewController.m */; };
+		C39EA3E61F4EC7490007D1C3 /* RecordViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C39EA3E51F4EC7490007D1C3 /* RecordViewController.m */; };
+		C39EA3EB1F4EC87B0007D1C3 /* PLSViewRecorderManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C39EA3EA1F4EC87B0007D1C3 /* PLSViewRecorderManager.m */; };
+		C39EA3ED1F4ECAC40007D1C3 /* icon_gif.png in Resources */ = {isa = PBXBuildFile; fileRef = C39EA3EC1F4ECAC40007D1C3 /* icon_gif.png */; };
+		C39EA3EF1F4ECAD90007D1C3 /* qiniu_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = C39EA3EE1F4ECAD90007D1C3 /* qiniu_logo.png */; };
+		C39EA3F41F4ECB1F0007D1C3 /* btn_no_selected_pic@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C39EA3F01F4ECB1F0007D1C3 /* btn_no_selected_pic@2x.png */; };
+		C39EA3F51F4ECB1F0007D1C3 /* btn_no_selected_pic@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C39EA3F11F4ECB1F0007D1C3 /* btn_no_selected_pic@3x.png */; };
+		C39EA3F61F4ECB1F0007D1C3 /* btn_selected_pic@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C39EA3F21F4ECB1F0007D1C3 /* btn_selected_pic@2x.png */; };
+		C39EA3F71F4ECB1F0007D1C3 /* btn_selected_pic@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C39EA3F31F4ECB1F0007D1C3 /* btn_selected_pic@3x.png */; };
 		C3F91F191F1CBD4900698322 /* filters.json in Resources */ = {isa = PBXBuildFile; fileRef = C3F91D391F1CBD4900698322 /* filters.json */; };
 		C3F91F1A1F1CBD4900698322 /* 1977blowout.png in Resources */ = {isa = PBXBuildFile; fileRef = C3F91D3B1F1CBD4900698322 /* 1977blowout.png */; };
 		C3F91F1B1F1CBD4900698322 /* 1977map.png in Resources */ = {isa = PBXBuildFile; fileRef = C3F91D3C1F1CBD4900698322 /* 1977map.png */; };
@@ -357,11 +363,6 @@
 		0A24C5D81EE912E500B2314E /* plsmusics.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = plsmusics.json; path = musics/plsmusics.json; sourceTree = "<group>"; };
 		0A24C5D91EE912E500B2314E /* Road_to_Moscow.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = Road_to_Moscow.mp3; path = musics/Road_to_Moscow.mp3; sourceTree = "<group>"; };
 		0A24C5EC1EE951B900B2314E /* movie.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = movie.png; path = images/movie.png; sourceTree = "<group>"; };
-		0A2722F81F17E8D400E30BD6 /* NSObject+Stalker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+Stalker.h"; sourceTree = "<group>"; };
-		0A2722F91F17E8D400E30BD6 /* NSObject+Stalker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+Stalker.m"; sourceTree = "<group>"; };
-		0A2722FA1F17E8D400E30BD6 /* Stalker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Stalker.h; sourceTree = "<group>"; };
-		0A2722FB1F17E8D400E30BD6 /* STStalker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STStalker.h; sourceTree = "<group>"; };
-		0A2722FC1F17E8D400E30BD6 /* STStalker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STStalker.m; sourceTree = "<group>"; };
 		0A2731ED1E75D2B0005D0CE1 /* end_disable.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = end_disable.png; path = images/end_disable.png; sourceTree = "<group>"; };
 		0A2731FE1E75E36B005D0CE1 /* progressbar_front.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = progressbar_front.png; path = images/progressbar_front.png; sourceTree = "<group>"; };
 		0A2732301E75F99D005D0CE1 /* btn_play_bg_a.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = btn_play_bg_a.png; path = images/btn_play_bg_a.png; sourceTree = "<group>"; };
@@ -433,17 +434,27 @@
 		0AE8AC9C1F065DCD006166E2 /* Sophomore_Makeout.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; name = Sophomore_Makeout.m4a; path = musics/Sophomore_Makeout.m4a; sourceTree = "<group>"; };
 		0AE8AC9D1F065DCD006166E2 /* Whistling_Down_the_Road.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; name = Whistling_Down_the_Road.m4a; path = musics/Whistling_Down_the_Road.m4a; sourceTree = "<group>"; };
 		0AE8ACA31F065F42006166E2 /* If_I_Had_a_Chicken.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; name = If_I_Had_a_Chicken.m4a; path = musics/If_I_Had_a_Chicken.m4a; sourceTree = "<group>"; };
-		0AECA4BE1E88258100AF2931 /* RecordViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecordViewController.h; sourceTree = "<group>"; };
 		0AECA4F01E88466300AF2931 /* PlayViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayViewController.h; sourceTree = "<group>"; };
 		0AECA4F11E88466300AF2931 /* PlayViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayViewController.m; sourceTree = "<group>"; };
 		0AECA4F31E884CD200AF2931 /* btn_back.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = btn_back.png; path = images/btn_back.png; sourceTree = "<group>"; };
 		0AECA4F51E884D0900AF2931 /* video_play.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = video_play.png; path = images/video_play.png; sourceTree = "<group>"; };
-		0AECA4FF1E88A60C00AF2931 /* RecordViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RecordViewController.m; sourceTree = "<group>"; };
-		0AF54B891F35D1ED0048797F /* PLSViewRecorderManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLSViewRecorderManager.h; sourceTree = "<group>"; };
-		0AF54B8A1F35D1ED0048797F /* PLSViewRecorderManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLSViewRecorderManager.m; sourceTree = "<group>"; };
 		29048327CD6F75BD8D75B80B /* Pods-PLShortVideoKitDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PLShortVideoKitDemo.debug.xcconfig"; path = "Pods/Target Support Files/Pods-PLShortVideoKitDemo/Pods-PLShortVideoKitDemo.debug.xcconfig"; sourceTree = "<group>"; };
 		57AEAFA0012D959C08AB23AE /* libPods-PLShortVideoKitDemo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PLShortVideoKitDemo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		85B60FAE619932ED649E6840 /* Pods-PLShortVideoKitDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PLShortVideoKitDemo.release.xcconfig"; path = "Pods/Target Support Files/Pods-PLShortVideoKitDemo/Pods-PLShortVideoKitDemo.release.xcconfig"; sourceTree = "<group>"; };
+		C39EA3DE1F4EC6950007D1C3 /* PLSFormatGifView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLSFormatGifView.h; sourceTree = "<group>"; };
+		C39EA3DF1F4EC6950007D1C3 /* PLSFormatGifView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLSFormatGifView.m; sourceTree = "<group>"; };
+		C39EA3E11F4EC6AB0007D1C3 /* GifFormatViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GifFormatViewController.h; sourceTree = "<group>"; };
+		C39EA3E21F4EC6AB0007D1C3 /* GifFormatViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GifFormatViewController.m; sourceTree = "<group>"; };
+		C39EA3E41F4EC7490007D1C3 /* RecordViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecordViewController.h; sourceTree = "<group>"; };
+		C39EA3E51F4EC7490007D1C3 /* RecordViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RecordViewController.m; sourceTree = "<group>"; };
+		C39EA3E91F4EC87B0007D1C3 /* PLSViewRecorderManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLSViewRecorderManager.h; sourceTree = "<group>"; };
+		C39EA3EA1F4EC87B0007D1C3 /* PLSViewRecorderManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLSViewRecorderManager.m; sourceTree = "<group>"; };
+		C39EA3EC1F4ECAC40007D1C3 /* icon_gif.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon_gif.png; path = images/icon_gif.png; sourceTree = "<group>"; };
+		C39EA3EE1F4ECAD90007D1C3 /* qiniu_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = qiniu_logo.png; path = images/qiniu_logo.png; sourceTree = "<group>"; };
+		C39EA3F01F4ECB1F0007D1C3 /* btn_no_selected_pic@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "btn_no_selected_pic@2x.png"; path = "images/btn_no_selected_pic@2x.png"; sourceTree = "<group>"; };
+		C39EA3F11F4ECB1F0007D1C3 /* btn_no_selected_pic@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "btn_no_selected_pic@3x.png"; path = "images/btn_no_selected_pic@3x.png"; sourceTree = "<group>"; };
+		C39EA3F21F4ECB1F0007D1C3 /* btn_selected_pic@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "btn_selected_pic@2x.png"; path = "images/btn_selected_pic@2x.png"; sourceTree = "<group>"; };
+		C39EA3F31F4ECB1F0007D1C3 /* btn_selected_pic@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "btn_selected_pic@3x.png"; path = "images/btn_selected_pic@3x.png"; sourceTree = "<group>"; };
 		C3F91D311F1CBD4900698322 /* FiveInputFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FiveInputFilter.h; sourceTree = "<group>"; };
 		C3F91D321F1CBD4900698322 /* GPUImageFourInputFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPUImageFourInputFilter.h; sourceTree = "<group>"; };
 		C3F91D331F1CBD4900698322 /* SixInputFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SixInputFilter.h; sourceTree = "<group>"; };
@@ -929,18 +940,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		0A2722F71F17E8D400E30BD6 /* Stalker */ = {
-			isa = PBXGroup;
-			children = (
-				0A2722F81F17E8D400E30BD6 /* NSObject+Stalker.h */,
-				0A2722F91F17E8D400E30BD6 /* NSObject+Stalker.m */,
-				0A2722FA1F17E8D400E30BD6 /* Stalker.h */,
-				0A2722FB1F17E8D400E30BD6 /* STStalker.h */,
-				0A2722FC1F17E8D400E30BD6 /* STStalker.m */,
-			);
-			path = Stalker;
-			sourceTree = "<group>";
-		};
 		0A9435731E6CA2E2008845A3 = {
 			isa = PBXGroup;
 			children = (
@@ -964,20 +963,21 @@
 			children = (
 				0A4C4C8E1F3DB5F2003F63CF /* PLShortVideoKit.bundle */,
 				C3F91D2D1F1CBD4900698322 /* KiwiFaceSDK */,
-				0A2722F71F17E8D400E30BD6 /* Stalker */,
 				0ACE7C281ED8B072002FF4C9 /* UI+Tools */,
 				0A9435821E6CA2E2008845A3 /* AppDelegate.h */,
 				0A9435831E6CA2E2008845A3 /* AppDelegate.m */,
 				0A9435851E6CA2E2008845A3 /* ViewController.h */,
 				0A9435861E6CA2E2008845A3 /* ViewController.m */,
-				0AECA4BE1E88258100AF2931 /* RecordViewController.h */,
-				0AECA4FF1E88A60C00AF2931 /* RecordViewController.m */,
+				C39EA3E41F4EC7490007D1C3 /* RecordViewController.h */,
+				C39EA3E51F4EC7490007D1C3 /* RecordViewController.m */,
 				0A398F6A1ED6259000996229 /* PhotoAlbumViewController.h */,
 				0A398F6B1ED6259000996229 /* PhotoAlbumViewController.m */,
 				0A6340281F15C9C9005ADF6C /* MovieTransCodeViewController.h */,
 				0A6340291F15C9C9005ADF6C /* MovieTransCodeViewController.m */,
 				0A398F6E1ED625DD00996229 /* ClipMovieViewController.h */,
 				0A398F6F1ED625DD00996229 /* ClipMovieViewController.m */,
+				C39EA3E11F4EC6AB0007D1C3 /* GifFormatViewController.h */,
+				C39EA3E21F4EC6AB0007D1C3 /* GifFormatViewController.m */,
 				0A52C1911E9C987900561F37 /* EditViewController.h */,
 				0A52C1921E9C987900561F37 /* EditViewController.m */,
 				0AECA4F01E88466300AF2931 /* PlayViewController.h */,
@@ -1001,6 +1001,11 @@
 				0AE8AC9C1F065DCD006166E2 /* Sophomore_Makeout.m4a */,
 				0AE8AC9D1F065DCD006166E2 /* Whistling_Down_the_Road.m4a */,
 				0AE8AC971F06443A006166E2 /* icon_trim.png */,
+				C39EA3EC1F4ECAC40007D1C3 /* icon_gif.png */,
+				C39EA3F01F4ECB1F0007D1C3 /* btn_no_selected_pic@2x.png */,
+				C39EA3F11F4ECB1F0007D1C3 /* btn_no_selected_pic@3x.png */,
+				C39EA3F21F4ECB1F0007D1C3 /* btn_selected_pic@2x.png */,
+				C39EA3F31F4ECB1F0007D1C3 /* btn_selected_pic@3x.png */,
 				0A9CB4E81EF042FB00EABA76 /* btn_close_sound@2x.png */,
 				0A9CB4E91EF042FB00EABA76 /* btn_close_sound@3x.png */,
 				0A9CB4EA1EF042FB00EABA76 /* btn_sound@2x.png */,
@@ -1054,6 +1059,7 @@
 				0A0692411E8A3B590035CB7B /* btn_camera_done_c@2x.png */,
 				0A0692421E8A3B590035CB7B /* btn_camera_done_c@3x.png */,
 				0AECA4F51E884D0900AF2931 /* video_play.png */,
+				C39EA3EE1F4ECAD90007D1C3 /* qiniu_logo.png */,
 				0AECA4F31E884CD200AF2931 /* btn_back.png */,
 				0A2732301E75F99D005D0CE1 /* btn_play_bg_a.png */,
 				0A2731FE1E75E36B005D0CE1 /* progressbar_front.png */,
@@ -1072,10 +1078,10 @@
 		0ACE7C281ED8B072002FF4C9 /* UI+Tools */ = {
 			isa = PBXGroup;
 			children = (
-				0AF54B891F35D1ED0048797F /* PLSViewRecorderManager.h */,
-				0AF54B8A1F35D1ED0048797F /* PLSViewRecorderManager.m */,
 				0ACE7C2B1ED8B072002FF4C9 /* PLSClipMovieView.h */,
 				0ACE7C2C1ED8B072002FF4C9 /* PLSClipMovieView.m */,
+				C39EA3DE1F4EC6950007D1C3 /* PLSFormatGifView.h */,
+				C39EA3DF1F4EC6950007D1C3 /* PLSFormatGifView.m */,
 				0ACE7C2D1ED8B072002FF4C9 /* PLSDeleteButton.h */,
 				0ACE7C2E1ED8B072002FF4C9 /* PLSDeleteButton.m */,
 				0ACE7C2F1ED8B072002FF4C9 /* PLSEditVideoCell.h */,
@@ -1092,6 +1098,8 @@
 				0A06B0BC1F123299003CA0F6 /* PLSFilterGroup.m */,
 				0A63402F1F15E8CC005ADF6C /* PLSSelectionView.h */,
 				0A6340301F15E8CC005ADF6C /* PLSSelectionView.m */,
+				C39EA3E91F4EC87B0007D1C3 /* PLSViewRecorderManager.h */,
+				C39EA3EA1F4EC87B0007D1C3 /* PLSViewRecorderManager.m */,
 			);
 			path = "UI+Tools";
 			sourceTree = "<group>";
@@ -1942,10 +1950,12 @@
 				C3F91F3C1F1CBD4900698322 /* sutroEdgeBurn.png in Resources */,
 				C3F91F9A1F1CBD4900698322 /* distortion_ET.png in Resources */,
 				C3F91FA01F1CBD4900698322 /* artwork master@2x.png in Resources */,
+				C39EA3F61F4ECB1F0007D1C3 /* btn_selected_pic@2x.png in Resources */,
 				C3F91F241F1CBD4900698322 /* brooklynCurves2.png in Resources */,
 				0A06924F1E8A3B590035CB7B /* btn_camera_done_a@2x.png in Resources */,
 				C3F91FA81F1CBD4900698322 /* cancel@2x.png in Resources */,
 				0AE8AC9E1F065DCD006166E2 /* counter.m4a in Resources */,
+				C39EA3F71F4ECB1F0007D1C3 /* btn_selected_pic@3x.png in Resources */,
 				C3F91F2E1F1CBD4900698322 /* hefeMetal.png in Resources */,
 				0A24C5E21EE912E500B2314E /* Road_to_Moscow.mp3 in Resources */,
 				0A0692431E8A3B590035CB7B /* btn_bar_back_a@2x.png in Resources */,
@@ -1957,6 +1967,7 @@
 				C3F91FF11F1CBDAB00698322 /* stickers in Resources */,
 				0A57EBB41E7596CC00FC5BF8 /* record_close_normal.png in Resources */,
 				0A1E2CE31E8CAF8C002C9296 /* btn_makeface_flipcamera@3x.png in Resources */,
+				C39EA3EF1F4ECAD90007D1C3 /* qiniu_logo.png in Resources */,
 				0A94DFCF1E6DF5D2007BDD0D /* delete.png in Resources */,
 				C3F91F281F1CBD4900698322 /* earlybirdOverlayMap.png in Resources */,
 				C3F91F351F1CBD4900698322 /* nashvilleMap.png in Resources */,
@@ -1987,6 +1998,7 @@
 				C3F91FC11F1CBD4A00698322 /* huiquan@2x.png in Resources */,
 				C3F91FC01F1CBD4A00698322 /* huangquan@3x.png in Resources */,
 				0A1E2CE51E8CAF8C002C9296 /* btn_record_shine_big@3x.png in Resources */,
+				C39EA3F51F4ECB1F0007D1C3 /* btn_no_selected_pic@3x.png in Resources */,
 				0A9CB4EF1EF042FB00EABA76 /* btn_sound@3x.png in Resources */,
 				C3F91FA41F1CBD4900698322 /* beauty@2x.png in Resources */,
 				C3F91F411F1CBD4900698322 /* toasterOverlayMapWarm.png in Resources */,
@@ -1994,6 +2006,7 @@
 				C3F91F1F1F1CBD4900698322 /* brannanContrast.png in Resources */,
 				C3F91FB01F1CBD4900698322 /* download@2x.png in Resources */,
 				0AD7D3151EA329A400144411 /* btn_record_a.png in Resources */,
+				C39EA3ED1F4ECAC40007D1C3 /* icon_gif.png in Resources */,
 				C3F91FCB1F1CBD4A00698322 /* off@2x.png in Resources */,
 				0AE8AC9F1F065DCD006166E2 /* Fire_Breather.m4a in Resources */,
 				C3F91FA21F1CBD4900698322 /* beauty drk@2x.png in Resources */,
@@ -2015,6 +2028,7 @@
 				C3F91FC21F1CBD4A00698322 /* huiquan@3x.png in Resources */,
 				C3F91F261F1CBD4900698322 /* earlyBirdCurves.png in Resources */,
 				C3F91F471F1CBD4900698322 /* xproMap.png in Resources */,
+				C39EA3F41F4ECB1F0007D1C3 /* btn_no_selected_pic@2x.png in Resources */,
 				C3F91FD51F1CBD4A00698322 /* quanjumeiyanliang@2x.png in Resources */,
 				0A06924D1E8A3B590035CB7B /* btn_camera_cancel_b@2x.png in Resources */,
 				C3F91FB61F1CBD4A00698322 /* face drk@3x.png in Resources */,
@@ -2070,7 +2084,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		B051BAB51EADFEF900385FF0 /* ShellScript */ = {
@@ -2126,7 +2140,6 @@
 				C3F91F6B1F1CBD4900698322 /* row_neon.cc in Sources */,
 				C3F91F861F1CBD4900698322 /* SDWebImageDownloaderOperation.m in Sources */,
 				C3F91F5C1F1CBD4900698322 /* planar_functions.cc in Sources */,
-				0A2722FD1F17E8D400E30BD6 /* NSObject+Stalker.m in Sources */,
 				C3F91F8F1F1CBD4900698322 /* UIView+WebCacheOperation.m in Sources */,
 				C3F91F7B1F1CBD4900698322 /* KWStickerManager.m in Sources */,
 				C3F91F781F1CBD4900698322 /* KWPresentStickerManager.m in Sources */,
@@ -2136,7 +2149,6 @@
 				C3F91F681F1CBD4900698322 /* row_gcc.cc in Sources */,
 				C3F91F741F1CBD4900698322 /* scale_neon.cc in Sources */,
 				C3F91F5F1F1CBD4900698322 /* rotate_argb.cc in Sources */,
-				0A2722FE1F17E8D400E30BD6 /* STStalker.m in Sources */,
 				C3F91F721F1CBD4900698322 /* scale_gcc.cc in Sources */,
 				0A398F6C1ED6259000996229 /* PhotoAlbumViewController.m in Sources */,
 				C3F91F531F1CBD4900698322 /* convert_argb.cc in Sources */,
@@ -2145,7 +2157,6 @@
 				0AE8AC951F063E3E006166E2 /* PLSClipAudioView.m in Sources */,
 				C3F91F941F1CBD4900698322 /* SSZipArchive.m in Sources */,
 				C3F91F4A1F1CBD4900698322 /* KWSDK_UI.m in Sources */,
-				0AF54B8B1F35D1ED0048797F /* PLSViewRecorderManager.m in Sources */,
 				C3F91F671F1CBD4900698322 /* row_common.cc in Sources */,
 				C3F91F4C1F1CBD4900698322 /* compare.cc in Sources */,
 				C3F91F971F1CBD4900698322 /* KWDistortionCell.m in Sources */,
@@ -2175,6 +2186,7 @@
 				0A63402A1F15C9C9005ADF6C /* MovieTransCodeViewController.m in Sources */,
 				C3F91F8C1F1CBD4900698322 /* UIImage+WebP.m in Sources */,
 				C3F91F8A1F1CBD4900698322 /* UIImage+GIF.m in Sources */,
+				C39EA3E61F4EC7490007D1C3 /* RecordViewController.m in Sources */,
 				C3F91F711F1CBD4900698322 /* scale_common.cc in Sources */,
 				C3F91F4D1F1CBD4900698322 /* compare_common.cc in Sources */,
 				C3F91F5D1F1CBD4900698322 /* rotate.cc in Sources */,
@@ -2191,8 +2203,8 @@
 				C3F91F821F1CBD4900698322 /* SDImageCache.m in Sources */,
 				0ACE7C391ED8B072002FF4C9 /* PLSProgressBar.m in Sources */,
 				C3F91F991F1CBD4900698322 /* KWStickerCell.m in Sources */,
-				0AECA5001E88A60C00AF2931 /* RecordViewController.m in Sources */,
 				0AECA4F21E88466300AF2931 /* PlayViewController.m in Sources */,
+				C39EA3E31F4EC6AC0007D1C3 /* GifFormatViewController.m in Sources */,
 				0A398F701ED625DD00996229 /* ClipMovieViewController.m in Sources */,
 				0A06B0BD1F123299003CA0F6 /* PLSFilterGroup.m in Sources */,
 				C3F91F4F1F1CBD4900698322 /* compare_neon.cc in Sources */,
@@ -2202,8 +2214,10 @@
 				C3F91F881F1CBD4900698322 /* SDWebImagePrefetcher.m in Sources */,
 				0ACE7C361ED8B072002FF4C9 /* PLSClipMovieView.m in Sources */,
 				0ACE7C3A1ED8B072002FF4C9 /* UIImage+PLSClip.m in Sources */,
+				C39EA3E01F4EC6950007D1C3 /* PLSFormatGifView.m in Sources */,
 				C3F91F501F1CBD4900698322 /* compare_neon64.cc in Sources */,
 				C3F91F691F1CBD4900698322 /* row_mips.cc in Sources */,
+				C39EA3EB1F4EC87B0007D1C3 /* PLSViewRecorderManager.m in Sources */,
 				C3F91F911F1CBD4900698322 /* mztools.c in Sources */,
 				C3F91F631F1CBD4900698322 /* rotate_neon.cc in Sources */,
 				C3F91F981F1CBD4900698322 /* KWFilterCell.m in Sources */,

@@ -14,7 +14,8 @@
 #import "PLSClipAudioView.h"
 #import "PLSFilterGroup.h"
 #import <AssetsLibrary/AssetsLibrary.h>
-#import "Stalker.h"
+#import "GifFormatViewController.h"
+
 
 #define PLS_RGBCOLOR(r,g,b) [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:1]
 
@@ -61,10 +62,6 @@ PLSAVAssetExportSessionDelegate
 
 @property (strong, nonatomic) UICollectionView *musicCollectionView;
 @property (strong, nonatomic) NSMutableArray *musicsArray;
-
-// 视频
-@property (strong, nonatomic) NSTimer *moviePlayTimeCheckerTimer;
-@property (assign, nonatomic) CGFloat movieCurrentTime;
 
 @end
 
@@ -136,6 +133,7 @@ PLSAVAssetExportSessionDelegate
     CMTime start = CMTimeMake([self.movieSettings[PLSStartTimeKey] floatValue] * 1e9, 1e9);
     CMTime duration = CMTimeMake([self.movieSettings[PLSDurationKey] floatValue] * 1e9, 1e9);
     self.shortVideoEditor.player.timeRange = CMTimeRangeMake(start, duration);
+    
     self.shortVideoEditor.audioPlayer.loopEnabled = YES;
     
     // 滤镜
@@ -145,26 +143,7 @@ PLSAVAssetExportSessionDelegate
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    // player
-    [self.shortVideoEditor.player.stalker when:UIApplicationWillResignActiveNotification then:^(NSNotification *notification) {
-        NSLog(@"[shortVideoEditor.player UIApplicationWillResignActiveNotification]");
-        [self.shortVideoEditor.player pause];
-    }];
-    [self.shortVideoEditor.player.stalker when:UIApplicationDidBecomeActiveNotification then:^(NSNotification *notification) {
-        NSLog(@"[shortVideoEditor.player, UIApplicationDidBecomeActiveNotification]");
-        [self.shortVideoEditor.player play];
-    }];
-    // audioPlayer
-    [self.shortVideoEditor.audioPlayer.stalker when:UIApplicationWillResignActiveNotification then:^(NSNotification *notification) {
-        NSLog(@"[shortVideoEditor.audioPlayer UIApplicationWillResignActiveNotification]");
-        [self.shortVideoEditor.audioPlayer pause];
-    }];
-    [self.shortVideoEditor.audioPlayer.stalker when:UIApplicationDidBecomeActiveNotification then:^(NSNotification *notification) {
-        NSLog(@"[shortVideoEditor.audioPlayer, UIApplicationDidBecomeActiveNotification]");
-        [self.shortVideoEditor.audioPlayer play];
-    }];
-    [self startPlaybackTimeChecker];
-    [self.shortVideoEditor.player seekToTime:CMTimeMake([self.movieSettings[PLSStartTimeKey] floatValue] * 1e9, 1e9) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
+    [self observerUIApplicationStatusForShortVideoEditor];
     [self.shortVideoEditor.player play];
     [self.shortVideoEditor.audioPlayer play];
 }
@@ -172,9 +151,7 @@ PLSAVAssetExportSessionDelegate
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     
-    [self.shortVideoEditor.player.stalker unobserveAll];
-    [self.shortVideoEditor.audioPlayer.stalker unobserveAll];
-    [self stopPlaybackTimeChecker];
+    [self removeObserverUIApplicationStatusForShortVideoEditor];
     [self.shortVideoEditor.player pause];
     [self.shortVideoEditor.audioPlayer pause];
 }
@@ -237,6 +214,15 @@ PLSAVAssetExportSessionDelegate
     filterButton.titleLabel.font = [UIFont systemFontOfSize:14];
     [self.editToolboxView addSubview:filterButton];
     
+    // 制作Gif图
+    UIButton *formGifButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    formGifButton.frame = CGRectMake(CGRectGetWidth(self.view.frame) - 180, 0, 35, 35);
+    [formGifButton setImage:[UIImage imageNamed:@"icon_gif"] forState:UIControlStateNormal];
+    formGifButton.titleLabel.font = [UIFont systemFontOfSize:14];
+    [self.editToolboxView addSubview:formGifButton];
+    [formGifButton addTarget:self action:@selector(formatGifButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
+
+    
     // 裁剪背景音乐
     UIButton *clipMusicButton = [UIButton buttonWithType:UIButtonTypeCustom];
     clipMusicButton.frame = CGRectMake(CGRectGetWidth(self.view.frame) - 140, 0, 35, 35);
@@ -280,7 +266,7 @@ PLSAVAssetExportSessionDelegate
     [self.musicCollectionView reloadData];
     
     // 展示拼接视频的进度
-    self.progressLabel = [[UILabel alloc] initWithFrame:CGRectMake(160, 0, 110, 45)];
+    self.progressLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetWidth(self.view.frame) - 270, 0, 90, 45)];
     self.progressLabel.textAlignment =  NSTextAlignmentLeft;
     self.progressLabel.textColor = [UIColor whiteColor];
     [self.editToolboxView addSubview:self.progressLabel];
@@ -344,7 +330,7 @@ PLSAVAssetExportSessionDelegate
     
     
     NSDictionary *dic = @{
-                          @"audioName"  : @"None",
+                          @"audioName"  : @"无",
                           @"audioUrl"   : @"NULL",
                           };
     [array addObject:dic];
@@ -540,7 +526,6 @@ PLSAVAssetExportSessionDelegate
 - (void)restart {
     // 影片
     [self.shortVideoEditor.player setItemByAsset:self.movieSettings[PLSAssetKey]];
-    [self.shortVideoEditor.player seekToTime:CMTimeMake([self.movieSettings[PLSStartTimeKey] floatValue] * 1e9, 1e9) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
     self.shortVideoEditor.player.volume = [self.movieSettings[PLSVolumeKey] floatValue];
     [self.shortVideoEditor.player play];
     
@@ -574,6 +559,11 @@ PLSAVAssetExportSessionDelegate
 }
 
 #pragma mark -- UIButton 按钮响应事件
+#pragma mark -- 制作Gif图
+- (void)formatGifButtonEvent:(id)sender {
+    [self joinGifFormatViewController];
+}
+
 #pragma mark -- 裁剪背景音乐
 - (void)clipMusicButtonEvent:(id)sender {
     CMTimeRange currentMusicTimeRange = CMTimeRangeMake(CMTimeMake([self.audioSettings[PLSStartTimeKey] floatValue] * 1e9, 1e9), CMTimeMake([self.audioSettings[PLSDurationKey] floatValue] * 1e9, 1e9));
@@ -650,6 +640,15 @@ PLSAVAssetExportSessionDelegate
         weakSelf.progressLabel.text = [NSString stringWithFormat:@"%d%%", (int)(progress * 100)];
     }];
 }
+    
+#pragma mark -- 进入 Gif 制作页面
+- (void)joinGifFormatViewController {
+    AVAsset *asset = self.movieSettings[PLSAssetKey];
+
+    GifFormatViewController *gifFormatViewController = [[GifFormatViewController alloc] init];
+    gifFormatViewController.asset = asset;
+    [self presentViewController:gifFormatViewController animated:YES completion:nil];
+}
 
 #pragma mark -- 完成视频合成跳转到下一页面
 - (void)joinNextViewController:(NSURL *)url object:(id)obj {
@@ -660,42 +659,28 @@ PLSAVAssetExportSessionDelegate
     [obj presentViewController:playViewController animated:YES completion:nil];
 }
 
-#pragma mark -- PlaybackTimeCheckerTimer
-- (void)startPlaybackTimeChecker {
-    [self stopPlaybackTimeChecker];
-    
-    self.moviePlayTimeCheckerTimer = [NSTimer scheduledTimerWithTimeInterval:0.1f target:self selector:@selector(onPlaybackTimeCheckerTimer) userInfo:nil repeats:YES];
+#pragma mark -- 程序的状态监听
+- (void)observerUIApplicationStatusForShortVideoEditor {
+    // player, audioPlayer
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(shortVideoEditorWillResignActiveEvent:) name:UIApplicationWillResignActiveNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(shortVideoEditorDidBecomeActiveEvent:) name:UIApplicationDidBecomeActiveNotification object:nil];
 }
 
-- (void)stopPlaybackTimeChecker {
-    if (self.moviePlayTimeCheckerTimer) {
-        [self.moviePlayTimeCheckerTimer invalidate];
-        self.moviePlayTimeCheckerTimer = nil;
-    }
+- (void)removeObserverUIApplicationStatusForShortVideoEditor {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillResignActiveNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
 }
 
-- (void)onPlaybackTimeCheckerTimer {
-    CMTime curTime = [self.shortVideoEditor.player currentTime];
-    Float64 seconds = CMTimeGetSeconds(curTime);
-    if (seconds < 0){
-        seconds = 0; // this happens! dont know why.
-    }
-    self.movieCurrentTime = seconds;
-    
-    CGFloat startTime =  [self.movieSettings[PLSStartTimeKey] floatValue];
-    CGFloat endTime = startTime + [self.movieSettings[PLSDurationKey] floatValue];
-    
-    if (self.movieCurrentTime >= endTime) {
-        self.movieCurrentTime = startTime;
-        [self seekVideoToPos:startTime];
-    }
+- (void)shortVideoEditorWillResignActiveEvent:(id)sender {
+    NSLog(@"[self.shortVideoEditor UIApplicationWillResignActiveNotification]");
+    [self.shortVideoEditor.player pause];
+    [self.shortVideoEditor.audioPlayer pause];
 }
 
-- (void)seekVideoToPos:(CGFloat)pos {
-    self.movieCurrentTime = pos;
-    CMTime time = CMTimeMakeWithSeconds(self.movieCurrentTime, self.shortVideoEditor.player.currentTime.timescale);
-    NSLog(@"seekVideoToPos time:%.2f", CMTimeGetSeconds(time));
-    [self.shortVideoEditor.player seekToTime:time toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
+- (void)shortVideoEditorDidBecomeActiveEvent:(id)sender {
+    NSLog(@"[self.shortVideoEditor UIApplicationDidBecomeActiveNotification]");
+    [self.shortVideoEditor.player play];
+    [self.shortVideoEditor.audioPlayer play];
 }
 
 #pragma mark -- 隐藏状态栏
@@ -705,6 +690,8 @@ PLSAVAssetExportSessionDelegate
 
 #pragma mark -- dealloc
 - (void)dealloc {
+    NSLog(@"dealloc: %@", [[self class] description]);
+
     self.shortVideoEditor.player.delegate = nil;
     self.shortVideoEditor.player = nil;
 
@@ -724,8 +711,6 @@ PLSAVAssetExportSessionDelegate
         [self.activityIndicatorView stopAnimating];
         self.activityIndicatorView = nil;
     }
-    
-    [self stopPlaybackTimeChecker];
 }
 
 @end
