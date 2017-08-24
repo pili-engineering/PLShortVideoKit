@@ -10,7 +10,7 @@ PLShortVideoKit 是七牛推出的一款适用于 iOS 平台的短视频 SDK，�
 * 支持横屏拍摄
 * 支持合成 GIF 动图
 * 修复录制时频繁切换滤镜导致预览卡住的问题
-* 修复快速执行开始和停止录制导致的 crash
+* 修复快速执行开始和停止录制导致的 crash 问题
 
 ### 注意事项
 * 若需要使用 PLShortVideoKit.framework 中的内置滤镜，则必须将 PLShortVideoKit.bundle 导入项目中。若需要增删、替换滤镜资源可操作 PLShortVideoKit.bundle 中的 colorFilter 文件夹。
