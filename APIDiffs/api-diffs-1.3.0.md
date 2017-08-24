@@ -13,6 +13,32 @@ PLShortVideoRecorder.h
 - *Added* class `PLSGifComposer`
 
 
+```
+PLSEditorPlayer.h
+```
+
+- *Added* + (PLSEditPlayer *_Nullable)audioPlayer;
+
+
+```
+PLSFilter.h
+```
+
+- *Added* @property (strong, nonatomic) NSString *colorImagePath;
+- *Added* - (instancetype)init;
+
+
+```
+PLSTypeDefines.h
+```
+
+- *Added* typedef NS_ENUM(NSInteger, PLSPreviewOrientation) {
+    PLSPreviewOrientationPortrait           = 1,
+    PLSPreviewOrientationPortraitUpsideDown = 2,
+    PLSPreviewOrientationLandscapeRight     = 3,
+    PLSPreviewOrientationLandscapeLeft      = 4,
+};
+
 
 
 
