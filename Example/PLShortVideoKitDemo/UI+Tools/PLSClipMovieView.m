@@ -137,7 +137,7 @@
 
 static NSString * const PLSClipMovieViewCellId = @"PLSClipMovieViewCellId";
 
-@interface PLSClipMovieView () <UICollectionViewDataSource, UICollectionViewDelegate>
+@interface PLSClipMovieView () <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout>
 
 @property (strong, nonatomic) NSURL *url; // 视频的 url
 @property (nonatomic, assign) Float64 frameRate; // 帧率
@@ -387,9 +387,18 @@ static NSString * const PLSClipMovieViewCellId = @"PLSClipMovieViewCellId";
                 return;
             }
             
-            if (ges.view.x + translation.x <= maxX && ges.view.x + translation.x >= 0) {
+//            if (ges.view.x + translation.x <= maxX && ges.view.x + translation.x >= 0) {
+            if (ges.view.x + translation.x <= maxX) {
+
+                CGFloat distance;
+                if(ges.view.x + translation.x < 0){
+                    distance = 0;
+                }else{
+                    distance = ges.view.x + translation.x;
+                }
+
                 [ges.view mas_updateConstraints:^(MASConstraintMaker *make) {
-                    make.left.mas_offset(ges.view.x + translation.x);
+                    make.left.mas_offset(distance);
                 }];
                 
                 [ges setTranslation:CGPointZero inView:self];
@@ -439,8 +448,13 @@ static NSString * const PLSClipMovieViewCellId = @"PLSClipMovieViewCellId";
                 return;
             }
             
-            if (CGRectGetMaxX(ges.view.frame) + translation.x >=minX && CGRectGetMaxX(ges.view.frame) + translation.x <= self.width) {
-                CGFloat distance = self.width - (CGRectGetMaxX(ges.view.frame) + translation.x);
+            if (CGRectGetMaxX(ges.view.frame) + translation.x >=minX) {
+                CGFloat distance;
+                if(CGRectGetMaxX(ges.view.frame) + translation.x > self.width){
+                    distance = 0;
+                }else{
+                    distance = self.width - (CGRectGetMaxX(ges.view.frame) + translation.x);
+                }
                 [ges.view mas_updateConstraints:^(MASConstraintMaker *make) {
                     make.right.mas_offset(-distance);
                 }];
@@ -546,6 +560,25 @@ static NSString * const PLSClipMovieViewCellId = @"PLSClipMovieViewCellId";
     cell.imageData = self.collectionImages[indexPath.item];
     
     return cell;
+}
+
+#pragma mark - UICollectionViewDelegateFlowLayout
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
+    CGFloat realImageCount = self.totalSeconds * PLSMinImageCount / self.maxDuration;
+    if(realImageCount > 0 && indexPath.item == ceil(realImageCount) - 1){
+        CGFloat remain = realImageCount - floorf(realImageCount);
+        return CGSizeMake(CGRectGetWidth(self.frame) / PLSMinImageCount * remain, PLSImagesViewH);
+    }else{
+        return CGSizeMake(CGRectGetWidth(self.frame) / PLSMinImageCount, PLSImagesViewH);
+    }
+}
+
+- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
+    return CGFLOAT_MIN;
+}
+
+- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
+    return CGFLOAT_MIN;
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
@@ -655,22 +688,19 @@ static NSString * const PLSClipMovieViewCellId = @"PLSClipMovieViewCellId";
 
 - (UICollectionView *)collectionView {
     if (!_collectionView) {
-        
         UICollectionViewFlowLayout *layout = [UICollectionViewFlowLayout new];
         layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
-        layout.itemSize = CGSizeMake(PLSImagesVIewW, PLSImagesViewH);
-        layout.minimumLineSpacing = 0;
-        
-        CGRect collectionRect = CGRectMake(0, 0, PLS_SCREEN_WIDTH, PLSImagesViewH);
-        _collectionView = [[UICollectionView alloc] initWithFrame:collectionRect collectionViewLayout:layout];
+//        layout.itemSize = CGSizeMake(PLSImagesVIewW, PLSImagesViewH);
+//        layout.minimumLineSpacing = 0;
+
+//        CGRect collectionRect = CGRectMake(0, 0, PLS_SCREEN_WIDTH, PLSImagesViewH);
+        _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
         _collectionView.dataSource = self;
         _collectionView.delegate = self;
-        
         [self.collectionView registerClass:[PLSClipMovieViewCell class] forCellWithReuseIdentifier:PLSClipMovieViewCellId];
 
         _collectionView.showsHorizontalScrollIndicator = NO;
     }
-    
     return _collectionView;
 }
 
