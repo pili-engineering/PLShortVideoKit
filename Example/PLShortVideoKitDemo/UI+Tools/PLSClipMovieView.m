@@ -387,9 +387,18 @@ static NSString * const PLSClipMovieViewCellId = @"PLSClipMovieViewCellId";
                 return;
             }
             
-            if (ges.view.x + translation.x <= maxX && ges.view.x + translation.x >= 0) {
+//            if (ges.view.x + translation.x <= maxX && ges.view.x + translation.x >= 0) {
+            if (ges.view.x + translation.x <= maxX) {
+
+                CGFloat distance;
+                if(ges.view.x + translation.x < 0){
+                    distance = 0;
+                }else{
+                    distance = ges.view.x + translation.x;
+                }
+
                 [ges.view mas_updateConstraints:^(MASConstraintMaker *make) {
-                    make.left.mas_offset(ges.view.x + translation.x);
+                    make.left.mas_offset(distance);
                 }];
                 
                 [ges setTranslation:CGPointZero inView:self];
@@ -439,8 +448,13 @@ static NSString * const PLSClipMovieViewCellId = @"PLSClipMovieViewCellId";
                 return;
             }
             
-            if (CGRectGetMaxX(ges.view.frame) + translation.x >=minX && CGRectGetMaxX(ges.view.frame) + translation.x <= self.width) {
-                CGFloat distance = self.width - (CGRectGetMaxX(ges.view.frame) + translation.x);
+            if (CGRectGetMaxX(ges.view.frame) + translation.x >=minX) {
+                CGFloat distance;
+                if(CGRectGetMaxX(ges.view.frame) + translation.x > self.width){
+                    distance = 0;
+                }else{
+                    distance = self.width - (CGRectGetMaxX(ges.view.frame) + translation.x);
+                }
                 [ges.view mas_updateConstraints:^(MASConstraintMaker *make) {
                     make.right.mas_offset(-distance);
                 }];
