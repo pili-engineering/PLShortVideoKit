@@ -58,6 +58,13 @@
 - (instancetype _Nullable )initWithAsset:(AVAsset *_Nullable)asset;
 
 /**
+ @brief 将视频导出到相册，默认为 NO
+ 
+ @since      v1.4.0
+ */
+@property (assign, nonatomic) BOOL isExportMovieToPhotosAlbum;
+
+/**
  @brief 视频导出的文件类型，默认为 AVFileTypeMPEG4
  
  @since      v1.1.0

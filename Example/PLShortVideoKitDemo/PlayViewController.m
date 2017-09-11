@@ -22,7 +22,8 @@ static NSString *const kURLPrefix = @"http://shortvideo.pdex-service.com";
 @interface PlayViewController ()
 <
 PLShortVideoUploaderDelegate,
-PLPlayerDelegate
+PLPlayerDelegate,
+UIGestureRecognizerDelegate
 >
 
 // 工具视图
@@ -30,6 +31,13 @@ PLPlayerDelegate
 @property (strong, nonatomic) UIView *processerToolboxView;
 
 @property (strong, nonatomic) UIButton *backButton;
+@property (strong, nonatomic) UISlider *playSlider;
+@property (strong, nonatomic) UILabel * currentTime;
+@property (strong, nonatomic) UILabel * duration;
+@property (strong, nonatomic) UILabel * playerInfo;
+@property (strong, nonatomic) UILabel * statLabel;
+@property (strong, nonatomic) UILabel * videoInfo;
+
 
 // 视频播放
 @property (strong, nonatomic) PLPlayer *player;
@@ -38,6 +46,10 @@ PLPlayerDelegate
 @property (strong, nonatomic) UIButton *uploadButton;
 @property (strong, nonatomic) UIProgressView *progressView;
 @property (strong, nonatomic) PLShortVideoUploader *shortVideoUploader;
+
+// 定时器监听
+
+@property (strong, nonatomic) NSTimer * timer;
 
 @end
 
@@ -51,6 +63,8 @@ PLPlayerDelegate
     [self setupToolboxUI];
     
     if (self.actionType == PLSActionTypePlayer) {
+        [self setupPlayerUI];
+        
         // 播放器初始化
         [self initPlayer];
         
@@ -58,13 +72,19 @@ PLPlayerDelegate
         UITapGestureRecognizer *singleFingerOne = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleFingerToPlayVideoEvent:)];
         singleFingerOne.numberOfTouchesRequired = 1; // 手指数
         singleFingerOne.numberOfTapsRequired = 1; // tap次数
+        singleFingerOne.delegate = self;
         [self.view addGestureRecognizer:singleFingerOne];
     }
     if (self.actionType == PLSActionTypeGif) {
         // 演示 gif 动图
-        PLSGifComposer *gifComposer = [[PLSGifComposer alloc] initWithImagesArray:_imagesArray];
-        UIImage *imageData = _imagesArray[0];
-        [gifComposer loadGifWithFrame:CGRectMake(0, 0, PLS_SCREEN_WIDTH, imageData.size.height/imageData.size.width * PLS_SCREEN_WIDTH) superView:self.view repeatCount:0];
+        UIWebView *webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, PLS_BaseToolboxView_HEIGHT, PLS_SCREEN_WIDTH, PLS_SCREEN_HEIGHT - PLS_BaseToolboxView_HEIGHT)];
+        webView.center = self.view.center;
+        webView.backgroundColor = [UIColor clearColor];
+        webView.opaque = NO;
+        webView.scalesPageToFit = YES;
+        webView.userInteractionEnabled = NO;
+        [webView loadRequest:[NSURLRequest requestWithURL:self.url]];
+        [self.view addSubview:webView];
     }
     
     // 文件上传（可上传视频、Gif 等）
@@ -76,6 +96,7 @@ PLPlayerDelegate
     
     if (self.actionType == PLSActionTypePlayer) {
         [self.player play];
+        [self addDurationTimer];
     }
 }
 
@@ -83,7 +104,7 @@ PLPlayerDelegate
     [super viewDidDisappear:animated];
     
     if (self.actionType == PLSActionTypePlayer) {
-        [self.player stop];
+        [self.player pause];
     }
 }
 
@@ -118,6 +139,39 @@ PLPlayerDelegate
     [self.baseToolboxView addSubview:self.uploadButton];
 }
 
+- (void)setupPlayerUI {
+    self.currentTime = [[UILabel alloc] initWithFrame:CGRectMake(20, PLS_SCREEN_HEIGHT - 130, 130, 30)];
+    self.currentTime.text = @"0.00s";
+    self.currentTime.textColor = [UIColor blueColor];
+    [self.view addSubview:self.currentTime];
+    
+    self.duration = [[UILabel alloc] initWithFrame:CGRectMake(PLS_SCREEN_WIDTH - 80, PLS_SCREEN_HEIGHT - 130, 130, 30)];
+    self.duration.text = @"0.00s";
+    self.duration.textColor = [UIColor blueColor];
+    [self.view addSubview:self.duration];
+    
+    self.playerInfo = [[UILabel alloc] initWithFrame:CGRectMake(20, 100, PLS_SCREEN_WIDTH-40, 30)];
+    self.playerInfo.text = @"player info";
+    self.playerInfo.textColor = [UIColor blueColor];
+    [self.view addSubview:self.playerInfo];
+    
+    self.videoInfo = [[UILabel alloc] initWithFrame:CGRectMake(20, 130, PLS_SCREEN_WIDTH-40, 80)];
+    self.videoInfo.text = @"video info";
+    self.videoInfo.textColor = [UIColor blueColor];
+    [self.view addSubview:self.videoInfo];
+    
+    self.statLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, 190, PLS_SCREEN_WIDTH-40, 30)];
+    self.statLabel.text = @"stat info";
+    self.statLabel.textColor = [UIColor blueColor];
+    [self.view addSubview:self.statLabel];
+    
+    self.playSlider = [[UISlider alloc] initWithFrame:CGRectMake(20, PLS_SCREEN_HEIGHT - 100, PLS_SCREEN_WIDTH - 40, 30)];
+    self.playSlider.minimumValue = 0;
+    self.playSlider.maximumValue = 1;
+    [self.playSlider addTarget:self action:@selector(playSeekTo:) forControlEvents:UIControlEventValueChanged];
+    [self.view addSubview:self.playSlider];
+}
+
 #pragma mark -- 播放器初始化
 - (void)initPlayer {
     if (!self.url) {
@@ -146,6 +200,29 @@ PLPlayerDelegate
     [self.view insertSubview:self.player.playerView belowSubview:self.baseToolboxView];
 }
 
+#pragma mark -- 添加定时器
+- (void)addDurationTimer {
+    if (self.timer) {
+        [self.timer invalidate];
+        self.timer = nil;
+    }
+    
+    self.timer = [NSTimer scheduledTimerWithTimeInterval:0.2
+                                                  target:self
+                                                selector:@selector(onDurationTimer)
+                                                userInfo:nil
+                                                 repeats:YES];
+}
+
+#pragma mark -- 移除定时器
+- (void)removeDurationTimer {
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(onDurationTimer) object:nil];
+    if (self.timer) {
+        [self.timer invalidate];
+        self.timer = nil;
+    }
+}
+
 #pragma mark -- 视频上传准备
 - (void)setupFileUpload {
     self.progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleBar];
@@ -159,6 +236,25 @@ PLPlayerDelegate
     [self prepareUpload];
 }
 
+- (void)onDurationTimer {
+    double elapsed = CMTimeGetSeconds(self.player.currentTime);
+    double duration = CMTimeGetSeconds(self.player.totalDuration);
+    self.playSlider.value = elapsed / duration;
+    if (isnan(elapsed)) {
+        self.currentTime.text = self.duration.text;
+    } else {
+        self.currentTime.text = [NSString stringWithFormat:@"%.2fs", elapsed];
+        self.duration.text = [NSString stringWithFormat:@"%.2fs", duration];
+    }
+    
+    NSString *info = [NSString stringWithFormat:@"videoFPS:%d, bitrate: %.2fkbs", _player.videoFPS, _player.bitrate];
+    self.videoInfo.text = info;
+    
+    info = [NSString stringWithFormat:@"renderFPS:%d, %dX%d", _player.renderFPS, _player.width, _player.height];
+    self.playerInfo.text = info;
+    NSLog(@"onDurationTimer");
+}
+
 - (void)prepareUpload {
     self.progressView.hidden = YES;
     self.progressView.progress = 0;
@@ -166,9 +262,10 @@ PLPlayerDelegate
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     formatter.dateFormat = @"yyyyMMddHHmmss";
     NSString *key;
-    if (_imagesArray.count == 0) {
+    if (self.actionType == PLSActionTypePlayer) {
         key = [NSString stringWithFormat:@"short_video_%@.mp4", [formatter stringFromDate:[NSDate date]]];
-    } else {
+    }
+    if (self.actionType == PLSActionTypeGif) {
         key = [NSString stringWithFormat:@"short_video_%@.gif", [formatter stringFromDate:[NSDate date]]];
     }
     PLSUploaderConfiguration * uploadConfig = [[PLSUploaderConfiguration alloc] initWithToken:kUploadToken videoKey:key https:YES recorder:nil];
@@ -179,18 +276,20 @@ PLPlayerDelegate
 #pragma mark -- 按钮的响应事件
 #pragma mark -- 返回
 - (void)backButtonClick {
+    [self removeDurationTimer];
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark -- 播放
 - (void)handleSingleFingerToPlayVideoEvent:(id)sender {
     [self.player play];
+    [self addDurationTimer];
 }
 
 #pragma mark -- 本地视频上传到云端
 - (void)uploadButtonClick:(id)sender {
     NSString *filePath = _url.path;
-
+    
     self.uploadButton.selected = !self.uploadButton.selected;
     
     if (self.uploadButton.isSelected) {
@@ -199,6 +298,14 @@ PLPlayerDelegate
     }else {
         [self.shortVideoUploader cancelUploadVidoFile];
     }
+}
+
+#pragma mark -- seekTo
+- (void)playSeekTo:(id)sender {
+    UISlider * slider = (UISlider *)sender;
+    CMTime time = CMTimeMake(slider.value * CMTimeGetSeconds(self.player.totalDuration), 1);
+    self.currentTime.text = [NSString stringWithFormat:@"%.2fs",slider.value];
+    [self.player seekTo:time];
 }
 
 #pragma mark -- 提示框
@@ -243,10 +350,20 @@ PLPlayerDelegate
     // 第一帧渲染后，将收到第一个 PLPlayerStatusPlaying 状态
     // 播放过程中出现卡顿时，将收到 PLPlayerStatusCaching 状态
     // 卡顿结束后，将收到 PLPlayerStatusPlaying 状态
+    if (state == PLPlayerStatusPlaying) {
+        NSString *stat = [NSString stringWithFormat:@"connect:%.2f/first:%.2f", _player.connectTime, _player.firstVideoTime];
+        self.statLabel.text = stat;
+    }
+    if (state == PLPlayerStatusCompleted) {
+        self.currentTime.text = self.duration.text;
+        self.playSlider.value = 1;
+        [self removeDurationTimer];
+    }
 }
 
 - (void)player:(nonnull PLPlayer *)player stoppedWithError:(nullable NSError *)error {
     // 当发生错误，停止播放时，会回调这个方法
+    [self showAlertWithMessage:[NSString stringWithFormat:@"播放出错，error = %@", error]];
 }
 
 - (void)player:(nonnull PLPlayer *)player codecError:(nonnull NSError *)error {
@@ -255,6 +372,7 @@ PLPlayerDelegate
     // error.code 值为 PLPlayerErrorHWCodecInitFailed/PLPlayerErrorHWDecodeFailed
     // 播发器也将自动切换成软解，继续播放
 }
+
 
 #pragma mark -- 隐藏状态栏
 - (BOOL)prefersStatusBarHidden {
@@ -268,7 +386,8 @@ PLPlayerDelegate
 
 - (void)dealloc {
     NSLog(@"dealloc: %@", [[self class] description]);
-
+    [self removeDurationTimer];
+    
     self.player = nil;
     self.player.delegate = nil;
     
@@ -276,5 +395,16 @@ PLPlayerDelegate
     
     self.baseToolboxView = nil;
 }
+
+#pragma mark -- 手势冲突
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
+{
+    if ([touch.view isKindOfClass:[UISlider class]])
+    {
+        return NO;
+    }
+    return YES;
+}
+
 
 @end

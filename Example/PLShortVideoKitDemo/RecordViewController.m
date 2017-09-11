@@ -19,6 +19,8 @@
 #import "KWSDK.h"
 #import "Global.h"
 #import "KWSmiliesStickerRenderer.h"
+#import "PLSRateButtonView.h"
+
 
 #define PLS_CLOSE_CONTROLLER_ALERTVIEW_TAG 10001
 #define PLS_SCREEN_WIDTH CGRectGetWidth([UIScreen mainScreen].bounds)
@@ -36,7 +38,8 @@ PLShortVideoRecorderDelegate,
 UICollectionViewDelegate,
 UICollectionViewDataSource,
 UICollectionViewDelegateFlowLayout,
-PLSViewRecorderManagerDelegate
+PLSViewRecorderManagerDelegate,
+PLSRateButtonViewDelegate
 >
 
 @property (strong, nonatomic) PLShortVideoRecorder *shortVideoRecorder;
@@ -46,6 +49,9 @@ PLSViewRecorderManagerDelegate
 @property (strong, nonatomic) UIButton *viewRecordButton;
 @property (strong, nonatomic) PLSDeleteButton *deleteButton;
 @property (strong, nonatomic) UIButton *endButton;
+@property (strong, nonatomic) PLSRateButtonView *rateButtonView;
+@property (strong, nonatomic) NSArray *titleArray;
+@property (assign, nonatomic) NSInteger titleIndex;
 
 @property (strong, nonatomic) UIView *baseToolboxView;
 @property (strong, nonatomic) UIView *recordToolboxView;
@@ -112,8 +118,8 @@ PLSViewRecorderManagerDelegate
     self.kwSdkUI.kwSdk.renderer = [[KWRenderer alloc]initWithModelPath:self.modelPath];
     
     if([KWRenderer isSdkInitFailed]){
-//        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"错误提示" message:@"使用 license 文件生成激活码时失败，可能是授权文件过期。" delegate:nil cancelButtonTitle:@"好的" otherButtonTitles:nil, nil];
-//        [alert show];
+        //        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"错误提示" message:@"使用 license 文件生成激活码时失败，可能是授权文件过期。" delegate:nil cancelButtonTitle:@"好的" otherButtonTitles:nil, nil];
+        //        [alert show];
         return;
     }
     
@@ -152,7 +158,7 @@ PLSViewRecorderManagerDelegate
     videoConfiguration.averageVideoBitRate = 1024*1000;
     videoConfiguration.videoSize = CGSizeMake(480, 854);
     videoConfiguration.videoOrientation = AVCaptureVideoOrientationPortrait;
-
+    
     PLSAudioConfiguration *audioConfiguration = [PLSAudioConfiguration defaultConfiguration];
     
     self.shortVideoRecorder = [[PLShortVideoRecorder alloc] initWithVideoConfiguration:videoConfiguration audioConfiguration:audioConfiguration];
@@ -284,6 +290,18 @@ PLSViewRecorderManagerDelegate
     self.recordToolboxView.backgroundColor = [UIColor clearColor];
     [self.view addSubview:self.recordToolboxView];
     
+    // 倍数拍摄
+    self.titleArray = @[@"极慢", @"慢", @"正常", @"快", @"极快"];
+    self.rateButtonView = [[PLSRateButtonView alloc]initWithFrame:CGRectMake(PLS_SCREEN_WIDTH/2 - 130, 35, 260, 34) defaultIndex:2];
+    self.rateButtonView.hidden = NO;
+    self.titleIndex = 2;
+    CGFloat countSpace = 200 /self.titleArray.count / 6;
+    self.rateButtonView.space = countSpace;
+    self.rateButtonView.staticTitleArray = self.titleArray;
+    self.rateButtonView.rateDelegate = self;
+    [self.recordToolboxView addSubview:_rateButtonView];
+    
+    
     // 录制视频的操作按钮
     CGFloat buttonWidth = 80.0f;
     self.recordButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -350,6 +368,29 @@ PLSViewRecorderManagerDelegate
     [self.importMovieView addSubview:importMovieLabel];
 }
 
+#pragma mark -- PLSRateButtonViewDelegate
+- (void)rateButtonView:(PLSRateButtonView *)rateButtonView didSelectedTitleIndex:(NSInteger)titleIndex{
+    self.titleIndex = titleIndex;
+    switch (titleIndex) {
+        case 0:
+            self.shortVideoRecorder.recoderRate = PLSVideoRecoderRateTopSlow;
+            break;
+        case 1:
+            self.shortVideoRecorder.recoderRate = PLSVideoRecoderRateSlow;
+            break;
+        case 2:
+            self.shortVideoRecorder.recoderRate = PLSVideoRecoderRateNormal;
+            break;
+        case 3:
+            self.shortVideoRecorder.recoderRate = PLSVideoRecoderRateFast;
+            break;
+        case 4:
+            self.shortVideoRecorder.recoderRate = PLSVideoRecoderRateTopFast;
+            break;
+        default:
+            break;
+    }
+}
 
 #pragma mark -- Button event
 // 获取相册中最新的一个视频的封面
@@ -530,7 +571,7 @@ PLSViewRecorderManagerDelegate
 - (void)applicationWillResignActive:(NSNotification *)notification {
     if (self.viewRecordButton.selected) {
         [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillResignActiveNotification object:nil];
-        self.viewRecordButton.selected = NO;        
+        self.viewRecordButton.selected = NO;
         [self.viewRecorderManager cancelRecording];
     }
 }
@@ -706,7 +747,7 @@ PLSViewRecorderManagerDelegate
 // 开始录制一段视频时
 - (void)shortVideoRecorder:(PLShortVideoRecorder *)recorder didStartRecordingToOutputFileAtURL:(NSURL *)fileURL {
     NSLog(@"start recording fileURL: %@", fileURL);
-
+    
     [self.progressBar addProgressView];
     [_progressBar startShining];
 }
@@ -728,16 +769,16 @@ PLSViewRecorderManagerDelegate
 // 删除了某一段视频
 - (void)shortVideoRecorder:(PLShortVideoRecorder *)recorder didDeleteFileAtURL:(NSURL *)fileURL fileDuration:(CGFloat)fileDuration totalDuration:(CGFloat)totalDuration {
     NSLog(@"delete fileURL: %@, fileDuration: %f, totalDuration: %f", fileURL, fileDuration, totalDuration);
-
+    
     self.endButton.enabled = totalDuration >= self.shortVideoRecorder.minDuration;
-
+    
     if (totalDuration <= 0.0000001f) {
         self.squareRecordButton.hidden = NO;
         self.deleteButton.hidden = YES;
         self.endButton.hidden = YES;
         self.importMovieView.hidden = NO;
     }
-
+    
     self.durationLabel.text = [NSString stringWithFormat:@"%.2fs", totalDuration];
 }
 
@@ -746,10 +787,10 @@ PLSViewRecorderManagerDelegate
     NSLog(@"finish recording fileURL: %@, fileDuration: %f, totalDuration: %f", fileURL, fileDuration, totalDuration);
     
     [_progressBar stopShining];
-
+    
     self.deleteButton.hidden = NO;
     self.endButton.hidden = NO;
-
+    
     
     if (totalDuration >= self.shortVideoRecorder.maxDuration) {
         [self endButtonEvent:nil];
@@ -759,7 +800,7 @@ PLSViewRecorderManagerDelegate
 // 在达到指定的视频录制时间 maxDuration 后，如果再调用 [PLShortVideoRecorder startRecording]，直接执行该回调
 - (void)shortVideoRecorder:(PLShortVideoRecorder *)recorder didFinishRecordingMaxDuration:(CGFloat)maxDuration {
     NSLog(@"finish recording maxDuration: %f", maxDuration);
-
+    
     AVAsset *asset = self.shortVideoRecorder.assetRepresentingAllFiles;
     [self playEvent:asset];
     [self.viewRecorderManager cancelRecording];
@@ -781,7 +822,7 @@ PLSViewRecorderManagerDelegate
     plsMovieSettings[PLSDurationKey] = [NSNumber numberWithFloat:[self.shortVideoRecorder getTotalDuration]];
     plsMovieSettings[PLSVolumeKey] = [NSNumber numberWithFloat:1.0f];
     outputSettings[PLSMovieSettingsKey] = plsMovieSettings;
-
+    
     EditViewController *videoEditViewController = [[EditViewController alloc] init];
     videoEditViewController.settings = outputSettings;
     [self presentViewController:videoEditViewController animated:YES completion:nil];
@@ -800,7 +841,7 @@ PLSViewRecorderManagerDelegate
 #pragma mark -- dealloc
 - (void)dealloc {
     NSLog(@"dealloc: %@", [[self class] description]);
-
+    
     self.shortVideoRecorder.delegate = nil;
     self.shortVideoRecorder = nil;
     
@@ -858,7 +899,7 @@ PLSViewRecorderManagerDelegate
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-
+    
     // 滤镜
     self.filterGroup.filterIndex = indexPath.row;
 }

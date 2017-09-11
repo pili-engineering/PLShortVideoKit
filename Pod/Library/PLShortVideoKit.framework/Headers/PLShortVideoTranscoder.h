@@ -19,6 +19,13 @@
 @interface PLShortVideoTranscoder : NSObject
 
 /**
+ @brief 将视频导出到相册，默认为 NO
+ 
+ @since      v1.4.0
+ */
+@property (assign, nonatomic) BOOL isExportMovieToPhotosAlbum;
+
+/**
  @abstract 视频转码后的地址
  
  @since      v1.0.5

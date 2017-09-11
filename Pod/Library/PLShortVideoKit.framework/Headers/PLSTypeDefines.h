@@ -70,13 +70,46 @@ typedef enum {
  @typedef    PLSPreviewOrientation
  @abstract   预览视图的方向。
  
- @since      v1.2.1
+ @since      v1.3.0
  */
 typedef NS_ENUM(NSInteger, PLSPreviewOrientation) {
     PLSPreviewOrientationPortrait           = 1,
     PLSPreviewOrientationPortraitUpsideDown = 2,
     PLSPreviewOrientationLandscapeRight     = 3,
     PLSPreviewOrientationLandscapeLeft      = 4,
+};
+
+/**
+ @typedef    PLSVideoRecoderRateType
+ @abstract   视频拍摄速率。
+ 
+ @since      v1.4.0
+ */
+typedef NS_ENUM(NSInteger, PLSVideoRecoderRateType) {
+    /**
+     @brief Maintains the video recoder rate normal
+     */
+    PLSVideoRecoderRateNormal = 0,
+    
+    /**
+     @brief Maintains the video recoder rate slow
+     */
+    PLSVideoRecoderRateSlow,
+    
+    /**
+     @brief Maintains the video recoder rate very slow
+     */
+    PLSVideoRecoderRateTopSlow,
+    
+    /**
+     @brief Maintains the video recoder rate fast
+     */
+    PLSVideoRecoderRateFast,
+    
+    /**
+     @brief Maintains the video recoder rate very fast
+     */
+    PLSVideoRecoderRateTopFast
 };
 
 #pragma mark - Audio SampleRate

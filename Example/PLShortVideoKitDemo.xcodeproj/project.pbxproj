@@ -60,6 +60,7 @@
 		0A398FA01ED6698F00996229 /* cut_bar_progress@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0A398F9D1ED6698F00996229 /* cut_bar_progress@3x.png */; };
 		0A3A8E8A1F208321002311A8 /* opencv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A3A8E891F208321002311A8 /* opencv2.framework */; };
 		0A4C4C8F1F3DB5F2003F63CF /* PLShortVideoKit.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 0A4C4C8E1F3DB5F2003F63CF /* PLShortVideoKit.bundle */; };
+		0A514AE11F62945A006A7E87 /* PLSRateButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A514AE01F62945A006A7E87 /* PLSRateButtonView.m */; };
 		0A52C1931E9C987900561F37 /* EditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A52C1921E9C987900561F37 /* EditViewController.m */; };
 		0A57EBB41E7596CC00FC5BF8 /* record_close_normal.png in Resources */ = {isa = PBXBuildFile; fileRef = 0A57EBB31E7596CC00FC5BF8 /* record_close_normal.png */; };
 		0A63402A1F15C9C9005ADF6C /* MovieTransCodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A6340291F15C9C9005ADF6C /* MovieTransCodeViewController.m */; };
@@ -384,6 +385,8 @@
 		0A398F9D1ED6698F00996229 /* cut_bar_progress@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "cut_bar_progress@3x.png"; path = "images/cut_bar_progress@3x.png"; sourceTree = "<group>"; };
 		0A3A8E891F208321002311A8 /* opencv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = opencv2.framework; sourceTree = "<group>"; };
 		0A4C4C8E1F3DB5F2003F63CF /* PLShortVideoKit.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = PLShortVideoKit.bundle; path = PLSBundleResource/PLShortVideoKit.bundle; sourceTree = "<group>"; };
+		0A514ADF1F62945A006A7E87 /* PLSRateButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLSRateButtonView.h; sourceTree = "<group>"; };
+		0A514AE01F62945A006A7E87 /* PLSRateButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLSRateButtonView.m; sourceTree = "<group>"; };
 		0A52C1911E9C987900561F37 /* EditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditViewController.h; sourceTree = "<group>"; };
 		0A52C1921E9C987900561F37 /* EditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditViewController.m; sourceTree = "<group>"; };
 		0A57EBB31E7596CC00FC5BF8 /* record_close_normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = record_close_normal.png; path = images/record_close_normal.png; sourceTree = "<group>"; };
@@ -1080,6 +1083,8 @@
 			children = (
 				0ACE7C2B1ED8B072002FF4C9 /* PLSClipMovieView.h */,
 				0ACE7C2C1ED8B072002FF4C9 /* PLSClipMovieView.m */,
+				0A514ADF1F62945A006A7E87 /* PLSRateButtonView.h */,
+				0A514AE01F62945A006A7E87 /* PLSRateButtonView.m */,
 				C39EA3DE1F4EC6950007D1C3 /* PLSFormatGifView.h */,
 				C39EA3DF1F4EC6950007D1C3 /* PLSFormatGifView.m */,
 				0ACE7C2D1ED8B072002FF4C9 /* PLSDeleteButton.h */,
@@ -2084,7 +2089,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		B051BAB51EADFEF900385FF0 /* ShellScript */ = {
@@ -2156,6 +2161,7 @@
 				C3F91F871F1CBD4900698322 /* SDWebImageManager.m in Sources */,
 				0AE8AC951F063E3E006166E2 /* PLSClipAudioView.m in Sources */,
 				C3F91F941F1CBD4900698322 /* SSZipArchive.m in Sources */,
+				0A514AE11F62945A006A7E87 /* PLSRateButtonView.m in Sources */,
 				C3F91F4A1F1CBD4900698322 /* KWSDK_UI.m in Sources */,
 				C3F91F671F1CBD4900698322 /* row_common.cc in Sources */,
 				C3F91F4C1F1CBD4900698322 /* compare.cc in Sources */,

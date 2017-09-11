@@ -8,6 +8,8 @@
 
 #import "PhotoAlbumViewController.h"
 #import "MovieTransCodeViewController.h"
+#import "PLShortVideoKit/PLShortVideoKit.h"
+#import "PLSRateButtonView.h"
 
 #define PLS_RGBCOLOR(r,g,b) [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:1]
 
@@ -179,7 +181,7 @@
         [manager requestAVAssetForVideo:self options:options resultHandler:^(AVAsset * _Nullable asset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
             AVURLAsset *urlAsset = (AVURLAsset *)asset;
             url = urlAsset.URL;
-    
+            
             dispatch_semaphore_signal(semaphore);
         }];
     }
@@ -254,10 +256,10 @@
 
 @end
 
-
+#pragma mark -- 选择视频的控制器
 #pragma mark -- PhotoAlbumViewController
 
-@interface PhotoAlbumViewController () <UIAlertViewDelegate>
+@interface PhotoAlbumViewController () <UIAlertViewDelegate, PLSRateButtonViewDelegate>
 
 @property (strong, nonatomic) NSArray *assets;
 @property (strong, nonatomic) UIImageView *previewImageView;
@@ -266,7 +268,14 @@
 @property (strong, nonatomic) UIView *baseToolboxView;
 @property (strong, nonatomic) UIView *editToolboxView;
 @property (strong, nonatomic) UIButton *nextButton;
+@property (strong, nonatomic) PLSRateButtonView *rateButtonView;
+@property (assign, nonatomic) BOOL isMovieLandscapeOrientation;
 @property (strong, nonatomic) PLSScrollView *dynamicScrollView;
+
+@property (strong, nonatomic) PLSMovieComposer *movieComposer;
+
+@property (strong, nonatomic) UIActivityIndicatorView *activityIndicatorView;
+@property (strong, nonatomic) UILabel *progressLabel;
 
 @end
 
@@ -370,12 +379,35 @@ static NSString * const reuseIdentifier = @"Cell";
     cancelButton.titleLabel.font = [UIFont systemFontOfSize:16];
     [cancelButton addTarget:self action:@selector(cancelButtonClick:) forControlEvents:UIControlEventTouchUpInside];
     [self.baseToolboxView addSubview:cancelButton];
+    
+    // 展示视频拼接的进度
+    self.progressLabel = [[UILabel alloc] initWithFrame:CGRectMake(160, 0, 200, 45)];
+    self.progressLabel.center = CGPointMake(self.view.center.x, self.view.center.y + 30);
+    self.progressLabel.textAlignment =  NSTextAlignmentCenter;
+    self.progressLabel.textColor = [UIColor whiteColor];
+    [self.baseToolboxView addSubview:self.progressLabel];
+    
+    // 展示视频拼接的动画
+    self.activityIndicatorView = [[UIActivityIndicatorView alloc] initWithFrame:self.view.bounds];
+    self.activityIndicatorView.center = self.view.center;
+    [self.activityIndicatorView setActivityIndicatorViewStyle:UIActivityIndicatorViewStyleWhiteLarge];
+    self.activityIndicatorView.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.5];
 }
 
 - (void)setupEditToolboxView {
     self.editToolboxView = [[UIView alloc] initWithFrame:CGRectMake(0, PLS_SCREEN_HEIGHT - 140, PLS_SCREEN_WIDTH, 140)];
     self.editToolboxView.backgroundColor = [UIColor blackColor];
     [self.view addSubview:self.editToolboxView];
+    
+    // 分辨率模式：竖屏、横屏
+    NSArray *titleArray = @[@"竖屏", @"横屏"];
+    self.rateButtonView = [[PLSRateButtonView alloc]initWithFrame:CGRectMake(10, 5, 140, 30) defaultIndex:0];
+    self.rateButtonView.hidden = NO;
+    CGFloat countSpace = 200 / titleArray.count / 6;
+    self.rateButtonView.space = countSpace;
+    self.rateButtonView.staticTitleArray = titleArray;
+    self.rateButtonView.rateDelegate = self;
+    [self.editToolboxView addSubview:self.rateButtonView];
     
     // 下一步
     self.nextButton = [[UIButton alloc] initWithFrame:CGRectMake(CGRectGetWidth(self.editToolboxView.frame) - 100, 5, 90, 30)];
@@ -464,9 +496,9 @@ static NSString * const reuseIdentifier = @"Cell";
 #pragma mark --- 选中的视频的视图
 - (void)updateScrollView:(PHAsset *)asset {
     if (asset) {
-        if (self.dynamicScrollView.selectedAssets.count < self.maxSelectCount) {
-            [self.dynamicScrollView addAsset:asset];
-        }
+        //        if (self.dynamicScrollView.selectedAssets.count < self.maxSelectCount) {
+        [self.dynamicScrollView addAsset:asset];
+        //        }
     }
 }
 
@@ -530,6 +562,22 @@ static NSString * const reuseIdentifier = @"Cell";
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
+#pragma mark -- 竖屏、横屏分辨率
+#pragma mark -- PLSRateButtonViewDelegate
+- (void)rateButtonView:(PLSRateButtonView *)rateButtonView didSelectedTitleIndex:(NSInteger)titleIndex{
+    switch (titleIndex) {
+        case 0:
+            self.isMovieLandscapeOrientation = NO;
+            break;
+        case 1:
+            self.isMovieLandscapeOrientation = YES;
+            break;
+        default:
+            self.isMovieLandscapeOrientation = NO;
+            break;
+    }
+}
+
 #pragma mark -- 下一步
 - (void)nextButtonClick:(UIButton *)sender {
     [self.urls removeAllObjects];
@@ -539,12 +587,67 @@ static NSString * const reuseIdentifier = @"Cell";
         [self.urls addObject:url];
     }
     
-    // 视频选择器视图中限制了选取数目为 1
+    // 视频选择器视图中视频的选取数目可以做限制的，限制为1个、多个、不限
     if (self.urls.count > 0) {
-        MovieTransCodeViewController *transCodeViewController = [[MovieTransCodeViewController alloc] init];
-        transCodeViewController.url = self.urls[0];
-        [self presentViewController:transCodeViewController animated:YES completion:nil];
+        if (self.urls.count == 1) {
+            MovieTransCodeViewController *transCodeViewController = [[MovieTransCodeViewController alloc] init];
+            transCodeViewController.url = self.urls[0];
+            [self presentViewController:transCodeViewController animated:YES completion:nil];
+        }
+        else {
+            [self loadActivityIndicatorView];
+            
+            __weak typeof(self)weakSelf = self;
+            self.movieComposer = [[PLSMovieComposer alloc] initWithUrls:self.urls];
+            if (self.isMovieLandscapeOrientation) {
+                self.movieComposer.videoSize = CGSizeMake(854, 480);
+            } else {
+                self.movieComposer.videoSize = CGSizeMake(480, 854);
+            }
+            
+            [self.movieComposer setCompletionBlock:^(NSURL *url) {
+                NSLog(@"movieComposer ur: %@", url);
+                
+                [weakSelf removeActivityIndicatorView];
+                weakSelf.progressLabel.text = @"";
+                
+                MovieTransCodeViewController *transCodeViewController = [[MovieTransCodeViewController alloc] init];
+                transCodeViewController.url = url;
+                [weakSelf presentViewController:transCodeViewController animated:YES completion:nil];
+            }];
+            [self.movieComposer setFailureBlock:^(NSError *error) {
+                NSLog(@"movieComposer failed");
+                
+                [weakSelf removeActivityIndicatorView];
+                weakSelf.progressLabel.text = @"";
+                
+            }];
+            [self.movieComposer setProcessingBlock:^(float progress){
+                NSLog(@"movieComposer progress: %f", progress);
+                
+                weakSelf.progressLabel.text = [NSString stringWithFormat:@"拼接进度%d%%", (int)(progress * 100)];
+            }];
+            
+            [self.movieComposer startComposing];
+        }
     }
+}
+
+// 加载拼接视频的动画
+- (void)loadActivityIndicatorView {
+    if ([self.activityIndicatorView isAnimating]) {
+        [self.activityIndicatorView stopAnimating];
+        [self.activityIndicatorView removeFromSuperview];
+    }
+    
+    [self.view addSubview:self.activityIndicatorView];
+    [self.activityIndicatorView startAnimating];
+}
+
+// 移除拼接视频的动画
+- (void)removeActivityIndicatorView {
+    [self.activityIndicatorView removeFromSuperview];
+    [self.activityIndicatorView stopAnimating];
 }
 
 #pragma mark -- view autorotate
@@ -568,6 +671,13 @@ static NSString * const reuseIdentifier = @"Cell";
 
 - (void)dealloc {
     NSLog(@"dealloc: %@", [[self class] description]);
+    
+    if ([self.activityIndicatorView isAnimating]) {
+        [self.activityIndicatorView stopAnimating];
+        self.activityIndicatorView = nil;
+    }
+    
+    self.movieComposer = nil;
 }
 
 @end

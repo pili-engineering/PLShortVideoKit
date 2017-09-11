@@ -36,10 +36,10 @@
     // Do any additional setup after loading the view.
     
     self.view.backgroundColor = PLS_RGBCOLOR(25, 24, 36);
-
+    
     [self setupBaseToolboxView];
     [self setupFormatGifView];
-
+    
 }
 
 #pragma mark -- 配置视图
@@ -111,6 +111,7 @@
 - (void)formatGifView:(PLSFormatGifView *)formatGifView previewArray:(NSArray *)previewArray{
     self.selectedArray = previewArray;
     PLSGifComposer *gifComposer = [[PLSGifComposer alloc] initWithImagesArray:previewArray];
+    gifComposer.interval = 0.1;
     UIImage *img = previewArray[0];
     
     self.gifPreview = [[UIView alloc]initWithFrame:CGRectMake(0, 0, PLS_SCREEN_WIDTH, PLS_SCREEN_HEIGHT)];
@@ -136,9 +137,10 @@
 #pragma mark -- 下一步
 - (void)nextButtonClick {
     __weak typeof(self) weakSelf = self;
-
+    
     PLSGifComposer *gifComposer = [[PLSGifComposer alloc] initWithImagesArray:_selectedArray];
     gifComposer.gifName = nil; // 为 nil 时，SDK 内部会生成相应的唯一名称。gifComposer.gifName = @"myGif"
+    gifComposer.interval = 0.1;
     
     [gifComposer setCompletionBlock:^(NSURL *url){
         NSLog(@"compose Gif successed");
@@ -156,7 +158,6 @@
     PlayViewController *playViewController = [[PlayViewController alloc]init];
     playViewController.actionType = PLSActionTypeGif;
     playViewController.url = url;
-    playViewController.imagesArray = imagesArray;
     [obj presentViewController:playViewController animated:YES completion:nil];
 }
 
@@ -167,7 +168,7 @@
 
 - (void)dealloc {
     NSLog(@"dealloc: %@", [[self class] description]);
-
+    
     self.formatGifView.delegate = nil;
     self.formatGifView = nil;
 }

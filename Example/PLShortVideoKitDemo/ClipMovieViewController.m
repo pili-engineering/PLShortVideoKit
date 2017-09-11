@@ -131,7 +131,8 @@
 }
 
 - (void)setupClipMovieView {
-    self.clipMovieView = [[PLSClipMovieView alloc] initWithMovieURL:self.url minDuration:2.0f maxDuration:180.f];
+    CGFloat duration = [self getFileDuration:self.url];
+    self.clipMovieView = [[PLSClipMovieView alloc] initWithMovieURL:self.url minDuration:2.0f maxDuration:duration];
     self.clipMovieView.delegate = self;
     [self.view addSubview:self.clipMovieView];
     [self.clipMovieView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -169,13 +170,13 @@
 
 #pragma mark - PLSClipMovieView delegate
 - (void)didStartDragView {
-//    if (self.shortVideoEditor.player.rate > 0) { // 正在播放的时候
-//        [self.shortVideoEditor.player pause];
-//    }
+    //    if (self.shortVideoEditor.player.rate > 0) { // 正在播放的时候
+    //        [self.shortVideoEditor.player pause];
+    //    }
 }
 
 - (void)clipFrameView:(PLSClipMovieView *)clipFrameView didDragView:(CMTime)time {
-
+    
 }
 
 - (void)clipFrameView:(PLSClipMovieView *)clipFrameView didEndDragLeftView:(CMTime)time; {
@@ -185,7 +186,7 @@
 }
 
 - (void)clipFrameView:(PLSClipMovieView *)clipFrameView didEndDragRightView:(CMTime)time; {
-    self.endTime = CMTimeGetSeconds(time);    
+    self.endTime = CMTimeGetSeconds(time);
 }
 
 - (void)clipFrameView:(PLSClipMovieView *)clipFrameView isScrolling:(BOOL)scrolling {
@@ -240,12 +241,12 @@
 #pragma mark -- dealloc
 - (void)dealloc {
     NSLog(@"dealloc: %@", [[self class] description]);
-
+    
     if (self.playbackTimeCheckerTimer) {
         [self.playbackTimeCheckerTimer invalidate];
         self.playbackTimeCheckerTimer = nil;
     }
-
+    
     self.baseToolboxView = nil;
     
     self.shortVideoEditor = nil;

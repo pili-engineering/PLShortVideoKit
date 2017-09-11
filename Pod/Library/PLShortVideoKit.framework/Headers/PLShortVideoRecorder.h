@@ -199,6 +199,13 @@
 @property (assign, nonatomic, readonly) BOOL captureEnabled;
 
 /**
+ @brief 视频拍摄速率值，默认使用 PLSVideoRecoderRateNormal，isRecording 为 YES 时，设置该值无效
+ 
+ @since      v1.4.0
+ */
+@property (readwrite, nonatomic) PLSVideoRecoderRateType recoderRate;
+
+/**
  @abstract   初始化方法
  
  @since      v1.0.0

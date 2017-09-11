@@ -17,6 +17,5 @@ typedef NS_ENUM(NSInteger, PLSActionType) {
 
 @property (assign, nonatomic) PLSActionType actionType;
 @property (strong, nonatomic) NSURL *url;
-@property (strong, nonatomic) NSArray *imagesArray;
 
 @end
