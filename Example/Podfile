@@ -7,5 +7,5 @@ target 'PLShortVideoKitDemo' do
    pod 'Crashlytics', '3.8.4'
    pod 'Masonry', '1.0.2'
    pod 'Qiniu', '7.1.5'
-   pod 'PLPlayerKit', '2.4.3'
+   pod 'PLPlayerKit'
 end

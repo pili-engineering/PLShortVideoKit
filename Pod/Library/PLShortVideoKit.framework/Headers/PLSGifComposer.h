@@ -33,6 +33,13 @@
 @property (copy, nonatomic) void(^failureBlock)(NSError* error);
 
 /**
+ @abstract Gif 动图每帧间隔设置，默认 0.1f，若需自定义，请在调用 composeGif 合成前，设置该属性
+ 
+ @since      v1.4.0
+ */
+@property (assign, nonatomic) CGFloat interval;
+
+/**
  @brief 实例初始化方法
  
  @since      v1.3.0
@@ -41,10 +48,17 @@
 
 /**
  @brief 将视频帧／图片数组合成为 Gif 动图，合成结果的回调见 completionBlock，failureBlock
-
+ 
  @since      v1.3.0
  */
 - (void)composeGif;
+
+/**
+ @brief 取消合成 Gif 动图
+ 
+ @since      v1.4.0
+ */
+- (void)cancelComposeGif;
 
 /**
  @brief UIImageView 加载 Gif 图

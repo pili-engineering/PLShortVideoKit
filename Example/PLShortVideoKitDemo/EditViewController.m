@@ -159,7 +159,7 @@ PLSAVAssetExportSessionDelegate
 #pragma mark -- 配置视图
 - (void)setupBaseToolboxView {
     self.view.backgroundColor = PLS_RGBCOLOR(25, 24, 36);
-
+    
     self.baseToolboxView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, PLS_SCREEN_WIDTH, 64)];
     self.baseToolboxView.backgroundColor = PLS_RGBCOLOR(25, 24, 36);
     [self.view addSubview:self.baseToolboxView];
@@ -221,7 +221,7 @@ PLSAVAssetExportSessionDelegate
     formGifButton.titleLabel.font = [UIFont systemFontOfSize:14];
     [self.editToolboxView addSubview:formGifButton];
     [formGifButton addTarget:self action:@selector(formatGifButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
-
+    
     
     // 裁剪背景音乐
     UIButton *clipMusicButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -258,7 +258,7 @@ PLSAVAssetExportSessionDelegate
     [musicButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     musicButton.titleLabel.font = [UIFont systemFontOfSize:14];
     [self.editToolboxView addSubview:musicButton];
-
+    
     // 展示音乐效果的 UICollectionView
     frame = self.musicCollectionView.frame;
     self.musicCollectionView.frame = CGRectMake(frame.origin.x, CGRectGetMaxY(musicButton.frame), frame.size.width, frame.size.height);
@@ -311,7 +311,7 @@ PLSAVAssetExportSessionDelegate
         
         [array addObject:dic];
     }
- 
+    
     return array;
 }
 
@@ -324,7 +324,7 @@ PLSAVAssetExportSessionDelegate
     NSData *data = [NSData dataWithContentsOfFile:jsonPath];
     NSError *error;
     NSDictionary *dicFromJson = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
-//    NSLog(@"load internal filters json error: %@", error);
+    //    NSLog(@"load internal filters json error: %@", error);
     
     NSArray *jsonArray = [dicFromJson objectForKey:@"musics"];
     
@@ -410,7 +410,7 @@ PLSAVAssetExportSessionDelegate
             //artwork这个key对应的value里面存的就是封面缩略图，其它key可以取出其它摘要信息，例如title - 标题
             if ([metadataItem.commonKey isEqualToString:@"artwork"]) {
                 data = (NSData *)metadataItem.value;
-
+                
                 break;
             }
         }
@@ -435,7 +435,7 @@ PLSAVAssetExportSessionDelegate
     PLSEditVideoCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([PLSEditVideoCell class]) forIndexPath:indexPath];
     
     if (collectionView == self.editVideoCollectionView) {
-
+        
         // 滤镜
         NSDictionary *filterInfoDic = self.filtersArray[indexPath.row];
         
@@ -446,7 +446,7 @@ PLSAVAssetExportSessionDelegate
         cell.iconImageView.image = [UIImage imageWithContentsOfFile:coverImagePath];
         
         return  cell;
-
+        
     }
     else {
         
@@ -454,7 +454,7 @@ PLSAVAssetExportSessionDelegate
         NSString *musicName = [dic objectForKey:@"audioName"];
         NSURL *musicUrl = [dic objectForKey:@"audioUrl"];
         UIImage *musicImage = [self musicImageWithMusicURL:musicUrl];
-
+        
         cell.iconImageView.image = musicImage;
         cell.iconPromptLabel.text = musicName;
     }
@@ -466,7 +466,7 @@ PLSAVAssetExportSessionDelegate
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     
     if (collectionView == self.editVideoCollectionView) {
-
+        
         // 滤镜
         self.filterGroup.filterIndex = indexPath.row;
         
@@ -481,9 +481,9 @@ PLSAVAssetExportSessionDelegate
             self.audioSettings[PLSStartTimeKey] = [NSNumber numberWithFloat:0.f];
             self.audioSettings[PLSDurationKey] = [NSNumber numberWithFloat:0.f];
             self.audioSettings[PLSNameKey] = musicName;
-
+            
             [self restart];
-
+            
         } else {
             
             NSDictionary *dic = self.musicsArray[indexPath.row];
@@ -613,14 +613,15 @@ PLSAVAssetExportSessionDelegate
     exportSession.shouldOptimizeForNetworkUse = YES;
     exportSession.outputSettings = self.outputSettings;
     exportSession.delegate = self;
-        
+    exportSession.isExportMovieToPhotosAlbum = YES;
+    
     [exportSession exportAsynchronously];
     
     __weak typeof(self) weakSelf = self;
     
     [exportSession setCompletionBlock:^(NSURL *url) {
         NSLog(@"Asset Export Completed");
-
+        
         dispatch_async(dispatch_get_main_queue(), ^{
             [weakSelf joinNextViewController:url object:weakSelf];
         });
@@ -628,7 +629,7 @@ PLSAVAssetExportSessionDelegate
     
     [exportSession setFailureBlock:^(NSError *error) {
         NSLog(@"Asset Export Failed: %@", error);
-
+        
         dispatch_async(dispatch_get_main_queue(), ^{
             [weakSelf removeActivityIndicatorView];
         });
@@ -640,11 +641,11 @@ PLSAVAssetExportSessionDelegate
         weakSelf.progressLabel.text = [NSString stringWithFormat:@"%d%%", (int)(progress * 100)];
     }];
 }
-    
+
 #pragma mark -- 进入 Gif 制作页面
 - (void)joinGifFormatViewController {
     AVAsset *asset = self.movieSettings[PLSAssetKey];
-
+    
     GifFormatViewController *gifFormatViewController = [[GifFormatViewController alloc] init];
     gifFormatViewController.asset = asset;
     [self presentViewController:gifFormatViewController animated:YES completion:nil];
@@ -691,10 +692,10 @@ PLSAVAssetExportSessionDelegate
 #pragma mark -- dealloc
 - (void)dealloc {
     NSLog(@"dealloc: %@", [[self class] description]);
-
+    
     self.shortVideoEditor.player.delegate = nil;
     self.shortVideoEditor.player = nil;
-
+    
     self.editVideoCollectionView.dataSource = nil;
     self.editVideoCollectionView.delegate = nil;
     self.editVideoCollectionView = nil;

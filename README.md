@@ -34,6 +34,7 @@ PLShortVideoKit 是七牛推出的一款适用于 iOS 平台的短视频 SDK，�
 | 自动对焦                | 1.0.0(+) |
 | 曝光调节                | 1.0.0(+) |
 | 横屏拍摄                | 1.3.0(+) |
+| 倍速拍摄                | 1.4.0(+) |
 
 ### 1.1.1 录屏
 | 功能点                 | 版本       |
@@ -64,11 +65,12 @@ PLShortVideoKit 是七牛推出的一款适用于 iOS 平台的短视频 SDK，�
 | 调节原声/背景声音量 | 1.0.3(+) |
 
 ### 1.2.4 视频合成
-| 功能点     | 版本   |
-| ------- | ---- |
-| 片头片尾 MV | 暂不支持 |
-| 图像/视频合成  | 暂不支持 |
-| 制作 GIF 动图  | 1.3.0(+) |
+| 功能点            | 版本      |
+| ---------------- | -------- |
+| 制作 GIF 动图     | 1.3.0(+) |
+| 多视频拼接        | 1.4.0(+) |
+| 片头片尾 MV 拼接  | 1.4.0(+) |
+| 图片合成视频      | 暂不支持  |
 
 ### 1.2.5 视频转码
 | 功能点  | 版本       |
@@ -102,6 +104,16 @@ $ sudo gem install cocoapods
 ```ruby
 target 'TargetName' do
 pod 'PLShortVideoKit'
+end
+```
+
+#### Warnings
+
+**在使用了七牛的推流或连麦 SDK 的工程中，集成该短视频 SDK 会出现美颜库导致的符号冲突问题 duplicate symbol _OBJC_CLASS_ MuseProcessor，解决方法如下**
+
+```ruby
+target 'TargetName' do
+pod 'PLShortVideoKit/ex-libMuseProcessor'
 end
 ```
 

@@ -33,6 +33,8 @@ FOUNDATION_EXPORT const unsigned char PLShortVideoKitVersionString[];
 #import <PLShortVideoKit/PLSEditPlayer.h>
 
 #import <PLShortVideoKit/PLSGifComposer.h>
+#import <PLShortVideoKit/PLSMovieComposer.h>
+
 
 
 

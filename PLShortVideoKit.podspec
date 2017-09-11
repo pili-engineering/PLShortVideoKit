@@ -9,7 +9,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "PLShortVideoKit"
-  s.version      = "1.3.0"
+  s.version      = "1.4.0"
   s.summary      = "PILI iOS short video record SDK"
   s.homepage     = "https://github.com/pili-engineering/PLShortVideoKit"
   s.license      = "Apache License 2.0"
@@ -19,9 +19,17 @@ Pod::Spec.new do |s|
   s.requires_arc = true
 
   s.ios.deployment_target	= "8.0"
-  s.vendored_libraries		= 'Pod/Library/*.a'
-  s.vendored_framework		= "Pod/Library/PLShortVideoKit.framework"
  
   s.dependency 'Qiniu', '7.1.5'
+
+
+  s.subspec "ex-libMuseProcessor" do |ss1|
+    ss1.vendored_framework		= "Pod/Library/PLShortVideoKit.framework"
+  end
+
+
+  s.subspec "libMuseProcessor" do |ss2|
+    ss2.vendored_libraries		= 'Pod/Library/*.a'
+  end
 
 end
