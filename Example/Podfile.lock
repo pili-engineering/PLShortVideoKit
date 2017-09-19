@@ -39,7 +39,6 @@ DEPENDENCIES:
   - Masonry (= 1.0.2)
   - PLPlayerKit
   - PLShortVideoKit (from `../`)
-  - Qiniu (= 7.1.7)
 
 EXTERNAL SOURCES:
   PLShortVideoKit:
@@ -55,6 +54,6 @@ SPEC CHECKSUMS:
   PLShortVideoKit: efa2035c374a99ea112342427afff4b63881e6ca
   Qiniu: 56ea8b9d785326e45e3a6fdd45bdbc84f78d0eff
 
-PODFILE CHECKSUM: 46cbb327993bf72c37ab333cc005b31761e8136a
+PODFILE CHECKSUM: d476191384c2ab8ab25ce48711e3cc47a594e9ae
 
 COCOAPODS: 1.2.1
