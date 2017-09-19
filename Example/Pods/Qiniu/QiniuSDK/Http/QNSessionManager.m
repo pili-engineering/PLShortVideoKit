@@ -113,6 +113,13 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error) {
     return self;
 }
 
+- (void)dealloc {
+    // 释放前，关闭 AFN 的 session，不然AFN内部有循环引用，导致内存无法释放，如果创建了多个 QNUploadManager 将丢多次内存
+    if (self.httpManager) {
+        [self.httpManager.session finishTasksAndInvalidate];
+    }
+}
+
 + (AFHTTPSessionManager *)httpManagerWithProxy:(NSDictionary *)proxyDict {
     NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
     if (proxyDict != nil) {

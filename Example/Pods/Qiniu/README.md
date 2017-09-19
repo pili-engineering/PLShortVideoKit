@@ -16,12 +16,12 @@ pod "Qiniu", "~> 7.1"
 
 ## 运行环境
 
-| Qiniu SDK 版本 | 最低 iOS版本   | 最低 OS X 版本  |                                   Notes                                   |
-|:--------------------:|:---------------------------:|:----------------------------:|:-------------------------------------------------------------------------:|
-|          7.1.x / AFNetworking-3.x       |            iOS 7            |           OS X 10.9          | Xcode 最低版本 6.  |
-|          [7.0.x / AFNetworking-2.x](https://github.com/qiniu/objc-sdk/tree/7.0.x/AFNetworking-2.x)         |            iOS 6            |           OS X 10.8          | Xcode 最低版本 5.  |
-|          [7.x / AFNetworking-1.x](https://github.com/qiniu/objc-sdk/tree/AFNetworking-1.x)         |            iOS 5            |         OS X 10.7        |Xcode 最低版本 5. |
-|          [6.x](https://github.com/qiniu/ios-sdk)         |            iOS 6            |         None        |Xcode 最低版本 5. |
+|               Qiniu SDK 版本               | 最低 iOS版本 | 最低 OS X 版本 |     Notes     |
+| :--------------------------------------: | :------: | :--------: | :-----------: |
+|         7.1.x / AFNetworking-3.x         |  iOS 7   | OS X 10.9  | Xcode 最低版本 6. |
+| [7.0.x / AFNetworking-2.x](https://github.com/qiniu/objc-sdk/tree/7.0.x/AFNetworking-2.x) |  iOS 6   | OS X 10.8  | Xcode 最低版本 5. |
+| [7.x / AFNetworking-1.x](https://github.com/qiniu/objc-sdk/tree/AFNetworking-1.x) |  iOS 5   | OS X 10.7  | Xcode 最低版本 5. |
+| [6.x](https://github.com/qiniu/ios-sdk)  |  iOS 6   |    None    | Xcode 最低版本 5. |
 
 ## 使用方法
 
@@ -40,6 +40,22 @@ pod "Qiniu", "~> 7.1"
 ```
 
 建议 QNUploadManager 创建一次重复使用, 或者使用单例方式创建.
+
+
+
+**注意**： 如使用最新版的sdk(7.1.4),可自动判断上传空间。按如下方式使用：
+
+```objective-c
+QNConfiguration *config =[QNConfiguration  	build:^(QNConfigurationBuilder *builder) {
+  NSMutableArray *array = [[NSMutableArray alloc] init];
+  [array addObject:[QNResolver systemResolver]];
+  QNDnsManager *dns = [[QNDnsManager alloc] init:array networkInfo:[QNNetworkInfo normal]];//是否选择  https  上传
+  builder.zone = [[QNAutoZone alloc] initWithHttps:YES dns:dns];//设置断点续传
+  NSError *error;
+  builder.recorder =  [QNFileRecorder fileRecorderWithFolder:@"保存目录" error:&error];}];
+```
+
+
 
 ## 测试
 

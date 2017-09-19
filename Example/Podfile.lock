@@ -21,15 +21,15 @@ PODS:
   - Masonry (1.0.2)
   - PLPlayerKit (3.0.1):
     - HappyDNS (~> 0.3.10)
-  - PLShortVideoKit (1.4.0):
-    - PLShortVideoKit/ex-libMuseProcessor (= 1.4.0)
-    - PLShortVideoKit/libMuseProcessor (= 1.4.0)
-    - Qiniu (= 7.1.5)
-  - PLShortVideoKit/ex-libMuseProcessor (1.4.0):
-    - Qiniu (= 7.1.5)
-  - PLShortVideoKit/libMuseProcessor (1.4.0):
-    - Qiniu (= 7.1.5)
-  - Qiniu (7.1.5):
+  - PLShortVideoKit (1.4.1):
+    - PLShortVideoKit/ex-libMuseProcessor (= 1.4.1)
+    - PLShortVideoKit/libMuseProcessor (= 1.4.1)
+    - Qiniu (= 7.1.7)
+  - PLShortVideoKit/ex-libMuseProcessor (1.4.1):
+    - Qiniu (= 7.1.7)
+  - PLShortVideoKit/libMuseProcessor (1.4.1):
+    - Qiniu (= 7.1.7)
+  - Qiniu (7.1.7):
     - AFNetworking (~> 3)
     - HappyDNS (~> 0.3)
 
@@ -39,7 +39,6 @@ DEPENDENCIES:
   - Masonry (= 1.0.2)
   - PLPlayerKit
   - PLShortVideoKit (from `../`)
-  - Qiniu (= 7.1.5)
 
 EXTERNAL SOURCES:
   PLShortVideoKit:
@@ -52,9 +51,9 @@ SPEC CHECKSUMS:
   HappyDNS: 691a3041128055d09866f86e6e9ca90f24da1f18
   Masonry: 7c429b56da9d4ee0bbb3ed77a5ea710d6a5df39e
   PLPlayerKit: 18497c84e9453dcc26244ae346ca6eaed3ae2a90
-  PLShortVideoKit: d78772360ca0fd307aef4427cf76fb6cd936075a
-  Qiniu: 77a3dba411556a383d72d17e842345a9d4c83252
+  PLShortVideoKit: efa2035c374a99ea112342427afff4b63881e6ca
+  Qiniu: 56ea8b9d785326e45e3a6fdd45bdbc84f78d0eff
 
-PODFILE CHECKSUM: 69a2b7057135313b8813515f158fa019409471e4
+PODFILE CHECKSUM: d476191384c2ab8ab25ce48711e3cc47a594e9ae
 
 COCOAPODS: 1.2.1

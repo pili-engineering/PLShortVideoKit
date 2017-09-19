@@ -58,7 +58,7 @@
  
  @since      v1.1.0
  */
-@property (assign, nonatomic) UIView *__nullable preview;
+@property (strong, nonatomic) UIView *__nullable preview;
 
 /**
  @brief 播放器预览视图的填充方式
