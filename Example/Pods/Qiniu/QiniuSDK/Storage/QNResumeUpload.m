@@ -224,7 +224,7 @@ typedef void (^task)(void);
 
             NSString *nextHost = host;
             if (info.isConnectionBroken || info.needSwitchServer) {
-                nextHost = [_config.zone upBackup:_token].address;
+                nextHost = [_config.zone up:_token isHttps:_config.useHttps frozenDomain:nextHost];
             }
 
             [self nextTask:offset retriedTimes:retried + 1 host:nextHost];
@@ -330,7 +330,7 @@ typedef void (^task)(void);
 - (void)run {
     @autoreleasepool {
         UInt32 offset = [self recoveryFromRecord];
-        [self nextTask:offset retriedTimes:0 host:[_config.zone up:_token].address];
+        [self nextTask:offset retriedTimes:0 host:[_config.zone up:_token isHttps:_config.useHttps frozenDomain:nil]];
     }
 }
 

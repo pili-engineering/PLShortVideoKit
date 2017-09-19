@@ -102,7 +102,7 @@
     }
     if (input == nil) {
         desc = @"no input data";
-    } else if (token == nil || [token isEqualToString:@""]) {
+    } else if (token == nil || [token isEqual:[NSNull null]] || [token isEqualToString:@""]) {
         desc = @"no token";
     }
     if (desc != nil) {

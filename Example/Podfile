@@ -6,6 +6,6 @@ target 'PLShortVideoKitDemo' do
    pod 'Fabric', '1.6.11'
    pod 'Crashlytics', '3.8.4'
    pod 'Masonry', '1.0.2'
-   pod 'Qiniu', '7.1.5'
+   pod 'Qiniu', '7.1.7'
    pod 'PLPlayerKit'
 end
