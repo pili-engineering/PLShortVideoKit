@@ -24,8 +24,7 @@
  @param failed download failed callback
  */
 
-- (void)downloadSticker:(KWSticker *)sticker index:(NSInteger)index withAnimation:(void(^)(NSInteger index))animating successed:(void(^)(KWSticker *sticker,NSInteger index))success failed:(void(^)(KWSticker *sticker,NSInteger index))failed;
-
+- (void)downloadSticker:(KWSticker *)sticker index:(NSInteger)index withAnimation:(void (^)(NSInteger index))animating successed:(void (^)(KWSticker *sticker, NSInteger index))success failed:(void (^)(KWSticker *sticker, NSInteger index))failed;
 
 /**
  Download all unsaved stickers
@@ -36,6 +35,6 @@
  @param failed the sticker download failed
  */
 
-- (void)downloadStickers:(NSArray *)stickers withAnimation:(void(^)(NSInteger index))animating successed:(void(^)(KWSticker *sticker,NSInteger index))success failed:(void(^)(KWSticker *sticker,NSInteger index))failed;
+- (void)downloadStickers:(NSArray *)stickers withAnimation:(void (^)(NSInteger index))animating successed:(void (^)(KWSticker *sticker, NSInteger index))success failed:(void (^)(KWSticker *sticker, NSInteger index))failed;
 
 @end

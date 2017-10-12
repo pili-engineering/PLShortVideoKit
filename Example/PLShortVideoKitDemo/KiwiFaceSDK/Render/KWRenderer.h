@@ -9,16 +9,37 @@
 #import <Foundation/Foundation.h>
 #import "FaceTracker.h"
 
-
 #import "KWPointsRenderer.h"
 #import "KWStickerRenderer.h"
 
 #import "SquareFaceDistortionFilter.h"
-#import "KWBeautifyFilter.h"
 #import "KWColorFilter.h"
 #import "SmallFaceBigEyeFilter.h"
 #import "Global.h"
 
+//大眼
+#define KW_NEWBEAUTY_EYEMAGNIFYING_START 0.0
+#define KW_NEWBEAUTY_EYEMAGNIFYING_END 0.15
+
+//瘦脸
+#define KW_NEWBEAUTY_CHINSLIMING_START 0.99
+#define KW_NEWBEAUTY_CHINSLIMING_END 0.95
+
+//美白
+#define KW_NEWBEAUTY_SKINWHITENING_START 0.4
+#define KW_NEWBEAUTY_SKINWHITENING_END 0.6
+
+//磨皮
+#define KW_NEWBEAUTY_BLEMISHREMOVAL_START -1.7
+#define KW_NEWBEAUTY_BLEMISHREMOVAL_END 0.4
+
+//饱和
+#define KW_NEWBEAUTY_SKINSATURATION_START 0.2
+#define KW_NEWBEAUTY_SKINSATURATION_END 1.1
+
+//粉嫩
+#define KW_NEWBEAUTY_SKINTENDERNESS_START -0.5
+#define KW_NEWBEAUTY_SKINTENDERNESS_END -0.2
 
 /**
  Video frame rendering class
@@ -37,30 +58,36 @@
  @param orientation the orientation of device
  @param faceNum max track faces count
  */
-typedef void (^RenderAndGetFacePointsBlock)(unsigned char *pixels, int format, int width, int height,result_68_t *p_result, int rstNum, int orientation,int faceNum);
+typedef void(^RenderAndGetFacePointsBlock)
+(unsigned char *pixels, int format, int width, int height, result_68_t *p_result, int rstNum, int orientation, int faceNum);
 
 // The maximum number of detectable faces, ranging from 1 to 4, defaults to 4
-@property (nonatomic) NSUInteger maxFaceNumber;
+@property(nonatomic) NSUInteger maxFaceNumber;
 
-@property (nonatomic, readonly) NSArray *filters;
+@property(nonatomic, readonly) NSArray *filters;
 
 //Forces face capture to stop
-@property (nonatomic, assign) BOOL isStopTracker;
+@property(nonatomic, assign) BOOL isStopTracker;
 
 //Whether low frequency Tracker
-@property (nonatomic, assign) BOOL isLowFrequencyTracker;
+@property(nonatomic, assign) BOOL isLowFrequencyTracker;
 
 //Whether to open the face stickers
-@property (nonatomic, assign) BOOL isEnableSmiliesSticker;
+@property(nonatomic, assign) BOOL isEnableSmiliesSticker;
 
-@property (nonatomic, copy)RenderAndGetFacePointsBlock kwRenderBlock;
+
+//是否开启换脸
+@property(nonatomic, assign) BOOL isEnableAutomaticFace;
+
+@property(nonatomic, copy) RenderAndGetFacePointsBlock kwRenderBlock;
 
 //@property (nonatomic,assign) NSInteger trackResultState;
 
-@property (nonatomic,assign) BOOL trackResultState;
+@property(nonatomic, assign) BOOL trackResultState;
 
-- (void)addFilter:(GPUImageOutput<GPUImageInput, KWRenderProtocol> *)filter;
-- (void)removeFilter:(GPUImageOutput<GPUImageInput, KWRenderProtocol> *)filter;
+- (void)addFilter:(GPUImageOutput <GPUImageInput, KWRenderProtocol> *)filter;
+
+- (void)removeFilter:(GPUImageOutput <GPUImageInput, KWRenderProtocol> *)filter;
 
 - (void)removeAllFilters;
 
@@ -70,7 +97,7 @@ typedef void (^RenderAndGetFacePointsBlock)(unsigned char *pixels, int format, i
 
 - (instancetype)initWithModelPath:(NSString *)modelPath;
 
-+ (BOOL)isSdkInitFailed;
++ (int)renderInitCode;
 
 //检查表情贴纸是否正在播放
 - (BOOL)checkSmiliesSticker:(GPUImageFilter *)filter;
@@ -78,3 +105,5 @@ typedef void (^RenderAndGetFacePointsBlock)(unsigned char *pixels, int format, i
 + (float)beautyParamWithValue:(float)value type:(KW_NEWBEAUTY_TYPE)type;
 
 @end
+
+UIKIT_EXTERN NSString *const KWVerifyFailededNotification;

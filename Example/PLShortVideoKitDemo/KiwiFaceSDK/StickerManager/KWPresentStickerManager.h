@@ -9,7 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "KWSticker.h"
 
-
 /**
  Sticker operation management class
  */
@@ -17,20 +16,17 @@
 
 + (instancetype)sharedManager;
 
-
 /**
  Asynchronous mode reads all the sticker information from the file
  
  @param completion Read the callback after completion
  */
-- (void)loadStickersWithCompletion:(void(^)(NSMutableArray<KWSticker *> *stickers))completion;
-
+- (void)loadStickersWithCompletion:(void (^)(NSMutableArray<KWSticker *> *stickers))completion;
 
 /*
  * Get the sticker path
  */
 - (NSString *)getStickerPath;
-
 
 /**
  Update StickerConfig's sticker download status

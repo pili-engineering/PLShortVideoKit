@@ -21,7 +21,7 @@
     
     UIButton *recordButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 62, 62)];
     [recordButton setImage:[UIImage imageNamed:@"btn_record_a"] forState:UIControlStateNormal];
-    [recordButton addTarget:self action:@selector(pressRecordButton:) forControlEvents:UIControlEventTouchUpInside];
+    [recordButton addTarget:self action:@selector(pressRecordButton:) forControlEvents:UIControlEventTouchDown];
     recordButton.center = CGPointMake(CGRectGetWidth([UIScreen mainScreen].bounds) / 2, CGRectGetHeight([UIScreen mainScreen].bounds) / 2);
     [self.view addSubview:recordButton];
     

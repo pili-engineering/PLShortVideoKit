@@ -8,35 +8,34 @@
 
 #import "KWPresentStickerRenderer.h"
 #import "GPUImage.h"
-@interface KWSmiliesStickerRenderer : GPUImageFilter<KWRenderProtocol, GPUImageInput>
+
+@interface KWSmiliesStickerRenderer : GPUImageFilter <KWRenderProtocol, GPUImageInput>
 typedef void(^SmiliesStickerRendererPlayOverBlock)(void);
 
-
-@property (nonatomic, copy) SmiliesStickerRendererPlayOverBlock smiliesStickerRendererPlayOverBlock;
+@property(nonatomic, copy) SmiliesStickerRendererPlayOverBlock smiliesStickerRendererPlayOverBlock;
 
 /**
  Need to draw the stickers
  */
-@property (nonatomic, strong) KWSticker *sticker;
-
+@property(nonatomic, strong) KWSticker *sticker;
 
 /**
  Whether the mirror
  */
-@property (nonatomic, assign) BOOL isMirrored;
+@property(nonatomic, assign) BOOL isMirrored;
 
-@property (nonatomic, copy) NSArray<NSArray *> *faces;
+@property(nonatomic, copy) NSArray<NSArray *> *faces;
 
-@property (nonatomic, assign) BOOL needTrackData;
+@property(nonatomic, assign) BOOL needTrackData;
 
 //贴纸是否正在播放
-@property (nonatomic, assign)BOOL isPlaying;
+@property(nonatomic, assign) BOOL isPlaying;
 
 //If stickers automatically
-@property (nonatomic, assign)BOOL isAutomaticallyPlay;
-
+@property(nonatomic, assign) BOOL isAutomaticallyPlay;
 
 #pragma mark - KWRenderProtocol
+
 - (BOOL)needTrackData;
 
 - (void)setSmiliesInfos:(NSMutableArray *)isOnEnableInfos;

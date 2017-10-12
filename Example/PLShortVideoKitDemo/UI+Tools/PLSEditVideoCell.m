@@ -13,20 +13,25 @@
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-        
-        _iconImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 45, 45)];
-        _iconImageView.layer.cornerRadius = _iconImageView.frame.size.width / 2;
-        _iconImageView.layer.masksToBounds = YES;
-        [self addSubview:_iconImageView];
-        
-        _iconPromptLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, CGRectGetMaxY(_iconImageView.frame)+2, CGRectGetMaxX(_iconImageView.bounds), 15)];
-        _iconPromptLabel.textAlignment = 1;
-        _iconPromptLabel.font = [UIFont systemFontOfSize:11];
+        _iconPromptLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 45, 15)];
+        _iconPromptLabel.textAlignment = NSTextAlignmentCenter;
+        _iconPromptLabel.font = [UIFont systemFontOfSize:12];
         _iconPromptLabel.textColor = [UIColor whiteColor];
         [self addSubview:_iconPromptLabel];
         
+        _iconImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 15, 45, 45)];
+        _iconImageView.layer.cornerRadius = _iconImageView.frame.size.width / 2;
+        _iconImageView.layer.masksToBounds = YES;
+        [self addSubview:_iconImageView];
     }
     return self;
+}
+
+- (void)setLabelFrame:(CGRect)labelFrame imageViewFrame:(CGRect)imageViewFrame {
+    _iconPromptLabel.frame = labelFrame;
+    _iconImageView.frame = imageViewFrame;
+    _iconImageView.layer.cornerRadius = _iconImageView.frame.size.width / 2;
+    _iconImageView.layer.masksToBounds = YES;
 }
 
 @end

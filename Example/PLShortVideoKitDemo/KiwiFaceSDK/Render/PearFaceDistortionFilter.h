@@ -4,9 +4,10 @@
 /**
  pear face of distorting mirror
  */
-@interface PearFaceDistortionFilter : GPUImageFilter<KWRenderProtocol>
+@interface PearFaceDistortionFilter : GPUImageFilter <KWRenderProtocol>
 {
-    GLint aspectRatioUniform, radiusUniform, newradiusUniform, centerUniform, scaleUniform,centerbottomUniform, leftpointUniform, rightpointUniform;
+    GLint aspectRatioUniform, radiusUniform, newradiusUniform, centerUniform, scaleUniform, centerbottomUniform,
+            leftpointUniform, rightpointUniform;
     GLfloat y_scaleUniform;
 }
 
@@ -26,6 +27,6 @@
 
 @property(readwrite, nonatomic) CGFloat y_scale;
 
-@property (nonatomic, copy) NSArray<NSArray *> *faces;
+@property(nonatomic, copy) NSArray<NSArray *> *faces;
 
 @end

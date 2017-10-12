@@ -23,6 +23,11 @@
 @property (assign, nonatomic) NSInteger filterIndex;
 
 /**
+ @abstract 当前使用的滤镜的颜色表图的路径
+ */
+@property (strong, nonatomic) NSString *colorImagePath;
+
+/**
  @abstract 当前使用的滤镜
  */
 @property (strong, nonatomic) PLSFilter *currentFilter;

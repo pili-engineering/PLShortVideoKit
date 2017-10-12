@@ -14,4 +14,6 @@
 
 @property (nonatomic, strong) UILabel *iconPromptLabel;
 
+- (void)setLabelFrame:(CGRect)labelFrame imageViewFrame:(CGRect)imageViewFrame;
+
 @end
