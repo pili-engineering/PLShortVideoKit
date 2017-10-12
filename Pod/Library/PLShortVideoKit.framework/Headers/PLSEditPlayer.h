@@ -82,6 +82,13 @@
 @property (assign, nonatomic) CMTimeRange timeRange;
 
 /**
+ @brief 播放器播放视频的分辨率
+ 
+ @since      v1.5.0
+ */
+@property (assign, nonatomic) CGSize videoSize;
+
+/**
  @brief 初始化音频播放器
  
  @since      v1.3.0
@@ -146,5 +153,24 @@
  @since      v1.1.0
  */
 -(void)clearWaterMark;
+
+/**
+ *  添加滤镜效果
+ *
+ *  @param colorImagePath 当前使用的滤镜的颜色表图的路径
+ 
+ @since      v1.5.0
+ */
+- (void)addFilter:(NSString *_Nullable)colorImagePath;
+
+/**
+ *  添加 MV 图层
+ *
+ *  @param colorURL 彩色层视频的地址
+ *  @param alphaURL 被彩色层当作透明层的视频的地址
+ 
+ @since      v1.5.0
+ */
+- (void)addMVLayerWithColor:(NSURL *_Nullable)colorURL alpha:(NSURL *_Nullable)alphaURL;
 
 @end

@@ -58,21 +58,15 @@
 #define SYSTEM_VERSION_LESS_THAN(v)                 ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
 #define SYSTEM_VERSION_LESS_THAN_OR_EQUAL_TO(v)     ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedDescending)
 
-#define RGBCOLOR(r,g,b) [UIColor colorWithRed:(r)/255.0f green:(g)/255.0f blue:(b)/255.0f alpha:1]
+#define RGBCOLOR(r, g, b) [UIColor colorWithRed:(r)/255.0f green:(g)/255.0f blue:(b)/255.0f alpha:1]
 
-#define RGBACOLOR(r,g,b,a) [UIColor colorWithRed:(r)/255.0f green:(g)/255.0f blue:(b)/255.0f alpha:(a)]
+#define RGBACOLOR(r, g, b, a) [UIColor colorWithRed:(r)/255.0f green:(g)/255.0f blue:(b)/255.0f alpha:(a)]
 
 #endif /* const_h */
 
-#define IsEnglish ![[[NSLocale preferredLanguages] objectAtIndex:0] hasPrefix:@"zh"]
+#define IsEnglish 0
 
-//#define IsEnglish 1
-
-
-//#define StickerIconPath @"http://oimad4qgn.bkt.clouddn.com/thumb/"
-
-//#define KWStickerDownloadBaseURL @"http://oimad4qgn.bkt.clouddn.com/test"
 #define KWStickerDownloadBaseURL @"https://omhooyf5o.qnssl.com"
-#define StickerIconPath @"https://omhopkmng.qnssl.com/"
 
+#define StickerIconPath @"https://omhopkmng.qnssl.com/"
 

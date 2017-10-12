@@ -38,6 +38,6 @@ extern NSString *const Device_Unrecognized;
 
 @interface UIDevice (DeviceModel)
 
--(NSString *) deviceModel;
+- (NSString *)deviceModel;
 
 @end

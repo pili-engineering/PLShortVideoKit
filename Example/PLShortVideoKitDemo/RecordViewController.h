@@ -7,10 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "KWSDK_UI.h"
 
 @interface RecordViewController : UIViewController
-@property (nonatomic, strong) KWSDK_UI *kwSdkUI;
-@property (nonatomic,copy)NSString *modelPath;
 
 @end

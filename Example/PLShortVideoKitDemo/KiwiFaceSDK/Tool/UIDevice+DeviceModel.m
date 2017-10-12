@@ -35,77 +35,76 @@ NSString *const Device_iPhone6Splus = @"iPhone 6S Plus";
 NSString *const Device_iPhone7 = @"iPhone 7";
 NSString *const Device_iPhone7plus = @"iPhone 7 Plus";
 
-
 NSString *const Device_Unrecognized = @"?unrecognized?";
 
 @implementation UIDevice (DeviceModel)
 
-- (NSString *)deviceModel{
-    
+- (NSString *)deviceModel {
+
     struct utsname systemInfo;
-    
+
     uname(&systemInfo);
-    
-    NSString* code = [NSString stringWithCString:systemInfo.machine
+
+    NSString *code = [NSString stringWithCString:systemInfo.machine
                                         encoding:NSUTF8StringEncoding];
-    
-    static NSDictionary* deviceNamesByCode = nil;
-    
+
+    static NSDictionary *deviceNamesByCode = nil;
+
     if (!deviceNamesByCode) {
-        
+
         deviceNamesByCode = @{
-                              @"i386"      : Device_Simulator,
-                              @"x86_64"    : Device_Simulator,
-                              @"iPod1,1"   : Device_iPod1,
-                              @"iPod2,1"   : Device_iPod2,
-                              @"iPod3,1"   : Device_iPod3,
-                              @"iPod4,1"   : Device_iPod4,
-                              @"iPod5,1"   : Device_iPod5,
-                              @"iPad2,1"   : Device_iPad2,
-                              @"iPad2,2"   : Device_iPad2,
-                              @"iPad2,3"   : Device_iPad2,
-                              @"iPad2,4"   : Device_iPad2,
-                              @"iPad2,5"   : Device_iPadMini1,
-                              @"iPad2,6"   : Device_iPadMini1,
-                              @"iPad2,7"   : Device_iPadMini1,
-                              @"iPhone3,1" : Device_iPhone4,
-                              @"iPhone3,2" : Device_iPhone4,
-                              @"iPhone3,3" : Device_iPhone4,
-                              @"iPhone4,1" : Device_iPhone4S,
-                              @"iPhone5,1" : Device_iPhone5,
-                              @"iPhone5,2" : Device_iPhone5,
-                              @"iPhone5,3" : Device_iPhone5C,
-                              @"iPhone5,4" : Device_iPhone5C,
-                              @"iPad3,1"   : Device_iPad3,
-                              @"iPad3,2"   : Device_iPad3,
-                              @"iPad3,3"   : Device_iPad3,
-                              @"iPad3,4"   : Device_iPad4,
-                              @"iPad3,5"   : Device_iPad4,
-                              @"iPad3,6"   : Device_iPad4,
-                              @"iPhone6,1" : Device_iPhone5S,
-                              @"iPhone6,2" : Device_iPhone5S,
-                              @"iPad4,1"   : Device_iPadAir1,
-                              @"iPad4,2"   : Device_iPadAir2,
-                              @"iPad4,4"   : Device_iPadMini2,
-                              @"iPad4,5"   : Device_iPadMini2,
-                              @"iPad4,6"   : Device_iPadMini2,
-                              @"iPad4,7"   : Device_iPadMini3,
-                              @"iPad4,8"   : Device_iPadMini3,
-                              @"iPad4,9"   : Device_iPadMini3,
-                              @"iPhone7,1" : Device_iPhone6plus,
-                              @"iPhone7,2" : Device_iPhone6,
-                              @"iPhone8,1" : Device_iPhone6S,
-                              @"iPhone8,2" : Device_iPhone6Splus,
-                              @"iPhone9,1" :Device_iPhone7,
-                              @"iPhone9,2" : Device_iPhone7plus
-                              };
+                @"i386": Device_Simulator,
+                @"x86_64": Device_Simulator,
+                @"iPod1,1": Device_iPod1,
+                @"iPod2,1": Device_iPod2,
+                @"iPod3,1": Device_iPod3,
+                @"iPod4,1": Device_iPod4,
+                @"iPod5,1": Device_iPod5,
+                @"iPad2,1": Device_iPad2,
+                @"iPad2,2": Device_iPad2,
+                @"iPad2,3": Device_iPad2,
+                @"iPad2,4": Device_iPad2,
+                @"iPad2,5": Device_iPadMini1,
+                @"iPad2,6": Device_iPadMini1,
+                @"iPad2,7": Device_iPadMini1,
+                @"iPhone3,1": Device_iPhone4,
+                @"iPhone3,2": Device_iPhone4,
+                @"iPhone3,3": Device_iPhone4,
+                @"iPhone4,1": Device_iPhone4S,
+                @"iPhone5,1": Device_iPhone5,
+                @"iPhone5,2": Device_iPhone5,
+                @"iPhone5,3": Device_iPhone5C,
+                @"iPhone5,4": Device_iPhone5C,
+                @"iPad3,1": Device_iPad3,
+                @"iPad3,2": Device_iPad3,
+                @"iPad3,3": Device_iPad3,
+                @"iPad3,4": Device_iPad4,
+                @"iPad3,5": Device_iPad4,
+                @"iPad3,6": Device_iPad4,
+                @"iPhone6,1": Device_iPhone5S,
+                @"iPhone6,2": Device_iPhone5S,
+                @"iPad4,1": Device_iPadAir1,
+                @"iPad4,2": Device_iPadAir2,
+                @"iPad4,4": Device_iPadMini2,
+                @"iPad4,5": Device_iPadMini2,
+                @"iPad4,6": Device_iPadMini2,
+                @"iPad4,7": Device_iPadMini3,
+                @"iPad4,8": Device_iPadMini3,
+                @"iPad4,9": Device_iPadMini3,
+                @"iPhone7,1": Device_iPhone6plus,
+                @"iPhone7,2": Device_iPhone6,
+                @"iPhone8,1": Device_iPhone6S,
+                @"iPhone8,2": Device_iPhone6Splus,
+                @"iPhone9,1": Device_iPhone7,
+                @"iPhone9,2": Device_iPhone7plus
+        };
     }
-    
-    NSString* deviceName = [deviceNamesByCode objectForKey:code];
-    if(deviceName){
+
+    NSString *deviceName = [deviceNamesByCode objectForKey:code];
+    if (deviceName) {
         return deviceName;
     }
-    
+
     return Device_Unrecognized;
 }
 

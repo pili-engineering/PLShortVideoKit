@@ -16,10 +16,12 @@
 #import "PLSEditVideoCell.h"
 #import "PLSFilterGroup.h"
 #import "PLSViewRecorderManager.h"
-#import "KWSDK.h"
-#import "Global.h"
-#import "KWSmiliesStickerRenderer.h"
 #import "PLSRateButtonView.h"
+
+#import "FaceTracker.h"
+#import "KWRenderManager.h"
+#import "Global.h"
+#import "KWUIManager.h"
 
 
 #define PLS_CLOSE_CONTROLLER_ALERTVIEW_TAG 10001
@@ -76,6 +78,10 @@ PLSRateButtonViewDelegate
 // 录制前是否开启自动检测设备方向调整视频拍摄的角度（竖屏、横屏）
 @property (assign, nonatomic) BOOL isUseAutoCheckDeviceOrientationBeforeRecording;
 
+@property (nonatomic, strong) KWUIManager *UIManager;
+@property (nonatomic, strong) KWRenderManager *renderManager;
+@property (nonatomic, copy) NSString *modelPath;
+
 @end
 
 @implementation RecordViewController
@@ -97,10 +103,8 @@ PLSRateButtonViewDelegate
     return self;
 }
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    // Do any additional setup after loading the view.
-    
+- (void)loadView{
+    [super loadView];
     self.view.backgroundColor = PLS_RGBCOLOR(25, 24, 36);
     
     // --------------------------
@@ -110,26 +114,15 @@ PLSRateButtonViewDelegate
     // --------------------------
     [self setupBaseToolboxView];
     [self setupRecordToolboxView];
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view.
     
     // --------------------------
-    // Kiwi 人脸识别
-    self.kwSdkUI = [KWSDK_UI shareManagerUI];
-    self.kwSdkUI.kwSdk = [KWSDK sharedManager];
-    self.kwSdkUI.kwSdk.renderer = [[KWRenderer alloc]initWithModelPath:self.modelPath];
-    
-    if([KWRenderer isSdkInitFailed]){
-        //        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"错误提示" message:@"使用 license 文件生成激活码时失败，可能是授权文件过期。" delegate:nil cancelButtonTitle:@"好的" otherButtonTitles:nil, nil];
-        //        [alert show];
-        return;
-    }
-    
-    [self.kwSdkUI.kwSdk initSdk];
-    [self.kwSdkUI setViewDelegate:self];
-    self.kwSdkUI.isClearOldUI = NO;
-    [self.kwSdkUI initSDKUI];
-    self.kwSdkUI.kwSdk.cameraPositionBack = NO;
-    [self.kwSdkUI setOffPhoneBtnHidden:YES];
-    [self.kwSdkUI setToggleBtnHidden:YES];
+    [self setupRenderManager];
+    [self setupKiwiFaceUI];
     // --------------------------
 }
 
@@ -156,9 +149,9 @@ PLSRateButtonViewDelegate
     videoConfiguration.position = AVCaptureDevicePositionFront;
     videoConfiguration.videoFrameRate = 25;
     videoConfiguration.averageVideoBitRate = 1024*1000;
-    videoConfiguration.videoSize = CGSizeMake(480, 854);
+    videoConfiguration.videoSize = CGSizeMake(544, 960);
     videoConfiguration.videoOrientation = AVCaptureVideoOrientationPortrait;
-    
+
     PLSAudioConfiguration *audioConfiguration = [PLSAudioConfiguration defaultConfiguration];
     
     self.shortVideoRecorder = [[PLShortVideoRecorder alloc] initWithVideoConfiguration:videoConfiguration audioConfiguration:audioConfiguration];
@@ -167,7 +160,7 @@ PLSRateButtonViewDelegate
     
     self.shortVideoRecorder.delegate = self;
     
-    self.shortVideoRecorder.maxDuration = 30.0f; // 设置最长录制时长
+    self.shortVideoRecorder.maxDuration = 10.0f; // 设置最长录制时长
     
     // 录制前是否开启自动检测设备方向调整视频拍摄的角度（竖屏、横屏）
     if (self.isUseAutoCheckDeviceOrientationBeforeRecording) {
@@ -218,9 +211,11 @@ PLSRateButtonViewDelegate
         
         // 展示多种滤镜的 UICollectionView
         CGRect frame = self.editVideoCollectionView.frame;
-        self.editVideoCollectionView.frame = CGRectMake(0, 260, frame.size.width, frame.size.height);
+        CGFloat y = self.baseToolboxView.frame.origin.y + self.baseToolboxView.frame.size.height + PLS_SCREEN_WIDTH;
+        self.editVideoCollectionView.frame = CGRectMake(0, y, frame.size.width, frame.size.height);
         [self.view addSubview:self.editVideoCollectionView];
         [self.editVideoCollectionView reloadData];
+        self.editVideoCollectionView.hidden = YES;
     }
 }
 
@@ -237,9 +232,18 @@ PLSRateButtonViewDelegate
     [backButton addTarget:self action:@selector(backButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
     [self.baseToolboxView addSubview:backButton];
     
+    // 七牛滤镜
+    UIButton *filterButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    filterButton.frame = CGRectMake(PLS_SCREEN_WIDTH - 310, 10, 35, 35);
+    [filterButton setTitle:@"滤镜" forState:UIControlStateNormal];
+    [filterButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    filterButton.titleLabel.font = [UIFont systemFontOfSize:14];
+    [filterButton addTarget:self action:@selector(filterButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
+    [self.baseToolboxView addSubview:filterButton];
+    
     // 录屏按钮
     self.viewRecordButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.viewRecordButton.frame = CGRectMake(PLS_SCREEN_WIDTH - 265, 10, 35, 35);
+    self.viewRecordButton.frame = CGRectMake(PLS_SCREEN_WIDTH - 255, 10, 35, 35);
     [self.viewRecordButton setTitle:@"录屏" forState:UIControlStateNormal];
     [self.viewRecordButton setTitle:@"完成" forState:UIControlStateSelected];
     self.viewRecordButton.selected = NO;
@@ -250,7 +254,7 @@ PLSRateButtonViewDelegate
     
     // 全屏／正方形录制模式
     self.squareRecordButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.squareRecordButton.frame = CGRectMake(PLS_SCREEN_WIDTH - 210, 10, 35, 35);
+    self.squareRecordButton.frame = CGRectMake(PLS_SCREEN_WIDTH - 200, 10, 35, 35);
     [self.squareRecordButton setTitle:@"1:1" forState:UIControlStateNormal];
     [self.squareRecordButton setTitle:@"全屏" forState:UIControlStateSelected];
     self.squareRecordButton.selected = NO;
@@ -261,7 +265,7 @@ PLSRateButtonViewDelegate
     
     // 闪光灯
     UIButton *flashButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    flashButton.frame = CGRectMake(PLS_SCREEN_WIDTH - 155, 10, 35, 35);
+    flashButton.frame = CGRectMake(PLS_SCREEN_WIDTH - 145, 10, 35, 35);
     [flashButton setBackgroundImage:[UIImage imageNamed:@"flash_close"] forState:UIControlStateNormal];
     [flashButton setBackgroundImage:[UIImage imageNamed:@"flash_open"] forState:UIControlStateSelected];
     [flashButton addTarget:self action:@selector(flashButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
@@ -269,7 +273,7 @@ PLSRateButtonViewDelegate
     
     // 美颜
     UIButton *beautyFaceButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    beautyFaceButton.frame = CGRectMake(PLS_SCREEN_WIDTH - 100, 12, 30, 30);
+    beautyFaceButton.frame = CGRectMake(PLS_SCREEN_WIDTH - 90, 10, 30, 30);
     [beautyFaceButton setTitle:@"美颜" forState:UIControlStateNormal];
     [beautyFaceButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     beautyFaceButton.titleLabel.font = [UIFont systemFontOfSize:14];
@@ -300,7 +304,7 @@ PLSRateButtonViewDelegate
     self.rateButtonView.staticTitleArray = self.titleArray;
     self.rateButtonView.rateDelegate = self;
     [self.recordToolboxView addSubview:_rateButtonView];
-    
+
     
     // 录制视频的操作按钮
     CGFloat buttonWidth = 80.0f;
@@ -462,10 +466,10 @@ PLSRateButtonViewDelegate
         
     } else {
         PLSVideoConfiguration *videoConfiguration = [PLSVideoConfiguration defaultConfiguration];
-        videoConfiguration.videoSize = CGSizeMake(480, 854);
+        videoConfiguration.videoSize = CGSizeMake(544, 960);
         [self.shortVideoRecorder reloadvideoConfiguration:videoConfiguration];
         
-        self.shortVideoRecorder.maxDuration = 60.0f;
+        self.shortVideoRecorder.maxDuration = 10.0f;
         
         dispatch_async(dispatch_get_main_queue(), ^{
             self.shortVideoRecorder.previewView.frame = CGRectMake(0, 0, PLS_SCREEN_WIDTH, PLS_SCREEN_HEIGHT);
@@ -521,6 +525,12 @@ PLSRateButtonViewDelegate
     [self.shortVideoRecorder toggleCamera];
 }
 
+// 七牛滤镜
+- (void)filterButtonEvent:(UIButton *)button {
+    button.selected = !button.selected;
+    self.editVideoCollectionView.hidden = !button.selected;
+}
+
 // 删除上一段视频
 - (void)deleteButtonEvent:(id)sender {
     if (_deleteButton.style == PLSDeleteButtonStyleNormal) {
@@ -571,7 +581,7 @@ PLSRateButtonViewDelegate
 - (void)applicationWillResignActive:(NSNotification *)notification {
     if (self.viewRecordButton.selected) {
         [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillResignActiveNotification object:nil];
-        self.viewRecordButton.selected = NO;
+        self.viewRecordButton.selected = NO;        
         [self.viewRecorderManager cancelRecording];
     }
 }
@@ -637,6 +647,39 @@ PLSRateButtonViewDelegate
     }
 }
 
+#pragma mark - 初始化KiwiFaceSDK
+- (void)setupRenderManager {
+    
+    // 1.创建 KWRenderManager对象,指定models文件路径 若不传则默认路径是KWResource.bundle/models
+//    self.renderManager = [[KWRenderManager alloc] initWithModelPath:self.modelPath isCameraPositionBack:NO];
+    self.renderManager = [[KWRenderManager alloc] initWithModelPath:nil isCameraPositionBack:YES];
+    
+    // 2.KWSDK鉴权提示
+    if ([KWRenderManager renderInitCode] != 0) {
+        UIAlertView *alertView =
+        [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"KiwiFaceSDK初始化失败,错误码: %d", [KWRenderManager renderInitCode]] message:@"可在FaceTracker.h中查看错误码" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
+        
+        [alertView show];
+        
+        return;
+    }
+    
+    // 3.加载贴纸滤镜
+    [self.renderManager loadRender];
+    
+}
+
+#pragma mark -初始化KiwiFace的演示UI
+- (void)setupKiwiFaceUI{
+    // 1.初始化UIManager
+    self.UIManager = [[KWUIManager alloc] initWithRenderManager:self.renderManager delegate:self superView:self.view];
+    // 2.是否清除原UI
+    self.UIManager.isClearOldUI = NO;
+    
+    // 3.创建内置UI
+    [self.UIManager createUI];
+}
+
 #pragma mark - 视频数据回调
 /// @abstract 获取到摄像头原数据时的回调, 便于开发者做滤镜等处理，需要注意的是这个回调在 camera 数据的输出线程，请不要做过于耗时的操作，否则可能会导致帧率下降
 - (CVPixelBufferRef)shortVideoRecorder:(PLShortVideoRecorder *)recorder cameraSourceDidGetPixelBuffer:(CVPixelBufferRef)pixelBuffer {
@@ -650,7 +693,7 @@ PLSRateButtonViewDelegate
     
     
     /* 横竖屏时更新sdk内置UI 坐标 */
-    [_kwSdkUI resetScreemMode];
+    [_UIManager resetScreemMode];
     
     
     UIDeviceOrientation iDeviceOrientation = [[UIDevice currentDevice] orientation];
@@ -681,63 +724,8 @@ PLSRateButtonViewDelegate
             break;
     }
     
-    /*********** 获得人脸捕捉数据 可供开发者在人脸捕捉之后 视频帧渲染之前 自定义执行的block ***********/
-    //    self.kwSdkUI.kwSdk.renderer.kwRenderBlock = ^(unsigned char *pixels, int format, int width, int height, result_68_t *p_result, int rstNum, int orientation,int faceMaxNum)
-    //    {
-    //        //        NSLog(@"format:%d,width:%d,height:%d,restNum:%d,orientation:%d,faceMaxNum:%d",format,width,height,rstNum,orientation,faceMaxNum);
-    //
-    //        NSMutableArray *faces = nil;
-    //        if (faceMaxNum > 0) {
-    //
-    //            // 检测结果
-    //            faces = [NSMutableArray arrayWithCapacity:faceMaxNum];
-    //            for (int i = 0; i < faceMaxNum; i++) {
-    //                //                NSMutableArray *points = [NSMutableArray arrayWithCapacity:68];
-    //                for (int j = 0; j < 68; j++) {
-    //                    //                    cv_pointf_t p = p_result[i].points_array[j];
-    //                    //保存人脸坐标点 展示
-    //                    //                    [points addObject:[NSValue valueWithCGPoint:CGPointMake(p.x, p.y)]];
-    //                }
-    //                //保存人脸坐标集合 展示
-    //                //                [faces addObject:points];
-    //            }
-    //        }
-    //    };
-    __weak typeof (self) __weakSelf = self;
-    self.kwSdkUI.kwSdk.renderer.kwRenderBlock = ^(unsigned char *pixels, int format, int width, int height,result_68_t *p_result, int rstNum, int orientation,int faceNum){
-        
-        BOOL mouth_open = NO;
-        
-        for (int i = 0; i < rstNum; i++) {
-            mouth_open = p_result[i].mouth_open;
-            if (mouth_open) {
-                break;
-            }
-        }
-        
-        if (mouth_open && ![__weakSelf.kwSdkUI.kwSdk.renderer checkSmiliesSticker:(GPUImageFilter *)__weakSelf.kwSdkUI.kwSdk.filters[3]] && __weakSelf.kwSdkUI.kwSdk.renderer.isEnableSmiliesSticker) {
-            [((KWSmiliesStickerRenderer *)__weakSelf.kwSdkUI.kwSdk.filters[3]).sticker setPlayCount:1];
-            ((KWSmiliesStickerRenderer *)__weakSelf.kwSdkUI.kwSdk.filters[3]).isAutomaticallyPlay = YES;
-            [((KWSmiliesStickerRenderer *)__weakSelf.kwSdkUI.kwSdk.filters[3]) setSticker:__weakSelf.kwSdkUI.kwSdk.presentStickers[0]];
-            
-            KWSticker *lastSticker = __weakSelf.kwSdkUI.kwSdk.presentStickers[0];
-            //设置播放次数
-            [lastSticker setPlayCount:1];
-            //贴纸帧数置零 将贴纸重新播放
-            for (KWStickerItem *item in lastSticker.items) {
-                item.currentFrameIndex = 0;
-                item.accumulator = 0;
-            }
-            //礼物贴纸 默认设置为跟脸 渲染
-            ((KWSmiliesStickerRenderer *)__weakSelf.kwSdkUI.kwSdk.filters[3]).needTrackData = YES;
-            
-            [__weakSelf.kwSdkUI.kwSdk.renderer addFilter:__weakSelf.kwSdkUI.kwSdk.filters[3]];
-            
-        }
-    };
-    
     /*********** 视频帧渲染 ***********/
-    [self.kwSdkUI.kwSdk.renderer processPixelBuffer:pixelBuffer withRotation:cvMobileRotate mirrored:NO];
+    [KWRenderManager processPixelBuffer:pixelBuffer];
     
     return pixelBuffer;
 }
@@ -747,7 +735,7 @@ PLSRateButtonViewDelegate
 // 开始录制一段视频时
 - (void)shortVideoRecorder:(PLShortVideoRecorder *)recorder didStartRecordingToOutputFileAtURL:(NSURL *)fileURL {
     NSLog(@"start recording fileURL: %@", fileURL);
-    
+
     [self.progressBar addProgressView];
     [_progressBar startShining];
 }
@@ -769,16 +757,16 @@ PLSRateButtonViewDelegate
 // 删除了某一段视频
 - (void)shortVideoRecorder:(PLShortVideoRecorder *)recorder didDeleteFileAtURL:(NSURL *)fileURL fileDuration:(CGFloat)fileDuration totalDuration:(CGFloat)totalDuration {
     NSLog(@"delete fileURL: %@, fileDuration: %f, totalDuration: %f", fileURL, fileDuration, totalDuration);
-    
+
     self.endButton.enabled = totalDuration >= self.shortVideoRecorder.minDuration;
-    
+
     if (totalDuration <= 0.0000001f) {
         self.squareRecordButton.hidden = NO;
         self.deleteButton.hidden = YES;
         self.endButton.hidden = YES;
         self.importMovieView.hidden = NO;
     }
-    
+
     self.durationLabel.text = [NSString stringWithFormat:@"%.2fs", totalDuration];
 }
 
@@ -787,10 +775,10 @@ PLSRateButtonViewDelegate
     NSLog(@"finish recording fileURL: %@, fileDuration: %f, totalDuration: %f", fileURL, fileDuration, totalDuration);
     
     [_progressBar stopShining];
-    
+
     self.deleteButton.hidden = NO;
     self.endButton.hidden = NO;
-    
+
     
     if (totalDuration >= self.shortVideoRecorder.maxDuration) {
         [self endButtonEvent:nil];
@@ -800,7 +788,7 @@ PLSRateButtonViewDelegate
 // 在达到指定的视频录制时间 maxDuration 后，如果再调用 [PLShortVideoRecorder startRecording]，直接执行该回调
 - (void)shortVideoRecorder:(PLShortVideoRecorder *)recorder didFinishRecordingMaxDuration:(CGFloat)maxDuration {
     NSLog(@"finish recording maxDuration: %f", maxDuration);
-    
+
     AVAsset *asset = self.shortVideoRecorder.assetRepresentingAllFiles;
     [self playEvent:asset];
     [self.viewRecorderManager cancelRecording];
@@ -822,7 +810,7 @@ PLSRateButtonViewDelegate
     plsMovieSettings[PLSDurationKey] = [NSNumber numberWithFloat:[self.shortVideoRecorder getTotalDuration]];
     plsMovieSettings[PLSVolumeKey] = [NSNumber numberWithFloat:1.0f];
     outputSettings[PLSMovieSettingsKey] = plsMovieSettings;
-    
+
     EditViewController *videoEditViewController = [[EditViewController alloc] init];
     videoEditViewController.settings = outputSettings;
     [self presentViewController:videoEditViewController animated:YES completion:nil];
@@ -840,17 +828,18 @@ PLSRateButtonViewDelegate
 
 #pragma mark -- dealloc
 - (void)dealloc {
-    NSLog(@"dealloc: %@", [[self class] description]);
-    
     self.shortVideoRecorder.delegate = nil;
     self.shortVideoRecorder = nil;
     
     self.alertView = nil;
     
     self.filtersArray = nil;
-    // 离开页面的时候释放内存
-    [KWSDK releaseManager];
-    [KWSDK_UI releaseManager];
+    
+    /* 内存释放 */
+    [self.renderManager releaseManager];
+    [self.UIManager releaseManager];
+    
+    NSLog(@"dealloc: %@", [[self class] description]);
 }
 
 #pragma mark -- UICollectionView delegate  用来展示和处理 SDK 内部自带的滤镜效果
@@ -899,7 +888,7 @@ PLSRateButtonViewDelegate
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    
+
     // 滤镜
     self.filterGroup.filterIndex = indexPath.row;
 }

@@ -96,7 +96,6 @@ UIGestureRecognizerDelegate
     
     if (self.actionType == PLSActionTypePlayer) {
         [self.player play];
-        [self addDurationTimer];
     }
 }
 
@@ -208,15 +207,14 @@ UIGestureRecognizerDelegate
     }
     
     self.timer = [NSTimer scheduledTimerWithTimeInterval:0.2
-                                                  target:self
-                                                selector:@selector(onDurationTimer)
-                                                userInfo:nil
-                                                 repeats:YES];
+                                                      target:self
+                                                    selector:@selector(onDurationTimer)
+                                                    userInfo:nil
+                                                     repeats:YES];
 }
 
 #pragma mark -- 移除定时器
 - (void)removeDurationTimer {
-    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(onDurationTimer) object:nil];
     if (self.timer) {
         [self.timer invalidate];
         self.timer = nil;
@@ -243,7 +241,7 @@ UIGestureRecognizerDelegate
     if (isnan(elapsed)) {
         self.currentTime.text = self.duration.text;
     } else {
-        self.currentTime.text = [NSString stringWithFormat:@"%.2fs", elapsed];
+       self.currentTime.text = [NSString stringWithFormat:@"%.2fs", elapsed];
         self.duration.text = [NSString stringWithFormat:@"%.2fs", duration];
     }
     
@@ -276,20 +274,18 @@ UIGestureRecognizerDelegate
 #pragma mark -- 按钮的响应事件
 #pragma mark -- 返回
 - (void)backButtonClick {
-    [self removeDurationTimer];
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark -- 播放
 - (void)handleSingleFingerToPlayVideoEvent:(id)sender {
     [self.player play];
-    [self addDurationTimer];
 }
 
 #pragma mark -- 本地视频上传到云端
 - (void)uploadButtonClick:(id)sender {
     NSString *filePath = _url.path;
-    
+
     self.uploadButton.selected = !self.uploadButton.selected;
     
     if (self.uploadButton.isSelected) {
@@ -350,15 +346,20 @@ UIGestureRecognizerDelegate
     // 第一帧渲染后，将收到第一个 PLPlayerStatusPlaying 状态
     // 播放过程中出现卡顿时，将收到 PLPlayerStatusCaching 状态
     // 卡顿结束后，将收到 PLPlayerStatusPlaying 状态
+    if (state == PLPlayerStatusReady) {
+        [self addDurationTimer];
+    }
     if (state == PLPlayerStatusPlaying) {
         NSString *stat = [NSString stringWithFormat:@"connect:%.2f/first:%.2f", _player.connectTime, _player.firstVideoTime];
         self.statLabel.text = stat;
     }
-    if (state == PLPlayerStatusCompleted) {
+    if (state == PLPlayerStatusCompleted || state == PLPlayerStatusPaused) {
         self.currentTime.text = self.duration.text;
         self.playSlider.value = 1;
         [self removeDurationTimer];
     }
+    
+    NSLog(@"status: %ld", (long)state);
 }
 
 - (void)player:(nonnull PLPlayer *)player stoppedWithError:(nullable NSError *)error {
@@ -385,26 +386,25 @@ UIGestureRecognizerDelegate
 }
 
 - (void)dealloc {
-    NSLog(@"dealloc: %@", [[self class] description]);
     [self removeDurationTimer];
-    
-    self.player = nil;
+
     self.player.delegate = nil;
-    
+    self.player = nil;
+
     self.shortVideoUploader = nil;
     
     self.baseToolboxView = nil;
+    
+    NSLog(@"dealloc: %@", [[self class] description]);
 }
 
 #pragma mark -- 手势冲突
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
-{
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
     if ([touch.view isKindOfClass:[UISlider class]])
     {
         return NO;
     }
     return YES;
 }
-
 
 @end

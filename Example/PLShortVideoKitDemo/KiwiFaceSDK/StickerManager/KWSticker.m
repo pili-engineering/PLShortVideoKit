@@ -12,14 +12,13 @@
 
 @interface KWStickerItem ()
 
-@property (nonatomic, strong) UIImage *currentFrame;
-
+@property(nonatomic, strong) UIImage *currentFrame;
 
 /**
 counter
  */
 
-@property (nonatomic) NSTimeInterval interval;
+@property(nonatomic) NSTimeInterval interval;
 
 @end
 
@@ -27,65 +26,61 @@ counter
 {
     NSArray *_imageFileURLs;
 //    NSMutableDictionary *_imagesDict;
-    
+
     GLuint *_textureArr;
 }
 
-- (instancetype)initWithJSONDictionary:(NSDictionary *)dict
-{
+- (instancetype)initWithJSONDictionary:(NSDictionary *)dict {
     self = [super init];
     if (self) {
         self.type = [[dict objectForKey:@"type"] intValue];
         self.trigerType = [[dict objectForKey:@"trigerType"] intValue];
-        
+
         self.itemDir = [dict objectForKey:@"frameFolder"];
         self.count = [[dict objectForKey:@"frameNum"] intValue];
         self.duration = [[dict objectForKey:@"frameDuration"] doubleValue] / 1000.;
         self.width = [[dict objectForKey:@"frameWidth"] floatValue];
         self.height = [[dict objectForKey:@"frameHeight"] floatValue];
-        
+
         self.position = [[dict objectForKey:@"facePos"] intValue];
         self.alignPos = [[dict objectForKey:@"alignPos"] intValue];
-        
+
         self.scaleWidthOffset = [[dict objectForKey:@"scaleWidthOffset"] floatValue];
         self.scaleHeightOffset = [[dict objectForKey:@"scaleHeightOffset"] floatValue];
         self.scaleXOffset = [[dict objectForKey:@"scaleXOffset"] floatValue];
         self.scaleYOffset = [[dict objectForKey:@"scaleYOffset"] floatValue];
-        
+
         self.accumulator = 0.;
         self.currentFrameIndex = 0;
         self.loopCountdown = NSIntegerMax;
         //        selfalloc.interval = self.duration / self.count;
     }
-    
+
     return self;
 }
 
-- (UIImage *)currentFrame
-{
+- (UIImage *)currentFrame {
     return [self _imageAtIndex:self.currentFrameIndex];
 }
 
-- (UIImage *)nextImageForInterval:(NSTimeInterval)interval
-{
+- (UIImage *)nextImageForInterval:(NSTimeInterval)interval {
     if (self.loopCountdown == 0) {
         return self.currentFrame;
     }
-    
+
     self.currentFrameIndex = [self _nextFrameIndexForInterval:interval];
-    
+
     return [self _imageAtIndex:self.currentFrameIndex];
 }
 
-- (NSUInteger)_nextFrameIndexForInterval:(NSTimeInterval)interval
-{
-    
-    
+- (NSUInteger)_nextFrameIndexForInterval:(NSTimeInterval)interval {
+
+
     // This is where FLAnimatedImage loads the GIF
 
     NSUInteger nextFrameIndex = self.currentFrameIndex;
     self.accumulator += interval;
-    
+
 //    if (self.isLastItem && self.loopCountdown == 0) {
 //        
 //        if (interval > (self.count -1) * self.duration) {
@@ -95,18 +90,18 @@ counter
 //        }
 //        //                    NSLog(@"self.isLastItem:%d",self.isLastItem);
 //    }
-    
-    
+
+
     while (self.accumulator > self.duration) {
         self.accumulator -= self.duration;
         nextFrameIndex++;
         if (nextFrameIndex >= self.count) {
             // If we've looped the number of times that this animated image describes, stop looping.
             self.loopCountdown--;
-            
+
             if (self.loopCountdown == 0) {
                 if (self.isLastItem && self.stickerItemPlayOver) {
-                        self.stickerItemPlayOver();
+                    self.stickerItemPlayOver();
                 }
                 nextFrameIndex = self.count - 1;
 //                self.accumulator = 0;
@@ -117,132 +112,131 @@ counter
             }
         }
     }
-    
+
     return nextFrameIndex;
 }
 
-- (UIImage *)_imageAtIndex:(NSUInteger)index
-{
+- (UIImage *)_imageAtIndex:(NSUInteger)index {
     if (_imageFileURLs.count <= 0) {
         [self _loadImages];
     }
-    
+
     return [UIImage imageWithContentsOfFile:[[_imageFileURLs objectAtIndex:index] path]];
 }
 
-- (void)_loadImages
-{
+- (void)_loadImages {
     NSURL *diskCacheURL = [NSURL fileURLWithPath:self.itemDir isDirectory:YES];
     NSArray *resourceKeys = @[NSURLIsDirectoryKey, NSURLContentModificationDateKey, NSURLNameKey];
     
     // First get the cache file related properties
     NSDirectoryEnumerator *fileEnumerator = [[NSFileManager defaultManager] enumeratorAtURL:diskCacheURL
                                                                  includingPropertiesForKeys:resourceKeys
-                                                                                    options:NSDirectoryEnumerationSkipsSubdirectoryDescendants  | NSDirectoryEnumerationSkipsHiddenFiles
-                                                                               errorHandler:^BOOL(NSURL * _Nonnull url, NSError * _Nonnull error) {
+                                                                                    options:NSDirectoryEnumerationSkipsSubdirectoryDescendants | NSDirectoryEnumerationSkipsHiddenFiles
+                                                                               errorHandler:^BOOL(NSURL *_Nonnull url, NSError *_Nonnull error) {
                                                                                    NSLog(@"error: %@", error);
                                                                                    return NO;
                                                                                }];
-    
+
     NSMutableDictionary *imageFiles = [NSMutableDictionary dictionary];
-    
+
     //Traverse all the files in the directory
     for (NSURL *fileURL in fileEnumerator) {
         NSDictionary *resourceValues = [fileURL resourceValuesForKeys:resourceKeys error:NULL];
         if ([resourceValues[NSURLIsDirectoryKey] boolValue]) {
             continue;
         }
-        
+
         [imageFiles setObject:resourceValues forKey:fileURL];
     }
-    
+
     _imageFileURLs = [imageFiles keysSortedByValueWithOptions:NSSortConcurrent
                                               usingComparator:^NSComparisonResult(id obj1, id obj2) {
                                                   return [obj1[NSURLNameKey] compare:obj2[NSURLNameKey] options:NSNumericSearch];
                                               }];
 }
 
-- (GLuint)_textureWithImage:(UIImage *)image
-{
+- (GLuint)_textureWithImage:(UIImage *)image {
     CGImageRef imageRef = image.CGImage;
     NSAssert(imageRef, @"Failed to load image.");
-    
+
     size_t width = CGImageGetWidth(imageRef);
     size_t height = CGImageGetHeight(imageRef);
-    
+
     GLubyte *imageData = (GLubyte *) calloc(width * height * 4, sizeof(GLubyte));
-    
-    CGContextRef spriteContext = CGBitmapContextCreate(imageData, width, height, 8, width * 4, CGImageGetColorSpace(imageRef), kCGImageAlphaPremultipliedLast);
+
+    CGContextRef spriteContext =
+            CGBitmapContextCreate(imageData, width, height, 8, width * 4, CGImageGetColorSpace(imageRef), kCGImageAlphaPremultipliedLast);
     CGContextDrawImage(spriteContext, CGRectMake(0, 0, width, height), imageRef);
     CGContextRelease(spriteContext);
-    
+
     GLuint texture;
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
-    
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)width, (GLsizei)height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei) width, (GLsizei) height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
     free(imageData);
-    
+
     return texture;
 }
 
-- (GLuint)_textureAtIndex:(NSUInteger)index
-{
+- (GLuint)_textureAtIndex:(NSUInteger)index {
     if (_textureArr == NULL) {
         _textureArr = malloc(sizeof(GLuint) * self.count);
         if (_textureArr == NULL) {
             // 分配内存失败
             return 0;
         }
-        
+
         for (int i = 0; i < self.count; i++) {
             _textureArr[i] = 0;
         }
     }
-    
+
     GLuint texture = _textureArr[index];
     if (texture == 0) {
         texture = [self _textureWithImage:[self _imageAtIndex:index]];
         _textureArr[index] = texture;
     }
-    
+
     return texture;
 }
 
-- (GLuint)nextTextureForInterval:(NSTimeInterval)interval
-{
+- (GLuint)nextTextureForInterval:(NSTimeInterval)interval {
     self.currentFrameIndex = [self _nextFrameIndexForInterval:interval];
-    
+
     return [self _textureAtIndex:self.currentFrameIndex];
 }
 
-- (void)deleteTextures
-{
+- (void)deleteTextures {
     if (_textureArr) {
-        glDeleteTextures((GLsizei)self.count, _textureArr);
+        glDeleteTextures((GLsizei) self.count, _textureArr);
         free(_textureArr);
         _textureArr = NULL;
     }
 }
 
-- (void)dealloc
-{
+- (void)dealloc {
     [self deleteTextures];
 }
 
 
 @end
 
-
 @implementation KWSticker
 
-- (instancetype)initWithName:(NSString *)name thumbName:(NSString *)thumb download:(BOOL)download DirectoryURL:(NSURL *)dirurl
-{
+- (instancetype)initWithName:(NSString *)name thumbName:(NSString *)thumb download:(BOOL)download DirectoryURL:(NSURL *)dirurl {
     if (self = [super init]) {
         if (self.playStickerCount == 0) {
             self.playStickerCount = NSIntegerMax;
         }
-        
+
         _stickerName = name;
         _stickerIcon = thumb;
         _isDownload = download;
@@ -260,7 +254,7 @@ counter
                 [KWSticker resetSticker:self];
                 return self;
             }
-            
+
             NSError *error = nil;
             NSData *data = [NSData dataWithContentsOfFile:configFile];
             NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
@@ -271,16 +265,15 @@ counter
                 _isDownload = NO;
                 return self;
             }
-            
+
             NSArray *itemsDict = [dict objectForKey:@"itemList"];
             NSMutableArray *items = [NSMutableArray arrayWithCapacity:itemsDict.count];
-            
+
             NSInteger itemsFrameNum = 0;
             KWStickerItem *itemCopy;
             for (NSDictionary *itemDict in itemsDict) {
                 KWStickerItem *item = [[KWStickerItem alloc] initWithJSONDictionary:itemDict];
-                
-                
+
                 if (item.count >= itemsFrameNum) {
                     itemsFrameNum = item.count;
                     itemCopy = item;
@@ -289,51 +282,49 @@ counter
                 item.loopCountdown = self.playStickerCount;
                 NSArray *dirArr = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:item.itemDir error:NULL];
                 NSInteger fileCount = dirArr.count;
-                
+
                 for (NSString *fileName in dirArr) {
                     if (![fileName hasSuffix:@".png"]) {
-                        fileCount --;
+                        fileCount--;
                     }
                 }
-                
+
                 //Check the sticker file for missing stickers
                 if (fileCount != [[itemDict objectForKey:@"frameNum"] intValue]) {
                     [KWSticker resetSticker:self];
 //                    break;
                     return self;
                 }
-                
+
                 [items addObject:item];
             }
             itemCopy.isLastItem = YES;
-            
+
             _items = items;
-            
+
         }
     }
     return self;
 }
 
--(void)setSourceType:(KWStickerSourceType)sourceType
-{
+- (void)setSourceType:(KWStickerSourceType)sourceType {
     _sourceType = sourceType;
     if (sourceType == KWStickerSourceTypeFromKW) {
         // if you want to use Kiwi's downloadURL, you donot need to do anything
         _downloadURL = nil;
-    }else if(sourceType == KWStickerSourceTypeFromLocal){
-        
+    } else if (sourceType == KWStickerSourceTypeFromLocal) {
+
         // you can set your own downURL here
-        _downloadURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://在这拼接下载的URL%@.zip",_stickerName]];
+        _downloadURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://在这拼接下载的URL%@.zip", _stickerName]];
     }
-    
+
 }
 
-+ (void)updateStickerAfterDownload:(KWSticker *)sticker DirectoryURL:(NSURL *)dirurl sucess:(void(^)(KWSticker *))sucessed fail:(void(^)(KWSticker *))failed
-{
++ (void)updateStickerAfterDownload:(KWSticker *)sticker DirectoryURL:(NSURL *)dirurl sucess:(void (^)(KWSticker *))sucessed fail:(void (^)(KWSticker *))failed {
     if (sticker.playStickerCount == 0) {
         sticker.playStickerCount = NSIntegerMax;
     }
-    
+
     sticker.isDownload = YES;
     NSString *dir = dirurl.path;
     sticker.stickerDir = dir;
@@ -342,7 +333,7 @@ counter
         [self resetSticker:sticker];
         failed(sticker);
     }
-    
+
     NSError *error = nil;
     NSData *data = [NSData dataWithContentsOfFile:configFile];
     NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
@@ -353,10 +344,10 @@ counter
         [self resetSticker:sticker];
         failed(sticker);
     }
-    
+
     NSArray *itemsDict = [dict objectForKey:@"itemList"];
     NSMutableArray *items = [NSMutableArray arrayWithCapacity:itemsDict.count];
-    
+
     NSInteger itemsFrameNum = 0;
     KWStickerItem *itemCopy;
     for (NSDictionary *itemDict in itemsDict) {
@@ -369,33 +360,31 @@ counter
         item.loopCountdown = sticker.playStickerCount;
         NSArray *dirArr = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:item.itemDir error:NULL];
         NSInteger fileCount = dirArr.count;
-        
+
         for (NSString *fileName in dirArr) {
             if (![fileName hasSuffix:@".png"]) {
-                fileCount --;
+                fileCount--;
             }
         }
-        
+
         //Check the sticker file for missing stickers
         if (fileCount != [[itemDict objectForKey:@"frameNum"] intValue]) {
-            
+
             [self resetSticker:sticker];
             failed(sticker);
-            
+
             break;
         }
-        
-        
+
         [items addObject:item];
     }
     itemCopy.isLastItem = YES;
     sticker.items = items;
-    
+
     sucessed(sticker);
 }
 
-- (void)setPlayCount:(NSUInteger)count
-{
+- (void)setPlayCount:(NSUInteger)count {
     self.playStickerCount = count;
     for (KWStickerItem *item in _items) {
         item.loopCountdown = count;
@@ -406,19 +395,17 @@ counter
     }
 }
 
-+ (void)resetSticker:(KWSticker *)sticker
-{
++ (void)resetSticker:(KWSticker *)sticker {
     [[NSFileManager defaultManager] removeItemAtPath:sticker.stickerDir error:NULL];
     sticker.stickerDir = nil;
     sticker.downloadState = KWStickerDownloadStateDownoadNot;
     sticker.isDownload = NO;
     sticker.stickerSound = nil;
     sticker.items = nil;
-    
+
 }
 
-- (void)dealloc
-{
+- (void)dealloc {
     for (KWStickerItem *item in _items) {
         [item deleteTextures];
     }

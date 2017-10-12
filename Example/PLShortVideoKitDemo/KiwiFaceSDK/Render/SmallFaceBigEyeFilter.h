@@ -1,12 +1,14 @@
 #import "GPUImageFilter.h"
 #import "KWRenderProtocol.h"
 #import "Global.h"
+
 /**
  Big eyes, face-lift integrated class
  */
 @interface SmallFaceBigEyeFilter : GPUImageFilter <KWRenderProtocol>
 {
-    GLint aspectRatioUniform, location0Uniform,location1Uniform,location2Uniform,location3Uniform,location4Uniform,location5Uniform,location6Uniform,location7Uniform,thinparamUniform,eyeparamUniform;
+    GLint aspectRatioUniform, location0Uniform, location1Uniform, location2Uniform, location3Uniform, location4Uniform,
+            location5Uniform, location6Uniform, location7Uniform, thinparamUniform, eyeparamUniform;
     GLfloat y_scaleUniform;
 }
 
@@ -23,8 +25,8 @@
 @property(readwrite, nonatomic) CGFloat thinparam;
 @property(readwrite, nonatomic) CGFloat eyeparam;  //0.05 - 0.3
 @property(readwrite, nonatomic) CGFloat y_scale;
-@property (nonatomic, copy) NSArray<NSArray *> *faces;
-@property (nonatomic, readonly) BOOL needTrackData;
+@property(nonatomic, copy) NSArray<NSArray *> *faces;
+@property(nonatomic, readonly) BOOL needTrackData;
 
 - (void)setParam:(float)value withType:(KW_NEWBEAUTY_TYPE)type;
 

@@ -181,7 +181,7 @@
         [manager requestAVAssetForVideo:self options:options resultHandler:^(AVAsset * _Nullable asset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
             AVURLAsset *urlAsset = (AVURLAsset *)asset;
             url = urlAsset.URL;
-            
+    
             dispatch_semaphore_signal(semaphore);
         }];
     }
@@ -496,9 +496,9 @@ static NSString * const reuseIdentifier = @"Cell";
 #pragma mark --- 选中的视频的视图
 - (void)updateScrollView:(PHAsset *)asset {
     if (asset) {
-        //        if (self.dynamicScrollView.selectedAssets.count < self.maxSelectCount) {
-        [self.dynamicScrollView addAsset:asset];
-        //        }
+//        if (self.dynamicScrollView.selectedAssets.count < self.maxSelectCount) {
+            [self.dynamicScrollView addAsset:asset];
+//        }
     }
 }
 
@@ -596,7 +596,7 @@ static NSString * const reuseIdentifier = @"Cell";
         }
         else {
             [self loadActivityIndicatorView];
-            
+
             __weak typeof(self)weakSelf = self;
             self.movieComposer = [[PLSMovieComposer alloc] initWithUrls:self.urls];
             if (self.isMovieLandscapeOrientation) {
@@ -607,7 +607,7 @@ static NSString * const reuseIdentifier = @"Cell";
             
             [self.movieComposer setCompletionBlock:^(NSURL *url) {
                 NSLog(@"movieComposer ur: %@", url);
-                
+
                 [weakSelf removeActivityIndicatorView];
                 weakSelf.progressLabel.text = @"";
                 
@@ -617,10 +617,10 @@ static NSString * const reuseIdentifier = @"Cell";
             }];
             [self.movieComposer setFailureBlock:^(NSError *error) {
                 NSLog(@"movieComposer failed");
-                
+
                 [weakSelf removeActivityIndicatorView];
                 weakSelf.progressLabel.text = @"";
-                
+
             }];
             [self.movieComposer setProcessingBlock:^(float progress){
                 NSLog(@"movieComposer progress: %f", progress);
@@ -670,14 +670,14 @@ static NSString * const reuseIdentifier = @"Cell";
 }
 
 - (void)dealloc {
-    NSLog(@"dealloc: %@", [[self class] description]);
-    
     if ([self.activityIndicatorView isAnimating]) {
         [self.activityIndicatorView stopAnimating];
         self.activityIndicatorView = nil;
     }
     
     self.movieComposer = nil;
+    
+    NSLog(@"dealloc: %@", [[self class] description]);
 }
 
 @end

@@ -12,7 +12,6 @@
 #import "PLSVideoConfiguration.h"
 #import "PLSAudioConfiguration.h"
 #import "PLSTypeDefines.h"
-#import "PLSFile.h"
 
 @class PLShortVideoRecorder;
 @protocol PLShortVideoRecorderDelegate <NSObject>

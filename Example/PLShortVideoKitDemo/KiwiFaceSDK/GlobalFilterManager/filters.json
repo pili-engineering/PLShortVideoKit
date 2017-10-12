@@ -1,0 +1,284 @@
+{
+  "filters": [
+    {
+      "name": "gray",
+      "dir": "gray",
+      "category": "default"
+    },
+    {
+      "name": "pailide",
+      "dir": "pailide",
+      "category": "default"
+    },
+    {
+      "name": "Inkwell",
+      "dir": "Inkwell",
+      "category": "inner"
+    },
+    {
+      "name": "dark",
+      "dir": "dark",
+      "category": "default"
+    },
+    {
+      "name": "retro",
+      "dir": "retro",
+      "category": "default"
+    },
+    {
+      "name": "funky",
+      "dir": "funky",
+      "category": "default"
+    },
+    {
+      "name": "delicious",
+      "dir": "delicious",
+      "category": "default"
+    },
+    {
+      "name": "good",
+      "dir": "good",
+      "category": "default"
+    },
+    {
+      "name": "railway",
+      "dir": "railway",
+      "category": "default"
+    },
+    {
+      "name": "Brannan",
+      "dir": "Brannan",
+      "category": "inner"
+    },
+    {
+      "name": "Amaro",
+      "dir": "Amaro",
+      "category": "inner"
+    },
+    {
+      "name": "Nashville",
+      "dir": "Nashville",
+      "category": "inner"
+    },
+    {
+      "name": "purple",
+      "dir": "purple",
+      "category": "default"
+    },
+    {
+      "name": "xibu",
+      "dir": "xibu",
+      "category": "default"
+    },
+    {
+      "name": "Walden",
+      "dir": "Walden",
+      "category": "inner"
+    },
+    {
+      "name": "Valencia",
+      "dir": "Valencia",
+      "category": "inner"
+    },
+    {
+      "name": "Freud",
+      "dir": "Freud",
+      "category": "inner"
+    },
+    {
+      "name": "normal",
+      "dir": "normal",
+      "category": "default"
+    },
+    {
+      "name": "huang",
+      "dir": "huang",
+      "category": "default"
+    },
+    {
+      "name": "red",
+      "dir": "red",
+      "category": "default"
+    },
+    {
+      "name": "Rise",
+      "dir": "Rise",
+      "category": "inner"
+    },
+    {
+      "name": "happy",
+      "dir": "happy",
+      "category": "default"
+    },
+    {
+      "name": "camomile",
+      "dir": "camomile",
+      "category": "default"
+    },
+    {
+      "name": "cold",
+      "dir": "cold",
+      "category": "default"
+    },
+    {
+      "name": "nice",
+      "dir": "nice",
+      "category": "default"
+    },
+    {
+      "name": "frog",
+      "dir": "frog",
+      "category": "default"
+    },
+    {
+      "name": "blueberry",
+      "dir": "blueberry",
+      "category": "default"
+    },
+    {
+      "name": "print",
+      "dir": "print",
+      "category": "default"
+    },
+    {
+      "name": "miss",
+      "dir": "miss",
+      "category": "default"
+    },
+    {
+      "name": "Fairy",
+      "dir": "Fairy",
+      "category": "default"
+    },
+    {
+      "name": "Hudson",
+      "dir": "Hudson",
+      "category": "inner"
+    },
+    {
+      "name": "Brooklyn",
+      "dir": "Brooklyn",
+      "category": "inner"
+    },
+    {
+      "name": "Sutro",
+      "dir": "Sutro",
+      "category": "inner"
+    },
+    {
+      "name": "lyon",
+      "dir": "lyon",
+      "category": "default"
+    },
+    {
+      "name": "pink",
+      "dir": "pink",
+      "category": "default"
+    },
+    {
+      "name": "siesta",
+      "dir": "siesta",
+      "category": "default"
+    },
+    {
+      "name": "pld",
+      "dir": "pld",
+      "category": "default"
+    },
+    {
+      "name": "yummy",
+      "dir": "yummy",
+      "category": "default"
+    },
+    {
+      "name": "habana",
+      "dir": "habana",
+      "category": "default"
+    },
+    {
+      "name": "sunny",
+      "dir": "sunny",
+      "category": "default"
+    },
+    {
+      "name": "harvest",
+      "dir": "harvest",
+      "category": "default"
+    },
+    {
+      "name": "Sierra",
+      "dir": "Sierra",
+      "category": "inner"
+    },
+    {
+      "name": "lzp",
+      "dir": "lzp",
+      "category": "default"
+    },
+    {
+      "name": "color",
+      "dir": "color",
+      "category": "default"
+    },
+    {
+      "name": "kc",
+      "dir": "kc",
+      "category": "default"
+    },
+    {
+      "name": "elegance",
+      "dir": "elegance",
+      "category": "default"
+    },
+    {
+      "name": "toutong",
+      "dir": "toutong",
+      "category": "default"
+    },
+    {
+      "name": "waltz",
+      "dir": "waltz",
+      "category": "default"
+    },
+    {
+      "name": "Hefe",
+      "dir": "Hefe",
+      "category": "inner"
+    },
+    {
+      "name": "Toaster",
+      "dir": "Toaster",
+      "category": "inner"
+    },
+    {
+      "name": "dreamy",
+      "dir": "dreamy",
+      "category": "default"
+    },
+    {
+      "name": "fuji",
+      "dir": "fuji",
+      "category": "default"
+    },
+    {
+      "name": "Earlybird",
+      "dir": "Earlybird",
+      "category": "inner"
+    },
+    {
+      "name": "candy",
+      "dir": "candy",
+      "category": "default"
+    },
+    {
+      "name": "fun",
+      "dir": "fun",
+      "category": "default"
+    },
+    {
+      "name": "lagoon",
+      "dir": "lagoon",
+      "category": "default"
+    }
+  ]
+}

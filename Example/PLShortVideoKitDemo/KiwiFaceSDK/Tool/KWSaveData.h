@@ -12,16 +12,21 @@
 
 
 //保存float值
-+(void)setFloat:(float)f forKey:(NSString *)key;
++ (void)setFloat:(float)f forKey:(NSString *)key;
+
 //读取float值
-+(float)floatForKey:(NSString *)key;
++ (float)floatForKey:(NSString *)key;
+
 //保存BOOL值
-+(void)setBool:(BOOL)b forKey:(NSString *)key;
++ (void)setBool:(BOOL)b forKey:(NSString *)key;
+
 //读取BOOL值
-+(BOOL)boolForKey:(NSString *)key;
++ (BOOL)boolForKey:(NSString *)key;
+
 //保存字符串
-+(void)setValue:(id)value forKey:(NSString *)key;
++ (void)setValue:(id)value forKey:(NSString *)key;
+
 //读取字符串
-+(id)valueForKey:(NSString *)key;
++ (id)valueForKey:(NSString *)key;
 
 @end

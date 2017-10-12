@@ -11,27 +11,25 @@
 
 @class KWSticker;
 
-@interface KWPresentStickerRenderer : GPUImageFilter<KWRenderProtocol, GPUImageInput>
+@interface KWPresentStickerRenderer : GPUImageFilter <KWRenderProtocol, GPUImageInput>
 
 typedef void(^PresentStickerRendererPlayOverBlock)(void);
 
-
-@property (nonatomic, copy) PresentStickerRendererPlayOverBlock presentStickerRendererPlayOverBlock;
+@property(nonatomic, copy) PresentStickerRendererPlayOverBlock presentStickerRendererPlayOverBlock;
 
 /**
  Need to draw the stickers
  */
-@property (nonatomic, strong) KWSticker *sticker;
-
+@property(nonatomic, strong) KWSticker *sticker;
 
 /**
  Whether the mirror
  */
-@property (nonatomic, assign) BOOL isMirrored;
+@property(nonatomic, assign) BOOL isMirrored;
 
-@property (nonatomic, copy) NSArray<NSArray *> *faces;
+@property(nonatomic, copy) NSArray<NSArray *> *faces;
 
-@property (nonatomic, assign) BOOL needTrackData;
+@property(nonatomic, assign) BOOL needTrackData;
 
 
 @end

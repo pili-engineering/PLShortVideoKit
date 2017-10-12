@@ -56,7 +56,7 @@ PLSSelectionViewDelegate
     // Do any additional setup after loading the view.
     
     // --------------------------
-    
+
     self.view.backgroundColor = PLS_RGBCOLOR(25, 24, 36);
     
     // --------------------------
@@ -265,7 +265,7 @@ PLSSelectionViewDelegate
     
     // 比如选取 [startTime, endTime] 这段视频来转码输出
     CMTimeRange timeRange = CMTimeRangeFromTimeToTime(CMTimeMake(self.startTime, 1), CMTimeMake(self.endTime, 1));
-    
+
     self.shortVideoTranscoder = [[PLShortVideoTranscoder alloc] initWithURL:self.url];
     self.shortVideoTranscoder.outputFileType = PLSFileTypeMPEG4;
     self.shortVideoTranscoder.outputFilePreset = self.transcoderPreset;
@@ -273,7 +273,7 @@ PLSSelectionViewDelegate
     [self.shortVideoTranscoder startTranscoding];
     
     [self.shortVideoTranscoder setCompletionBlock:^(NSURL *url){
-        
+
         NSLog(@"transCoding successd, url: %@", url);
         
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -336,8 +336,6 @@ PLSSelectionViewDelegate
 
 #pragma mark -- dealloc
 - (void)dealloc {
-    NSLog(@"dealloc: %@", [[self class] description]);
-    
     if ([self.activityIndicatorView isAnimating]) {
         [self.activityIndicatorView stopAnimating];
         self.activityIndicatorView = nil;
@@ -350,6 +348,8 @@ PLSSelectionViewDelegate
     self.playerItem = nil;
     
     self.shortVideoTranscoder = nil;
+    
+    NSLog(@"dealloc: %@", [[self class] description]);
 }
 
 @end

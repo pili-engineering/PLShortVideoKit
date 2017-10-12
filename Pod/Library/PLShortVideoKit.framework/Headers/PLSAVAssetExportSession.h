@@ -79,6 +79,13 @@
 @property (strong, nonatomic) NSURL * _Nullable outputURL;
 
 /**
+ @brief 视频导出的分辨率
+ 
+ @since      v1.5.0
+ */
+@property (assign, nonatomic) CGSize outputVideoSize;
+
+/**
  @brief 是否设置便于网络环境下的传输，默认为 YES
  
  @since      v1.1.0
@@ -133,6 +140,25 @@
  @since      v1.1.0
  */
 - (void)cancelExport;
+
+/**
+ *  添加滤镜效果
+ *
+ *  @param colorImagePath 当前使用的滤镜的颜色表图的路径
+ 
+ @since      v1.5.0
+ */
+- (void)addFilter:(NSString *_Nullable)colorImagePath;
+
+/**
+ *  添加 MV 图层
+ *
+ *  @param colorURL 彩色层视频的地址
+ *  @param alphaURL 被彩色层当作透明层的视频的地址
+ 
+ @since      v1.5.0
+ */
+- (void)addMVLayerWithColor:(NSURL *_Nullable)colorURL alpha:(NSURL *_Nullable)alphaURL;
 
 @end
 

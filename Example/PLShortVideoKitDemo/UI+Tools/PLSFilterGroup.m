@@ -16,15 +16,20 @@
 
 @implementation PLSFilterGroup
 @synthesize filterIndex = _filterIndex;
+@synthesize colorImagePath = _colorImagePath;
 
 - (void)setFilterIndex:(NSInteger)filterIndex {    
     _filterIndex = filterIndex;
-    NSString *colorImagePath = _colorFilterArray[filterIndex];
-    self.currentFilter.colorImagePath = colorImagePath;
+    _colorImagePath = _colorFilterArray[filterIndex];
+    self.currentFilter.colorImagePath = _colorImagePath;
 }
 
 - (NSInteger)filterIndex {
     return _filterIndex;
+}
+
+- (NSString *)colorImagePath {
+    return _colorImagePath;
 }
 
 - (instancetype)init {

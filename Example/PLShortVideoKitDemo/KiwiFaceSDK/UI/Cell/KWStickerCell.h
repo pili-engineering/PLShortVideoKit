@@ -10,21 +10,20 @@
 
 @class KWSticker;
 
-
 @interface KWIndicatorView : UIView
 
 - (id)initWithTintColor:(UIColor *)tintColor size:(CGFloat)size;
 
-@property (nonatomic, strong) UIColor *tintColor;
-@property (nonatomic) CGFloat size;
+@property(nonatomic, strong) UIColor *tintColor;
+@property(nonatomic) CGFloat size;
 
-@property (nonatomic, readonly) BOOL animating;
+@property(nonatomic, readonly) BOOL animating;
 
 - (void)startAnimating;
+
 - (void)stopAnimating;
 
 @end
-
 
 @interface KWStickerCell : UICollectionViewCell
 
@@ -35,8 +34,7 @@
 /**
 是否隐藏背景框
  */
--(void)hideBackView:(BOOL)hidden;
-
+- (void)hideBackView:(BOOL)hidden;
 
 /**
  开启动画

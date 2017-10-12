@@ -17,6 +17,6 @@
 /**
  是否隐藏背景框
  */
--(void)hideBackView:(BOOL)hidden;
+- (void)hideBackView:(BOOL)hidden;
 
 @end

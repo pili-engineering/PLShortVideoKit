@@ -14,6 +14,6 @@
  */
 @interface KWPointsRenderer : GPUImageFilter <KWRenderProtocol>
 
-@property (nonatomic, copy) NSArray<NSArray *> *faces;
+@property(nonatomic, copy) NSArray<NSArray *> *faces;
 
 @end

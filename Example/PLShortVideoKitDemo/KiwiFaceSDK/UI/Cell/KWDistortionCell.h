@@ -10,7 +10,7 @@
 
 @interface KWDistortionCell : UICollectionViewCell
 
-@property(nonatomic ,strong)UIImageView *imgView;
+@property(nonatomic, strong) UIImageView *imgView;
 
 - (id)initWithFrame:(CGRect)frame;
 

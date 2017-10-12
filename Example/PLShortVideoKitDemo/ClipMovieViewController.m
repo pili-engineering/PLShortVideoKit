@@ -21,11 +21,9 @@
 @interface ClipMovieViewController () <PLSClipMovieViewDelegate>
 
 @property (strong, nonatomic) UIView *baseToolboxView;
-
 @property (strong, nonatomic) UIButton *playButton;
 
-@property (strong, nonatomic) PLShortVideoEditor *shortVideoEditor;
-@property (strong, nonatomic) PLSFile *fileManager;
+@property (strong, nonatomic) PLSEditPlayer *player;
 
 @property (strong, nonatomic) PLSClipMovieView *clipMovieView;
 @property (assign, nonatomic) CGFloat startTime;
@@ -65,26 +63,25 @@
     [self setupClipMovieView];
     
     // --------------------------
-    self.shortVideoEditor = [[PLShortVideoEditor alloc] initWithAsset:[AVAsset assetWithURL:self.url]];
-    self.shortVideoEditor.player.loopEnabled = YES;
-    self.shortVideoEditor.player.preview.frame = CGRectMake(0, PLS_BaseToolboxView_HEIGHT, PLS_SCREEN_WIDTH, PLS_SCREEN_WIDTH);
-    self.shortVideoEditor.player.fillMode = PLSVideoFillModePreserveAspectRatio;
-    [self.view addSubview:self.shortVideoEditor.player.preview];
+    self.player = [[PLSEditPlayer alloc] init];
+    [self.player setItemByAsset:[AVAsset assetWithURL:self.url]];
+    self.player.loopEnabled = YES;
+    self.player.preview.frame = CGRectMake(0, PLS_BaseToolboxView_HEIGHT, PLS_SCREEN_WIDTH, PLS_SCREEN_WIDTH);
+    self.player.fillMode = PLSVideoFillModePreserveAspectRatio;
+    [self.view addSubview:self.player.preview];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    [self.shortVideoEditor.player seekToTime:CMTimeMake(self.startTime * 1e9, 1e9) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
-    [self.shortVideoEditor.player play];
-    [self startPlaybackTimeChecker];
+    [self.player seekToTime:CMTimeMake(self.startTime * 1e9, 1e9) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
+    [self.player play];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     
-    [self.shortVideoEditor.player pause];
-    [self stopPlaybackTimeChecker];
+    [self.player pause];
 }
 
 #pragma mark -- 配置视图
@@ -149,7 +146,7 @@
 
 #pragma mark -- 下一步
 - (void)nextButtonClick {
-    [self.shortVideoEditor.player pause];
+    [self.player pause];
     
     // 设置音视频、水印等编辑信息
     NSMutableDictionary *outputSettings = [[NSMutableDictionary alloc] init];
@@ -170,62 +167,29 @@
 
 #pragma mark - PLSClipMovieView delegate
 - (void)didStartDragView {
-    //    if (self.shortVideoEditor.player.rate > 0) { // 正在播放的时候
-    //        [self.shortVideoEditor.player pause];
-    //    }
+//    if (self.player.rate > 0) { // 正在播放的时候
+//        [self.player pause];
+//    }
 }
 
 - (void)clipFrameView:(PLSClipMovieView *)clipFrameView didDragView:(CMTime)time {
-    
+
 }
 
 - (void)clipFrameView:(PLSClipMovieView *)clipFrameView didEndDragLeftView:(CMTime)time; {
     self.startTime = CMTimeGetSeconds(time);
     
-    [self.shortVideoEditor.player seekToTime:time toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
+    self.player.timeRange = CMTimeRangeMake(time, CMTimeSubtract(CMTimeMake(self.endTime * 1e9, 1e9), time));
 }
 
 - (void)clipFrameView:(PLSClipMovieView *)clipFrameView didEndDragRightView:(CMTime)time; {
-    self.endTime = CMTimeGetSeconds(time);
+    self.endTime = CMTimeGetSeconds(time);    
+    
+    self.player.timeRange = CMTimeRangeMake(CMTimeMake(self.startTime * 1e9, 1e9), CMTimeSubtract(time, CMTimeMake(self.startTime * 1e9, 1e9)));
 }
 
 - (void)clipFrameView:(PLSClipMovieView *)clipFrameView isScrolling:(BOOL)scrolling {
     self.view.userInteractionEnabled = !scrolling;
-}
-
-#pragma mark -- PlaybackTimeCheckerTimer
-- (void)startPlaybackTimeChecker {
-    [self stopPlaybackTimeChecker];
-    
-    self.playbackTimeCheckerTimer = [NSTimer scheduledTimerWithTimeInterval:0.1f target:self selector:@selector(onPlaybackTimeCheckerTimer) userInfo:nil repeats:YES];
-}
-
-- (void)stopPlaybackTimeChecker {
-    if (self.playbackTimeCheckerTimer) {
-        [self.playbackTimeCheckerTimer invalidate];
-        self.playbackTimeCheckerTimer = nil;
-    }
-}
-
-- (void)onPlaybackTimeCheckerTimer {
-    CMTime curTime = [self.shortVideoEditor.player currentTime];
-    Float64 seconds = CMTimeGetSeconds(curTime);
-    if (seconds < 0){
-        seconds = 0; // this happens! dont know why.
-    }
-    self.videoPlaybackPosition = seconds;
-    
-    if (self.videoPlaybackPosition >= self.endTime) {
-        self.videoPlaybackPosition = self.startTime;
-        [self seekVideoToPos: self.startTime];
-    }
-}
-
-- (void)seekVideoToPos:(CGFloat)pos {
-    self.videoPlaybackPosition = pos;
-    CMTime time = CMTimeMakeWithSeconds(self.videoPlaybackPosition, self.shortVideoEditor.player.currentTime.timescale);
-    //NSLog(@"seekVideoToPos time:%.2f", CMTimeGetSeconds(time));
-    [self.shortVideoEditor.player seekToTime:time toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
 }
 
 #pragma mark -- 隐藏状态栏
@@ -240,16 +204,11 @@
 
 #pragma mark -- dealloc
 - (void)dealloc {
-    NSLog(@"dealloc: %@", [[self class] description]);
-    
-    if (self.playbackTimeCheckerTimer) {
-        [self.playbackTimeCheckerTimer invalidate];
-        self.playbackTimeCheckerTimer = nil;
-    }
-    
     self.baseToolboxView = nil;
     
-    self.shortVideoEditor = nil;
+    self.player = nil;
+    
+    NSLog(@"dealloc: %@", [[self class] description]);
 }
 
 @end
