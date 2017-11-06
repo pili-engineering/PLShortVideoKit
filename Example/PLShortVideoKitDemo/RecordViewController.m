@@ -22,6 +22,7 @@
 #import "KWRenderManager.h"
 #import "Global.h"
 #import "KWUIManager.h"
+#import "EasyarARViewController.h"
 
 
 #define PLS_CLOSE_CONTROLLER_ALERTVIEW_TAG 10001
@@ -44,6 +45,8 @@ PLSViewRecorderManagerDelegate,
 PLSRateButtonViewDelegate
 >
 
+@property (strong, nonatomic) PLSVideoConfiguration *videoConfiguration;
+@property (strong, nonatomic) PLSAudioConfiguration *audioConfiguration;
 @property (strong, nonatomic) PLShortVideoRecorder *shortVideoRecorder;
 @property (strong, nonatomic) PLSViewRecorderManager *viewRecorderManager;
 @property (strong, nonatomic) PLSProgressBar *progressBar;
@@ -120,6 +123,8 @@ PLSRateButtonViewDelegate
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    [self setUpEasyarSDKARButton];
+
     // --------------------------
     [self setupRenderManager];
     [self setupKiwiFaceUI];
@@ -145,22 +150,22 @@ PLSRateButtonViewDelegate
     // SDK 的版本信息
     NSLog(@"PLShortVideoRecorder versionInfo: %@", [PLShortVideoRecorder versionInfo]);
     
-    PLSVideoConfiguration *videoConfiguration = [PLSVideoConfiguration defaultConfiguration];
-    videoConfiguration.position = AVCaptureDevicePositionFront;
-    videoConfiguration.videoFrameRate = 25;
-    videoConfiguration.averageVideoBitRate = 1024*1000;
-    videoConfiguration.videoSize = CGSizeMake(544, 960);
-    videoConfiguration.videoOrientation = AVCaptureVideoOrientationPortrait;
+    self.videoConfiguration = [PLSVideoConfiguration defaultConfiguration];
+    self.videoConfiguration.position = AVCaptureDevicePositionFront;
+    self.videoConfiguration.videoFrameRate = 25;
+    self.videoConfiguration.averageVideoBitRate = 1024*1000;
+    self.videoConfiguration.videoSize = CGSizeMake(544, 960);
+    self.videoConfiguration.videoOrientation = AVCaptureVideoOrientationPortrait;
 
-    PLSAudioConfiguration *audioConfiguration = [PLSAudioConfiguration defaultConfiguration];
+    self.audioConfiguration = [PLSAudioConfiguration defaultConfiguration];
     
-    self.shortVideoRecorder = [[PLShortVideoRecorder alloc] initWithVideoConfiguration:videoConfiguration audioConfiguration:audioConfiguration];
+    self.shortVideoRecorder = [[PLShortVideoRecorder alloc] initWithVideoConfiguration:self.videoConfiguration audioConfiguration:self.audioConfiguration];
+    self.shortVideoRecorder.delegate = self;
+    self.shortVideoRecorder.maxDuration = 10.0f; // 设置最长录制时长
+    self.shortVideoRecorder.outputFileType = PLSFileTypeMPEG4;
+    self.shortVideoRecorder.innerFocusViewShowEnable = YES; // 显示 SDK 内部自带的对焦动画
     self.shortVideoRecorder.previewView.frame = CGRectMake(0, 0, PLS_SCREEN_WIDTH, PLS_SCREEN_HEIGHT);
     [self.view addSubview:self.shortVideoRecorder.previewView];
-    
-    self.shortVideoRecorder.delegate = self;
-    
-    self.shortVideoRecorder.maxDuration = 10.0f; // 设置最长录制时长
     
     // 录制前是否开启自动检测设备方向调整视频拍摄的角度（竖屏、横屏）
     if (self.isUseAutoCheckDeviceOrientationBeforeRecording) {
@@ -172,7 +177,22 @@ PLSRateButtonViewDelegate
         [self.view addSubview:deviceOrientationView];
         self.shortVideoRecorder.adaptationRecording = YES; // 根据设备方向自动确定横屏 or 竖屏拍摄效果
         [self.shortVideoRecorder setDeviceOrientationBlock:^(PLSPreviewOrientation deviceOrientation){
-            NSLog(@"deviceOrientation : %ld", (long)deviceOrientation);
+            switch (deviceOrientation) {
+                case PLSPreviewOrientationPortrait:
+                    NSLog(@"deviceOrientation : PLSPreviewOrientationPortrait");
+                    break;
+                case PLSPreviewOrientationPortraitUpsideDown:
+                    NSLog(@"deviceOrientation : PLSPreviewOrientationPortraitUpsideDown");
+                    break;
+                case PLSPreviewOrientationLandscapeRight:
+                    NSLog(@"deviceOrientation : PLSPreviewOrientationLandscapeRight");
+                    break;
+                case PLSPreviewOrientationLandscapeLeft:
+                    NSLog(@"deviceOrientation : PLSPreviewOrientationLandscapeLeft");
+                    break;
+                default:
+                    break;
+            }
             
             if (deviceOrientation == PLSPreviewOrientationPortrait) {
                 deviceOrientationView.frame = CGRectMake(0, 0, PLS_SCREEN_WIDTH/2, 44);
@@ -372,28 +392,54 @@ PLSRateButtonViewDelegate
     [self.importMovieView addSubview:importMovieLabel];
 }
 
-#pragma mark -- PLSRateButtonViewDelegate
-- (void)rateButtonView:(PLSRateButtonView *)rateButtonView didSelectedTitleIndex:(NSInteger)titleIndex{
-    self.titleIndex = titleIndex;
-    switch (titleIndex) {
-        case 0:
-            self.shortVideoRecorder.recoderRate = PLSVideoRecoderRateTopSlow;
-            break;
-        case 1:
-            self.shortVideoRecorder.recoderRate = PLSVideoRecoderRateSlow;
-            break;
-        case 2:
-            self.shortVideoRecorder.recoderRate = PLSVideoRecoderRateNormal;
-            break;
-        case 3:
-            self.shortVideoRecorder.recoderRate = PLSVideoRecoderRateFast;
-            break;
-        case 4:
-            self.shortVideoRecorder.recoderRate = PLSVideoRecoderRateTopFast;
-            break;
-        default:
-            break;
+#pragma mark - 初始化KiwiFaceSDK
+- (void)setupRenderManager {
+    
+    // 1.创建 KWRenderManager对象,指定models文件路径 若不传则默认路径是KWResource.bundle/models
+    //    self.renderManager = [[KWRenderManager alloc] initWithModelPath:self.modelPath isCameraPositionBack:NO];
+    self.renderManager = [[KWRenderManager alloc] initWithModelPath:nil isCameraPositionBack:YES];
+    
+    // 2.KWSDK鉴权提示
+    if ([KWRenderManager renderInitCode] != 0) {
+        UIAlertView *alertView =
+        [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"KiwiFaceSDK初始化失败,错误码: %d", [KWRenderManager renderInitCode]] message:@"可在FaceTracker.h中查看错误码" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
+        
+        [alertView show];
+        
+        return;
     }
+    
+    // 3.加载贴纸滤镜
+    [self.renderManager loadRender];
+    
+}
+
+#pragma mark -初始化KiwiFace的演示UI
+- (void)setupKiwiFaceUI{
+    // 1.初始化UIManager
+    self.UIManager = [[KWUIManager alloc] initWithRenderManager:self.renderManager delegate:self superView:self.view];
+    // 2.是否清除原UI
+    self.UIManager.isClearOldUI = NO;
+    
+    // 3.创建内置UI
+    [self.UIManager createUI];
+}
+
+#pragma mark - EasyarSDK AR 入口
+- (void)setUpEasyarSDKARButton {
+    UIButton *ARButton = [[UIButton alloc] initWithFrame:CGRectMake(PLS_SCREEN_WIDTH - 60, 243, 46, 46)];
+    ARButton.layer.cornerRadius = 23;
+    ARButton.backgroundColor = [UIColor colorWithRed:116/255 green:116/255 blue:116/255 alpha:0.55];
+    [ARButton setImage:[UIImage imageNamed:@"easyar_AR"] forState:UIControlStateNormal];
+    ARButton.imageEdgeInsets = UIEdgeInsetsMake(6, 6, 6, 6);
+    [ARButton addTarget:self action:@selector(ARButtonOnClick:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:ARButton];
+}
+
+- (void)ARButtonOnClick:(id)sender {
+    EasyarARViewController *easyerARViewController = [[EasyarARViewController alloc]init];
+    [easyerARViewController loadARID:@"287e6520eff14884be463d61efb40ba8"];
+    [self presentViewController:easyerARViewController animated:NO completion:nil];
 }
 
 #pragma mark -- Button event
@@ -414,7 +460,7 @@ PLSRateButtonViewDelegate
         
         if (assets.count > 0) {
             PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
-            CGSize size = self.importMovieButton.frame.size;
+            CGSize size = CGSizeMake(50, 50);
             [[PHImageManager defaultManager] requestImageForAsset:assets[0] targetSize:size contentMode:PHImageContentModeAspectFill options:options resultHandler:^(UIImage *result, NSDictionary *info) {
                 
                 // 设置的 options 可能会导致该回调调用两次，第一次返回你指定尺寸的图片，第二次将会返回原尺寸图片
@@ -451,10 +497,8 @@ PLSRateButtonViewDelegate
     UIButton *button = (UIButton *)sender;
     button.selected = !button.selected;
     if (button.selected) {
-        
-        PLSVideoConfiguration *videoConfiguration = [PLSVideoConfiguration defaultConfiguration];
-        videoConfiguration.videoSize = CGSizeMake(480, 480);
-        [self.shortVideoRecorder reloadvideoConfiguration:videoConfiguration];
+        self.videoConfiguration.videoSize = CGSizeMake(480, 480);
+        [self.shortVideoRecorder reloadvideoConfiguration:self.videoConfiguration];
         
         self.shortVideoRecorder.maxDuration = 10.0f;
         
@@ -465,9 +509,8 @@ PLSRateButtonViewDelegate
         });
         
     } else {
-        PLSVideoConfiguration *videoConfiguration = [PLSVideoConfiguration defaultConfiguration];
-        videoConfiguration.videoSize = CGSizeMake(544, 960);
-        [self.shortVideoRecorder reloadvideoConfiguration:videoConfiguration];
+        self.videoConfiguration.videoSize = CGSizeMake(544, 960);
+        [self.shortVideoRecorder reloadvideoConfiguration:self.videoConfiguration];
         
         self.shortVideoRecorder.maxDuration = 10.0f;
         
@@ -586,24 +629,6 @@ PLSRateButtonViewDelegate
     }
 }
 
-#pragma mark - PLSViewRecorderManagerDelegate
-- (void)viewRecorderManager:(PLSViewRecorderManager *)manager didFinishRecordingToAsset:(AVAsset *)asset totalDuration:(CGFloat)totalDuration {
-    self.viewRecordButton.selected = NO;
-    // 设置音视频、水印等编辑信息
-    NSMutableDictionary *outputSettings = [[NSMutableDictionary alloc] init];
-    // 待编辑的原始视频素材
-    NSMutableDictionary *plsMovieSettings = [[NSMutableDictionary alloc] init];
-    plsMovieSettings[PLSAssetKey] = asset;
-    plsMovieSettings[PLSStartTimeKey] = [NSNumber numberWithFloat:0.f];
-    plsMovieSettings[PLSDurationKey] = [NSNumber numberWithFloat:totalDuration];
-    plsMovieSettings[PLSVolumeKey] = [NSNumber numberWithFloat:1.0f];
-    outputSettings[PLSMovieSettingsKey] = plsMovieSettings;
-    
-    EditViewController *videoEditViewController = [[EditViewController alloc] init];
-    videoEditViewController.settings = outputSettings;
-    [self presentViewController:videoEditViewController animated:YES completion:nil];
-}
-
 #pragma mark - UIAlertViewDelegate
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
     switch (alertView.tag) {
@@ -628,7 +653,49 @@ PLSRateButtonViewDelegate
     }
 }
 
-#pragma mark -- 鉴权回调
+#pragma mark -- PLSRateButtonViewDelegate
+- (void)rateButtonView:(PLSRateButtonView *)rateButtonView didSelectedTitleIndex:(NSInteger)titleIndex{
+    self.titleIndex = titleIndex;
+    switch (titleIndex) {
+        case 0:
+            self.shortVideoRecorder.recoderRate = PLSVideoRecoderRateTopSlow;
+            break;
+        case 1:
+            self.shortVideoRecorder.recoderRate = PLSVideoRecoderRateSlow;
+            break;
+        case 2:
+            self.shortVideoRecorder.recoderRate = PLSVideoRecoderRateNormal;
+            break;
+        case 3:
+            self.shortVideoRecorder.recoderRate = PLSVideoRecoderRateFast;
+            break;
+        case 4:
+            self.shortVideoRecorder.recoderRate = PLSVideoRecoderRateTopFast;
+            break;
+        default:
+            break;
+    }
+}
+
+#pragma mark - PLSViewRecorderManagerDelegate
+- (void)viewRecorderManager:(PLSViewRecorderManager *)manager didFinishRecordingToAsset:(AVAsset *)asset totalDuration:(CGFloat)totalDuration {
+    self.viewRecordButton.selected = NO;
+    // 设置音视频、水印等编辑信息
+    NSMutableDictionary *outputSettings = [[NSMutableDictionary alloc] init];
+    // 待编辑的原始视频素材
+    NSMutableDictionary *plsMovieSettings = [[NSMutableDictionary alloc] init];
+    plsMovieSettings[PLSAssetKey] = asset;
+    plsMovieSettings[PLSStartTimeKey] = [NSNumber numberWithFloat:0.f];
+    plsMovieSettings[PLSDurationKey] = [NSNumber numberWithFloat:totalDuration];
+    plsMovieSettings[PLSVolumeKey] = [NSNumber numberWithFloat:1.0f];
+    outputSettings[PLSMovieSettingsKey] = plsMovieSettings;
+    
+    EditViewController *videoEditViewController = [[EditViewController alloc] init];
+    videoEditViewController.settings = outputSettings;
+    [self presentViewController:videoEditViewController animated:YES completion:nil];
+}
+
+#pragma mark -- PLShortVideoRecorderDelegate 摄像头／麦克风鉴权的回调
 - (void)shortVideoRecorder:(PLShortVideoRecorder *__nonnull)recorder didGetCameraAuthorizationStatus:(PLSAuthorizationStatus)status {
     if (status == PLSAuthorizationStatusAuthorized) {
         [recorder startCaptureSession];
@@ -647,44 +714,15 @@ PLSRateButtonViewDelegate
     }
 }
 
-#pragma mark - 初始化KiwiFaceSDK
-- (void)setupRenderManager {
-    
-    // 1.创建 KWRenderManager对象,指定models文件路径 若不传则默认路径是KWResource.bundle/models
-//    self.renderManager = [[KWRenderManager alloc] initWithModelPath:self.modelPath isCameraPositionBack:NO];
-    self.renderManager = [[KWRenderManager alloc] initWithModelPath:nil isCameraPositionBack:YES];
-    
-    // 2.KWSDK鉴权提示
-    if ([KWRenderManager renderInitCode] != 0) {
-        UIAlertView *alertView =
-        [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"KiwiFaceSDK初始化失败,错误码: %d", [KWRenderManager renderInitCode]] message:@"可在FaceTracker.h中查看错误码" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
-        
-        [alertView show];
-        
-        return;
-    }
-    
-    // 3.加载贴纸滤镜
-    [self.renderManager loadRender];
-    
+#pragma mark - PLShortVideoRecorderDelegate 摄像头对焦位置的回调
+- (void)shortVideoRecorderDidFocusAtPoint:(CGPoint)point {
+    NSLog(@"shortVideoRecorderDidFocusAtPoint:%@", NSStringFromCGPoint(point));
 }
 
-#pragma mark -初始化KiwiFace的演示UI
-- (void)setupKiwiFaceUI{
-    // 1.初始化UIManager
-    self.UIManager = [[KWUIManager alloc] initWithRenderManager:self.renderManager delegate:self superView:self.view];
-    // 2.是否清除原UI
-    self.UIManager.isClearOldUI = NO;
-    
-    // 3.创建内置UI
-    [self.UIManager createUI];
-}
-
-#pragma mark - 视频数据回调
+#pragma mark - PLShortVideoRecorderDelegate 摄像头采集的视频数据的回调
 /// @abstract 获取到摄像头原数据时的回调, 便于开发者做滤镜等处理，需要注意的是这个回调在 camera 数据的输出线程，请不要做过于耗时的操作，否则可能会导致帧率下降
 - (CVPixelBufferRef)shortVideoRecorder:(PLShortVideoRecorder *)recorder cameraSourceDidGetPixelBuffer:(CVPixelBufferRef)pixelBuffer {
     //此处可以做美颜/滤镜等处理
-    
     // 是否在录制时使用滤镜，默认是关闭的，NO
     if (self.isUseFilterWhenRecording) {
         PLSFilter *filter = self.filterGroup.currentFilter;

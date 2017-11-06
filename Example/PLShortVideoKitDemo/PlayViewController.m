@@ -59,14 +59,12 @@ UIGestureRecognizerDelegate
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    // 配置工具视图
-    [self setupToolboxUI];
-    
     if (self.actionType == PLSActionTypePlayer) {
-        [self setupPlayerUI];
-        
         // 播放器初始化
         [self initPlayer];
+        
+        // 配置播放信息视图
+        [self setupPlayerUI];
         
         // 单指单击，播放视频
         UITapGestureRecognizer *singleFingerOne = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleFingerToPlayVideoEvent:)];
@@ -86,6 +84,9 @@ UIGestureRecognizerDelegate
         [webView loadRequest:[NSURLRequest requestWithURL:self.url]];
         [self.view addSubview:webView];
     }
+    
+    // 配置工具视图
+    [self setupToolboxUI];
     
     // 文件上传（可上传视频、Gif 等）
     [self setupFileUpload];
@@ -196,7 +197,7 @@ UIGestureRecognizerDelegate
     //获取视频输出视图并添加为到当前 UIView 对象的 Subview
     self.player.playerView.frame = CGRectMake(0, 0, PLS_SCREEN_WIDTH, PLS_SCREEN_HEIGHT);
     self.player.playerView.contentMode = UIViewContentModeScaleAspectFit;
-    [self.view insertSubview:self.player.playerView belowSubview:self.baseToolboxView];
+    [self.view addSubview:self.player.playerView];
 }
 
 #pragma mark -- 添加定时器

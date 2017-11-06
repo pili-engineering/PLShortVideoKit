@@ -303,7 +303,6 @@
 		0A8B8A521F8F8786001A3A48 /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = 0A8B89521F8F8785001A3A48 /* mztools.c */; };
 		0A8B8A531F8F8786001A3A48 /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = 0A8B89541F8F8785001A3A48 /* unzip.c */; };
 		0A8B8A541F8F8786001A3A48 /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 0A8B89561F8F8785001A3A48 /* zip.c */; };
-		0A8B8A551F8F8786001A3A48 /* SSZipArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A8B89591F8F8785001A3A48 /* SSZipArchive.m */; };
 		0A8B8A561F8F8786001A3A48 /* UIDevice+DeviceModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A8B895B1F8F8785001A3A48 /* UIDevice+DeviceModel.m */; };
 		0A8B8A571F8F8786001A3A48 /* KWDistortionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A8B895F1F8F8785001A3A48 /* KWDistortionCell.m */; };
 		0A8B8A581F8F8786001A3A48 /* KWFilterCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A8B89611F8F8785001A3A48 /* KWFilterCell.m */; };
@@ -329,6 +328,37 @@
 		0A9CB4ED1EF042FB00EABA76 /* btn_close_sound@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0A9CB4E91EF042FB00EABA76 /* btn_close_sound@3x.png */; };
 		0A9CB4EE1EF042FB00EABA76 /* btn_sound@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0A9CB4EA1EF042FB00EABA76 /* btn_sound@2x.png */; };
 		0A9CB4EF1EF042FB00EABA76 /* btn_sound@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0A9CB4EB1EF042FB00EABA76 /* btn_sound@3x.png */; };
+		0AC9D55B1FB0AD4C003F7E8F /* arScene.js in Resources */ = {isa = PBXBuildFile; fileRef = 0AC9D53B1FB0AD4C003F7E8F /* arScene.js */; };
+		0AC9D55C1FB0AD4C003F7E8F /* easyar.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC9D53C1FB0AD4C003F7E8F /* easyar.framework */; };
+		0AC9D55D1FB0AD4C003F7E8F /* easyar3d.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC9D53D1FB0AD4C003F7E8F /* easyar3d.framework */; };
+		0AC9D55E1FB0AD4C003F7E8F /* PostBasic.effect in Resources */ = {isa = PBXBuildFile; fileRef = 0AC9D53E1FB0AD4C003F7E8F /* PostBasic.effect */; };
+		0AC9D55F1FB0AD4C003F7E8F /* Recorder.js in Resources */ = {isa = PBXBuildFile; fileRef = 0AC9D53F1FB0AD4C003F7E8F /* Recorder.js */; };
+		0AC9D5601FB0AD4C003F7E8F /* Recorder.json in Resources */ = {isa = PBXBuildFile; fileRef = 0AC9D5401FB0AD4C003F7E8F /* Recorder.json */; };
+		0AC9D5611FB0AD4C003F7E8F /* scene.js in Resources */ = {isa = PBXBuildFile; fileRef = 0AC9D5411FB0AD4C003F7E8F /* scene.js */; };
+		0AC9D5621FB0AD4C003F7E8F /* Auth.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9D5441FB0AD4C003F7E8F /* Auth.m */; };
+		0AC9D5631FB0AD4C003F7E8F /* Downloader.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9D5461FB0AD4C003F7E8F /* Downloader.m */; };
+		0AC9D5641FB0AD4C003F7E8F /* JSONLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9D5481FB0AD4C003F7E8F /* JSONLoader.m */; };
+		0AC9D5651FB0AD4C003F7E8F /* SPARApp.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9D54A1FB0AD4C003F7E8F /* SPARApp.m */; };
+		0AC9D5661FB0AD4C003F7E8F /* SPARAppCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9D54C1FB0AD4C003F7E8F /* SPARAppCache.m */; };
+		0AC9D5671FB0AD4C003F7E8F /* SPARManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9D54E1FB0AD4C003F7E8F /* SPARManager.m */; };
+		0AC9D5681FB0AD4C003F7E8F /* SPARPackage.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9D5501FB0AD4C003F7E8F /* SPARPackage.m */; };
+		0AC9D5691FB0AD4C003F7E8F /* SPARPreloadCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9D5521FB0AD4C003F7E8F /* SPARPreloadCache.m */; };
+		0AC9D56A1FB0AD4C003F7E8F /* SPARTarget.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9D5541FB0AD4C003F7E8F /* SPARTarget.m */; };
+		0AC9D56B1FB0AD4C003F7E8F /* SPARUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9D5561FB0AD4C003F7E8F /* SPARUtil.m */; };
+		0AC9D56D1FB0AD4C003F7E8F /* Unpacker.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9D55A1FB0AD4C003F7E8F /* Unpacker.m */; };
+		0AC9D5701FB0AE36003F7E8F /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC9D56F1FB0AE2A003F7E8F /* JavaScriptCore.framework */; };
+		0AC9D5711FB0AE41003F7E8F /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC9D56E1FB0AE23003F7E8F /* Accelerate.framework */; };
+		0AC9D5741FB0AFCF003F7E8F /* PLSLoadAnimationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9D5731FB0AFCF003F7E8F /* PLSLoadAnimationView.m */; };
+		0AC9D57B1FB0AFE9003F7E8F /* ARWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9D5761FB0AFE8003F7E8F /* ARWebViewController.m */; };
+		0AC9D57C1FB0AFE9003F7E8F /* DubViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9D5771FB0AFE8003F7E8F /* DubViewController.m */; };
+		0AC9D57D1FB0AFE9003F7E8F /* EasyarARViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9D5791FB0AFE9003F7E8F /* EasyarARViewController.m */; };
+		0AC9D5851FB0B089003F7E8F /* back_white.png in Resources */ = {isa = PBXBuildFile; fileRef = 0AC9D57E1FB0B087003F7E8F /* back_white.png */; };
+		0AC9D5861FB0B089003F7E8F /* dubber_stop.png in Resources */ = {isa = PBXBuildFile; fileRef = 0AC9D57F1FB0B088003F7E8F /* dubber_stop.png */; };
+		0AC9D5871FB0B089003F7E8F /* easyar_AR.png in Resources */ = {isa = PBXBuildFile; fileRef = 0AC9D5801FB0B088003F7E8F /* easyar_AR.png */; };
+		0AC9D5881FB0B089003F7E8F /* scan_line.png in Resources */ = {isa = PBXBuildFile; fileRef = 0AC9D5811FB0B088003F7E8F /* scan_line.png */; };
+		0AC9D5891FB0B089003F7E8F /* icon_dub.png in Resources */ = {isa = PBXBuildFile; fileRef = 0AC9D5821FB0B088003F7E8F /* icon_dub.png */; };
+		0AC9D58A1FB0B089003F7E8F /* dubber_start.png in Resources */ = {isa = PBXBuildFile; fileRef = 0AC9D5831FB0B088003F7E8F /* dubber_start.png */; };
+		0AC9D58B1FB0B089003F7E8F /* scroll_image.png in Resources */ = {isa = PBXBuildFile; fileRef = 0AC9D5841FB0B089003F7E8F /* scroll_image.png */; };
 		0ACE7C361ED8B072002FF4C9 /* PLSClipMovieView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE7C2C1ED8B072002FF4C9 /* PLSClipMovieView.m */; };
 		0ACE7C371ED8B072002FF4C9 /* PLSDeleteButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE7C2E1ED8B072002FF4C9 /* PLSDeleteButton.m */; };
 		0ACE7C381ED8B072002FF4C9 /* PLSEditVideoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE7C301ED8B072002FF4C9 /* PLSEditVideoCell.m */; };
@@ -347,6 +377,7 @@
 		0AECA4F21E88466300AF2931 /* PlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AECA4F11E88466300AF2931 /* PlayViewController.m */; };
 		0AECA4F41E884CD200AF2931 /* btn_back.png in Resources */ = {isa = PBXBuildFile; fileRef = 0AECA4F31E884CD200AF2931 /* btn_back.png */; };
 		0AECA4F61E884D0900AF2931 /* video_play.png in Resources */ = {isa = PBXBuildFile; fileRef = 0AECA4F51E884D0900AF2931 /* video_play.png */; };
+		0AEE2DFB1FB0B0FC00DC6573 /* SSZipArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9D5581FB0AD4C003F7E8F /* SSZipArchive.m */; };
 		0AFB9DBD1FB083EB0057D8D8 /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AFB9DB41FB083EB0057D8D8 /* libavcodec.a */; };
 		0AFB9DBE1FB083EB0057D8D8 /* libavformat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AFB9DB51FB083EB0057D8D8 /* libavformat.a */; };
 		0AFB9DBF1FB083EB0057D8D8 /* libavutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AFB9DB61FB083EB0057D8D8 /* libavutil.a */; };
@@ -974,6 +1005,54 @@
 		0A9CB4E91EF042FB00EABA76 /* btn_close_sound@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "btn_close_sound@3x.png"; path = "images/btn_close_sound@3x.png"; sourceTree = "<group>"; };
 		0A9CB4EA1EF042FB00EABA76 /* btn_sound@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "btn_sound@2x.png"; path = "images/btn_sound@2x.png"; sourceTree = "<group>"; };
 		0A9CB4EB1EF042FB00EABA76 /* btn_sound@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "btn_sound@3x.png"; path = "images/btn_sound@3x.png"; sourceTree = "<group>"; };
+		0AC9D53B1FB0AD4C003F7E8F /* arScene.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = arScene.js; sourceTree = "<group>"; };
+		0AC9D53C1FB0AD4C003F7E8F /* easyar.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = easyar.framework; sourceTree = "<group>"; };
+		0AC9D53D1FB0AD4C003F7E8F /* easyar3d.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = easyar3d.framework; sourceTree = "<group>"; };
+		0AC9D53E1FB0AD4C003F7E8F /* PostBasic.effect */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = PostBasic.effect; sourceTree = "<group>"; };
+		0AC9D53F1FB0AD4C003F7E8F /* Recorder.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = Recorder.js; sourceTree = "<group>"; };
+		0AC9D5401FB0AD4C003F7E8F /* Recorder.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Recorder.json; sourceTree = "<group>"; };
+		0AC9D5411FB0AD4C003F7E8F /* scene.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = scene.js; sourceTree = "<group>"; };
+		0AC9D5431FB0AD4C003F7E8F /* Auth.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Auth.h; sourceTree = "<group>"; };
+		0AC9D5441FB0AD4C003F7E8F /* Auth.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Auth.m; sourceTree = "<group>"; };
+		0AC9D5451FB0AD4C003F7E8F /* Downloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Downloader.h; sourceTree = "<group>"; };
+		0AC9D5461FB0AD4C003F7E8F /* Downloader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Downloader.m; sourceTree = "<group>"; };
+		0AC9D5471FB0AD4C003F7E8F /* JSONLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSONLoader.h; sourceTree = "<group>"; };
+		0AC9D5481FB0AD4C003F7E8F /* JSONLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSONLoader.m; sourceTree = "<group>"; };
+		0AC9D5491FB0AD4C003F7E8F /* SPARApp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPARApp.h; sourceTree = "<group>"; };
+		0AC9D54A1FB0AD4C003F7E8F /* SPARApp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SPARApp.m; sourceTree = "<group>"; };
+		0AC9D54B1FB0AD4C003F7E8F /* SPARAppCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPARAppCache.h; sourceTree = "<group>"; };
+		0AC9D54C1FB0AD4C003F7E8F /* SPARAppCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SPARAppCache.m; sourceTree = "<group>"; };
+		0AC9D54D1FB0AD4C003F7E8F /* SPARManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPARManager.h; sourceTree = "<group>"; };
+		0AC9D54E1FB0AD4C003F7E8F /* SPARManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SPARManager.m; sourceTree = "<group>"; };
+		0AC9D54F1FB0AD4C003F7E8F /* SPARPackage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPARPackage.h; sourceTree = "<group>"; };
+		0AC9D5501FB0AD4C003F7E8F /* SPARPackage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SPARPackage.m; sourceTree = "<group>"; };
+		0AC9D5511FB0AD4C003F7E8F /* SPARPreloadCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPARPreloadCache.h; sourceTree = "<group>"; };
+		0AC9D5521FB0AD4C003F7E8F /* SPARPreloadCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SPARPreloadCache.m; sourceTree = "<group>"; };
+		0AC9D5531FB0AD4C003F7E8F /* SPARTarget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPARTarget.h; sourceTree = "<group>"; };
+		0AC9D5541FB0AD4C003F7E8F /* SPARTarget.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SPARTarget.m; sourceTree = "<group>"; };
+		0AC9D5551FB0AD4C003F7E8F /* SPARUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPARUtil.h; sourceTree = "<group>"; };
+		0AC9D5561FB0AD4C003F7E8F /* SPARUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SPARUtil.m; sourceTree = "<group>"; };
+		0AC9D5571FB0AD4C003F7E8F /* SSZipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSZipArchive.h; sourceTree = "<group>"; };
+		0AC9D5581FB0AD4C003F7E8F /* SSZipArchive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSZipArchive.m; sourceTree = "<group>"; };
+		0AC9D5591FB0AD4C003F7E8F /* Unpacker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Unpacker.h; sourceTree = "<group>"; };
+		0AC9D55A1FB0AD4C003F7E8F /* Unpacker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Unpacker.m; sourceTree = "<group>"; };
+		0AC9D56E1FB0AE23003F7E8F /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		0AC9D56F1FB0AE2A003F7E8F /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		0AC9D5721FB0AFCF003F7E8F /* PLSLoadAnimationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLSLoadAnimationView.h; sourceTree = "<group>"; };
+		0AC9D5731FB0AFCF003F7E8F /* PLSLoadAnimationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLSLoadAnimationView.m; sourceTree = "<group>"; };
+		0AC9D5751FB0AFE8003F7E8F /* ARWebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ARWebViewController.h; sourceTree = "<group>"; };
+		0AC9D5761FB0AFE8003F7E8F /* ARWebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ARWebViewController.m; sourceTree = "<group>"; };
+		0AC9D5771FB0AFE8003F7E8F /* DubViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DubViewController.m; sourceTree = "<group>"; };
+		0AC9D5781FB0AFE9003F7E8F /* EasyarARViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EasyarARViewController.h; sourceTree = "<group>"; };
+		0AC9D5791FB0AFE9003F7E8F /* EasyarARViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EasyarARViewController.m; sourceTree = "<group>"; };
+		0AC9D57A1FB0AFE9003F7E8F /* DubViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DubViewController.h; sourceTree = "<group>"; };
+		0AC9D57E1FB0B087003F7E8F /* back_white.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = back_white.png; path = images/back_white.png; sourceTree = "<group>"; };
+		0AC9D57F1FB0B088003F7E8F /* dubber_stop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = dubber_stop.png; path = images/dubber_stop.png; sourceTree = "<group>"; };
+		0AC9D5801FB0B088003F7E8F /* easyar_AR.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = easyar_AR.png; path = images/easyar_AR.png; sourceTree = "<group>"; };
+		0AC9D5811FB0B088003F7E8F /* scan_line.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = scan_line.png; path = images/scan_line.png; sourceTree = "<group>"; };
+		0AC9D5821FB0B088003F7E8F /* icon_dub.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon_dub.png; path = images/icon_dub.png; sourceTree = "<group>"; };
+		0AC9D5831FB0B088003F7E8F /* dubber_start.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = dubber_start.png; path = images/dubber_start.png; sourceTree = "<group>"; };
+		0AC9D5841FB0B089003F7E8F /* scroll_image.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = scroll_image.png; path = images/scroll_image.png; sourceTree = "<group>"; };
 		0ACE7C2B1ED8B072002FF4C9 /* PLSClipMovieView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLSClipMovieView.h; sourceTree = "<group>"; };
 		0ACE7C2C1ED8B072002FF4C9 /* PLSClipMovieView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLSClipMovieView.m; sourceTree = "<group>"; };
 		0ACE7C2D1ED8B072002FF4C9 /* PLSDeleteButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLSDeleteButton.h; sourceTree = "<group>"; };
@@ -1038,11 +1117,15 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0AC9D5711FB0AE41003F7E8F /* Accelerate.framework in Frameworks */,
+				0AC9D5701FB0AE36003F7E8F /* JavaScriptCore.framework in Frameworks */,
+				0AC9D55D1FB0AD4C003F7E8F /* easyar3d.framework in Frameworks */,
 				0AFB9DC21FB083EB0057D8D8 /* libspeex.a in Frameworks */,
 				0A8B8A091F8F8785001A3A48 /* libfaceTrackerSDK.a in Frameworks */,
 				0A8B89A61F8F8785001A3A48 /* libKwSDK.a in Frameworks */,
 				0AFB9DC31FB083EB0057D8D8 /* libspeexdsp.a in Frameworks */,
 				0AFB9DBE1FB083EB0057D8D8 /* libavformat.a in Frameworks */,
+				0AC9D55C1FB0AD4C003F7E8F /* easyar.framework in Frameworks */,
 				0A8B8A0B1F8F8785001A3A48 /* opencv2.framework in Frameworks */,
 				0AFB9DCB1FB084040057D8D8 /* libz.1.1.3.tbd in Frameworks */,
 				0A8B8A0C1F8F8786001A3A48 /* libGPUImage.a in Frameworks */,
@@ -1739,10 +1822,10 @@
 		0A9435731E6CA2E2008845A3 = {
 			isa = PBXGroup;
 			children = (
+				897018225EF668D16731032B /* Frameworks */,
 				0A94357E1E6CA2E2008845A3 /* PLShortVideoKitDemo */,
 				0A94357D1E6CA2E2008845A3 /* Products */,
 				32B90CBBA587775FFC5C4D5B /* Pods */,
-				897018225EF668D16731032B /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1758,6 +1841,7 @@
 			isa = PBXGroup;
 			children = (
 				0A4C4C8E1F3DB5F2003F63CF /* PLShortVideoKit.bundle */,
+				0AC9D53A1FB0AD4C003F7E8F /* EasyARSDK */,
 				0AFB9DAB1FB083EB0057D8D8 /* PLPlayerKit */,
 				C3F91D2D1F1CBD4900698322 /* KiwiFaceSDK */,
 				0ACE7C281ED8B072002FF4C9 /* UI+Tools */,
@@ -1767,6 +1851,10 @@
 				0A9435861E6CA2E2008845A3 /* ViewController.m */,
 				C39EA3E41F4EC7490007D1C3 /* RecordViewController.h */,
 				C39EA3E51F4EC7490007D1C3 /* RecordViewController.m */,
+				0AC9D5781FB0AFE9003F7E8F /* EasyarARViewController.h */,
+				0AC9D5791FB0AFE9003F7E8F /* EasyarARViewController.m */,
+				0AC9D5751FB0AFE8003F7E8F /* ARWebViewController.h */,
+				0AC9D5761FB0AFE8003F7E8F /* ARWebViewController.m */,
 				0A398F6A1ED6259000996229 /* PhotoAlbumViewController.h */,
 				0A398F6B1ED6259000996229 /* PhotoAlbumViewController.m */,
 				0A6340281F15C9C9005ADF6C /* MovieTransCodeViewController.h */,
@@ -1775,6 +1863,8 @@
 				0A398F6F1ED625DD00996229 /* ClipMovieViewController.m */,
 				C39EA3E11F4EC6AB0007D1C3 /* GifFormatViewController.h */,
 				C39EA3E21F4EC6AB0007D1C3 /* GifFormatViewController.m */,
+				0AC9D57A1FB0AFE9003F7E8F /* DubViewController.h */,
+				0AC9D5771FB0AFE8003F7E8F /* DubViewController.m */,
 				0A52C1911E9C987900561F37 /* EditViewController.h */,
 				0A52C1921E9C987900561F37 /* EditViewController.m */,
 				0AECA4F01E88466300AF2931 /* PlayViewController.h */,
@@ -1811,6 +1901,13 @@
 				0AE8AC9B1F065DCD006166E2 /* Greenery.m4a */,
 				0AE8AC9C1F065DCD006166E2 /* Sophomore_Makeout.m4a */,
 				0AE8AC9D1F065DCD006166E2 /* Whistling_Down_the_Road.m4a */,
+				0AC9D57E1FB0B087003F7E8F /* back_white.png */,
+				0AC9D5831FB0B088003F7E8F /* dubber_start.png */,
+				0AC9D57F1FB0B088003F7E8F /* dubber_stop.png */,
+				0AC9D5801FB0B088003F7E8F /* easyar_AR.png */,
+				0AC9D5821FB0B088003F7E8F /* icon_dub.png */,
+				0AC9D5811FB0B088003F7E8F /* scan_line.png */,
+				0AC9D5841FB0B089003F7E8F /* scroll_image.png */,
 				0A8B8A5E1F8F8988001A3A48 /* Time_Machine_No_Reverser.png */,
 				0A8B8A5F1F8F8988001A3A48 /* Time_Machine_Reverser.png */,
 				0AE8AC971F06443A006166E2 /* icon_trim.png */,
@@ -1888,9 +1985,57 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		0AC9D53A1FB0AD4C003F7E8F /* EasyARSDK */ = {
+			isa = PBXGroup;
+			children = (
+				0AC9D53B1FB0AD4C003F7E8F /* arScene.js */,
+				0AC9D53C1FB0AD4C003F7E8F /* easyar.framework */,
+				0AC9D53D1FB0AD4C003F7E8F /* easyar3d.framework */,
+				0AC9D53E1FB0AD4C003F7E8F /* PostBasic.effect */,
+				0AC9D53F1FB0AD4C003F7E8F /* Recorder.js */,
+				0AC9D5401FB0AD4C003F7E8F /* Recorder.json */,
+				0AC9D5411FB0AD4C003F7E8F /* scene.js */,
+				0AC9D5421FB0AD4C003F7E8F /* spar */,
+			);
+			path = EasyARSDK;
+			sourceTree = "<group>";
+		};
+		0AC9D5421FB0AD4C003F7E8F /* spar */ = {
+			isa = PBXGroup;
+			children = (
+				0AC9D5431FB0AD4C003F7E8F /* Auth.h */,
+				0AC9D5441FB0AD4C003F7E8F /* Auth.m */,
+				0AC9D5451FB0AD4C003F7E8F /* Downloader.h */,
+				0AC9D5461FB0AD4C003F7E8F /* Downloader.m */,
+				0AC9D5471FB0AD4C003F7E8F /* JSONLoader.h */,
+				0AC9D5481FB0AD4C003F7E8F /* JSONLoader.m */,
+				0AC9D5491FB0AD4C003F7E8F /* SPARApp.h */,
+				0AC9D54A1FB0AD4C003F7E8F /* SPARApp.m */,
+				0AC9D54B1FB0AD4C003F7E8F /* SPARAppCache.h */,
+				0AC9D54C1FB0AD4C003F7E8F /* SPARAppCache.m */,
+				0AC9D54D1FB0AD4C003F7E8F /* SPARManager.h */,
+				0AC9D54E1FB0AD4C003F7E8F /* SPARManager.m */,
+				0AC9D54F1FB0AD4C003F7E8F /* SPARPackage.h */,
+				0AC9D5501FB0AD4C003F7E8F /* SPARPackage.m */,
+				0AC9D5511FB0AD4C003F7E8F /* SPARPreloadCache.h */,
+				0AC9D5521FB0AD4C003F7E8F /* SPARPreloadCache.m */,
+				0AC9D5531FB0AD4C003F7E8F /* SPARTarget.h */,
+				0AC9D5541FB0AD4C003F7E8F /* SPARTarget.m */,
+				0AC9D5551FB0AD4C003F7E8F /* SPARUtil.h */,
+				0AC9D5561FB0AD4C003F7E8F /* SPARUtil.m */,
+				0AC9D5571FB0AD4C003F7E8F /* SSZipArchive.h */,
+				0AC9D5581FB0AD4C003F7E8F /* SSZipArchive.m */,
+				0AC9D5591FB0AD4C003F7E8F /* Unpacker.h */,
+				0AC9D55A1FB0AD4C003F7E8F /* Unpacker.m */,
+			);
+			path = spar;
+			sourceTree = "<group>";
+		};
 		0ACE7C281ED8B072002FF4C9 /* UI+Tools */ = {
 			isa = PBXGroup;
 			children = (
+				0AC9D5721FB0AFCF003F7E8F /* PLSLoadAnimationView.h */,
+				0AC9D5731FB0AFCF003F7E8F /* PLSLoadAnimationView.m */,
 				0ACE7C2B1ED8B072002FF4C9 /* PLSClipMovieView.h */,
 				0ACE7C2C1ED8B072002FF4C9 /* PLSClipMovieView.m */,
 				0A514ADF1F62945A006A7E87 /* PLSRateButtonView.h */,
@@ -1976,6 +2121,8 @@
 		897018225EF668D16731032B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0AC9D56F1FB0AE2A003F7E8F /* JavaScriptCore.framework */,
+				0AC9D56E1FB0AE23003F7E8F /* Accelerate.framework */,
 				0AFB9DCA1FB084040057D8D8 /* libz.1.1.3.tbd */,
 				0AFB9DC81FB083FF0057D8D8 /* libbz2.1.0.tbd */,
 				0AFB9DC61FB083F90057D8D8 /* libiconv.2.4.0.tbd */,
@@ -2090,9 +2237,11 @@
 				0A0692491E8A3B590035CB7B /* btn_bar_next_b@2x.png in Resources */,
 				0A8B89C11F8F8785001A3A48 /* cutoutIconDown@2x.png in Resources */,
 				0A8B89CB1F8F8785001A3A48 /* entranceBackground_sys.png in Resources */,
+				0AC9D55F1FB0AD4C003F7E8F /* Recorder.js in Resources */,
 				0A8B89831F8F8785001A3A48 /* earlybirdOverlayMap.png in Resources */,
 				0A8B89881F8F8785001A3A48 /* hefeMap.png in Resources */,
 				0A94DFD31E6DF5D2007BDD0D /* toggle_camera.png in Resources */,
+				0AC9D5861FB0B089003F7E8F /* dubber_stop.png in Resources */,
 				0A8B89E81F8F8785001A3A48 /* on@2x.png in Resources */,
 				0A9CB4EC1EF042FB00EABA76 /* btn_close_sound@2x.png in Resources */,
 				0A8B89901F8F8785001A3A48 /* nashvilleMap.png in Resources */,
@@ -2102,6 +2251,7 @@
 				0AE8AC981F06443A006166E2 /* icon_trim.png in Resources */,
 				0A8B89B61F8F8785001A3A48 /* button@2x.png in Resources */,
 				0A8B8A111F8F8786001A3A48 /* stickers.json in Resources */,
+				0AC9D5871FB0B089003F7E8F /* easyar_AR.png in Resources */,
 				0A8B89BA1F8F8785001A3A48 /* closeVideo_sys@2x.png in Resources */,
 				0A8B89E51F8F8785001A3A48 /* meiyanliang@3x.png in Resources */,
 				0A8B89D41F8F8785001A3A48 /* gesturesStickerDown_sys@2x.png in Resources */,
@@ -2110,11 +2260,13 @@
 				0A398F911ED6628500996229 /* cut_bar_left.png in Resources */,
 				0A8B89FC1F8F8785001A3A48 /* tags@2x.png in Resources */,
 				0A8B89BC1F8F8785001A3A48 /* cutoutBgimage.jpg in Resources */,
+				0AC9D55E1FB0AD4C003F7E8F /* PostBasic.effect in Resources */,
 				0A8B89CE1F8F8785001A3A48 /* face@2x.png in Resources */,
 				0A8B89741F8F8785001A3A48 /* filters.json in Resources */,
 				0A8B89E61F8F8785001A3A48 /* off@2x.png in Resources */,
 				0A398F931ED6628500996229 /* cut_bar_left@3x.png in Resources */,
 				0A8B89B51F8F8785001A3A48 /* beauty@3x.png in Resources */,
+				0AC9D5851FB0B089003F7E8F /* back_white.png in Resources */,
 				0A1E2CE41E8CAF8C002C9296 /* btn_record_shine_big@2x.png in Resources */,
 				0A8B89CA1F8F8785001A3A48 /* enterVideo_sys@3x.png in Resources */,
 				0A8B89981F8F8785001A3A48 /* sutroEdgeBurn.png in Resources */,
@@ -2180,6 +2332,7 @@
 				0AE8AC9E1F065DCD006166E2 /* counter.m4a in Resources */,
 				0A8B89DD1F8F8785001A3A48 /* ison@3x.png in Resources */,
 				C39EA3F71F4ECB1F0007D1C3 /* btn_selected_pic@3x.png in Resources */,
+				0AC9D58B1FB0B089003F7E8F /* scroll_image.png in Resources */,
 				0A8B89BD1F8F8785001A3A48 /* cutoutIcon.png in Resources */,
 				0A24C5E21EE912E500B2314E /* Road_to_Moscow.mp3 in Resources */,
 				0A0692431E8A3B590035CB7B /* btn_bar_back_a@2x.png in Resources */,
@@ -2237,6 +2390,7 @@
 				0A8B89D21F8F8785001A3A48 /* gesturesSticker_sys@2x.png in Resources */,
 				0A8B89DE1F8F8785001A3A48 /* logo@2x.png in Resources */,
 				0AE8AC9F1F065DCD006166E2 /* Fire_Breather.m4a in Resources */,
+				0AC9D55B1FB0AD4C003F7E8F /* arScene.js in Resources */,
 				0A0692501E8A3B590035CB7B /* btn_camera_done_a@3x.png in Resources */,
 				0A8B89F81F8F8785001A3A48 /* switch@2x.png in Resources */,
 				0A94358C1E6CA2E2008845A3 /* Assets.xcassets in Resources */,
@@ -2251,8 +2405,10 @@
 				0A8B89B01F8F8785001A3A48 /* automaticFace@2x.png in Resources */,
 				0A8B898A1F8F8785001A3A48 /* hefeSoftLight.png in Resources */,
 				0A8B89FF1F8F8785001A3A48 /* takephoto_sys@3x.png in Resources */,
+				0AC9D5611FB0AD4C003F7E8F /* scene.js in Resources */,
 				C39EA3F41F4ECB1F0007D1C3 /* btn_no_selected_pic@2x.png in Resources */,
 				0A8B89C61F8F8785001A3A48 /* distorting mirror@3x.png in Resources */,
+				0AC9D5601FB0AD4C003F7E8F /* Recorder.json in Resources */,
 				0A8B89A01F8F8785001A3A48 /* valenciaMap.png in Resources */,
 				0A8B89E71F8F8785001A3A48 /* off@3x.png in Resources */,
 				0A8B89F51F8F8785001A3A48 /* smiliesSticker_sys@3x.png in Resources */,
@@ -2260,6 +2416,7 @@
 				0A8B89911F8F8785001A3A48 /* overlayMap.png in Resources */,
 				0A06924D1E8A3B590035CB7B /* btn_camera_cancel_b@2x.png in Resources */,
 				0A06924B1E8A3B590035CB7B /* btn_camera_cancel_a@2x.png in Resources */,
+				0AC9D58A1FB0B089003F7E8F /* dubber_start.png in Resources */,
 				0A8B89C41F8F8785001A3A48 /* distorting mirror drk@3x.png in Resources */,
 				0A398FA01ED6698F00996229 /* cut_bar_progress@3x.png in Resources */,
 				0A8B89F21F8F8785001A3A48 /* shoot@2x.png in Resources */,
@@ -2273,6 +2430,7 @@
 				0A8B89B31F8F8785001A3A48 /* beauty drk@3x.png in Resources */,
 				0A8B89A21F8F8785001A3A48 /* waldenMap.png in Resources */,
 				0A398F761ED62A1500996229 /* btn_banner_a@3x.png in Resources */,
+				0AC9D5891FB0B089003F7E8F /* icon_dub.png in Resources */,
 				0A24C5ED1EE951B900B2314E /* movie.png in Resources */,
 				0A8B89D11F8F8785001A3A48 /* filter@3x.png in Resources */,
 				0AECA4F41E884CD200AF2931 /* btn_back.png in Resources */,
@@ -2282,6 +2440,7 @@
 				0A9CB4ED1EF042FB00EABA76 /* btn_close_sound@3x.png in Resources */,
 				0A8B899D1F8F8785001A3A48 /* toasterOverlayMapWarm.png in Resources */,
 				0A8B899C1F8F8785001A3A48 /* toasterMetal.png in Resources */,
+				0AC9D5881FB0B089003F7E8F /* scan_line.png in Resources */,
 				0AECA4F61E884D0900AF2931 /* video_play.png in Resources */,
 				0A0692451E8A3B590035CB7B /* btn_bar_back_b@2x.png in Resources */,
 				0A8B89D31F8F8785001A3A48 /* gesturesSticker_sys@3x.png in Resources */,
@@ -2384,24 +2543,31 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0AEE2DFB1FB0B0FC00DC6573 /* SSZipArchive.m in Sources */,
 				0A8B8A381F8F8786001A3A48 /* scale_common.cc in Sources */,
 				0A9435871E6CA2E2008845A3 /* ViewController.m in Sources */,
 				0A8B8A241F8F8786001A3A48 /* rotate.cc in Sources */,
 				0A8B8A141F8F8786001A3A48 /* compare_common.cc in Sources */,
 				0A8B8A401F8F8786001A3A48 /* Reachability.m in Sources */,
 				0A8B8A0A1F8F8785001A3A48 /* KWUIManager.m in Sources */,
+				0AC9D57B1FB0AFE9003F7E8F /* ARWebViewController.m in Sources */,
 				0A8B8A361F8F8786001A3A48 /* scale_any.cc in Sources */,
 				0A8B8A351F8F8786001A3A48 /* scale.cc in Sources */,
+				0AC9D56B1FB0AD4C003F7E8F /* SPARUtil.m in Sources */,
 				0A8B8A1F1F8F8786001A3A48 /* convert_to_i420.cc in Sources */,
 				0A8B8A5A1F8F8786001A3A48 /* KWRenderManager.m in Sources */,
 				0A52C1931E9C987900561F37 /* EditViewController.m in Sources */,
 				0A8B8A3C1F8F8786001A3A48 /* scale_neon64.cc in Sources */,
+				0AC9D5691FB0AD4C003F7E8F /* SPARPreloadCache.m in Sources */,
 				0A8B8A0F1F8F8786001A3A48 /* KWStickerDownloadManager.m in Sources */,
+				0AC9D56A1FB0AD4C003F7E8F /* SPARTarget.m in Sources */,
 				0A8B8A451F8F8786001A3A48 /* SDWebImageDecoder.m in Sources */,
+				0AC9D5681FB0AD4C003F7E8F /* SPARPackage.m in Sources */,
 				0A8B8A591F8F8786001A3A48 /* KWStickerCell.m in Sources */,
 				0A8B8A251F8F8786001A3A48 /* rotate_any.cc in Sources */,
 				0A8B8A0E1F8F8786001A3A48 /* KWSticker.m in Sources */,
 				0A8B8A0D1F8F8786001A3A48 /* KWPresentStickerManager.m in Sources */,
+				0AC9D5661FB0AD4C003F7E8F /* SPARAppCache.m in Sources */,
 				0A8B8A311F8F8786001A3A48 /* row_msa.cc in Sources */,
 				0A398F6C1ED6259000996229 /* PhotoAlbumViewController.m in Sources */,
 				0A8B8A581F8F8786001A3A48 /* KWFilterCell.m in Sources */,
@@ -2412,6 +2578,7 @@
 				0AE8AC951F063E3E006166E2 /* PLSClipAudioView.m in Sources */,
 				0A8B8A3A1F8F8786001A3A48 /* scale_mips.cc in Sources */,
 				0A514AE11F62945A006A7E87 /* PLSRateButtonView.m in Sources */,
+				0AC9D5631FB0AD4C003F7E8F /* Downloader.m in Sources */,
 				0A8B8A3B1F8F8786001A3A48 /* scale_neon.cc in Sources */,
 				0A8B8A1A1F8F8786001A3A48 /* convert_argb.cc in Sources */,
 				0A8B8A171F8F8786001A3A48 /* compare_neon64.cc in Sources */,
@@ -2425,6 +2592,7 @@
 				0A8B8A511F8F8786001A3A48 /* ioapi.c in Sources */,
 				0A8B8A3D1F8F8786001A3A48 /* scale_win.cc in Sources */,
 				0A8B8A421F8F8786001A3A48 /* NSData+ImageContentType.m in Sources */,
+				0AC9D5621FB0AD4C003F7E8F /* Auth.m in Sources */,
 				C39EA3E61F4EC7490007D1C3 /* RecordViewController.m in Sources */,
 				0A928BE31EE75703007D2250 /* PLSAudioVolumeView.m in Sources */,
 				0ACE7C381ED8B072002FF4C9 /* PLSEditVideoCell.m in Sources */,
@@ -2436,16 +2604,20 @@
 				0A8B8A301F8F8786001A3A48 /* row_mips.cc in Sources */,
 				0A8B8A4D1F8F8786001A3A48 /* UIImage+WebP.m in Sources */,
 				0ACE7C391ED8B072002FF4C9 /* PLSProgressBar.m in Sources */,
+				0AC9D5741FB0AFCF003F7E8F /* PLSLoadAnimationView.m in Sources */,
+				0AC9D56D1FB0AD4C003F7E8F /* Unpacker.m in Sources */,
 				0A8B8A531F8F8786001A3A48 /* unzip.c in Sources */,
 				0AECA4F21E88466300AF2931 /* PlayViewController.m in Sources */,
 				0A8B8A3F1F8F8786001A3A48 /* KWSaveData.m in Sources */,
 				0A8B8A2D1F8F8786001A3A48 /* row_any.cc in Sources */,
+				0AC9D57D1FB0AFE9003F7E8F /* EasyarARViewController.m in Sources */,
 				0A8B8A131F8F8786001A3A48 /* compare.cc in Sources */,
 				0A8B8A191F8F8786001A3A48 /* convert.cc in Sources */,
 				0A8B8A391F8F8786001A3A48 /* scale_gcc.cc in Sources */,
 				0A8B8A431F8F8786001A3A48 /* SDImageCache.m in Sources */,
 				0A8B8A1D1F8F8786001A3A48 /* convert_jpeg.cc in Sources */,
 				0A8B8A4A1F8F8786001A3A48 /* UIButton+WebCache.m in Sources */,
+				0AC9D5641FB0AD4C003F7E8F /* JSONLoader.m in Sources */,
 				0A8B8A201F8F8786001A3A48 /* cpu_id.cc in Sources */,
 				0A8B8A4B1F8F8786001A3A48 /* UIImage+GIF.m in Sources */,
 				0A8B8A161F8F8786001A3A48 /* compare_neon.cc in Sources */,
@@ -2457,7 +2629,7 @@
 				0A8B8A441F8F8786001A3A48 /* SDWebImageCompat.m in Sources */,
 				0A8B8A5D1F8F8848001A3A48 /* PLSViewRecorderManager.m in Sources */,
 				0A8B8A151F8F8786001A3A48 /* compare_gcc.cc in Sources */,
-				0A8B8A551F8F8786001A3A48 /* SSZipArchive.m in Sources */,
+				0AC9D5671FB0AD4C003F7E8F /* SPARManager.m in Sources */,
 				C39EA3E31F4EC6AC0007D1C3 /* GifFormatViewController.m in Sources */,
 				0A8B8A501F8F8786001A3A48 /* UIView+WebCacheOperation.m in Sources */,
 				0A8B8A2B1F8F8786001A3A48 /* rotate_neon64.cc in Sources */,
@@ -2471,8 +2643,10 @@
 				0A398F701ED625DD00996229 /* ClipMovieViewController.m in Sources */,
 				0A8B8A331F8F8786001A3A48 /* row_neon64.cc in Sources */,
 				0A06B0BD1F123299003CA0F6 /* PLSFilterGroup.m in Sources */,
+				0AC9D5651FB0AD4C003F7E8F /* SPARApp.m in Sources */,
 				0A8B8A1E1F8F8786001A3A48 /* convert_to_argb.cc in Sources */,
 				0ACE7C361ED8B072002FF4C9 /* PLSClipMovieView.m in Sources */,
+				0AC9D57C1FB0AFE9003F7E8F /* DubViewController.m in Sources */,
 				0A8B8A231F8F8786001A3A48 /* planar_functions.cc in Sources */,
 				0A8B8A1B1F8F8786001A3A48 /* convert_from.cc in Sources */,
 				0A8B89A41F8F8785001A3A48 /* KWGlobalFilter.m in Sources */,
@@ -2612,8 +2786,8 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/PLShortVideoKitDemo",
 					"$(PROJECT_DIR)",
-					"$(PROJECT_DIR)/PLShortVideoKitDemo/Librarys",
 					"$(PROJECT_DIR)/PLShortVideoKitDemo/KiwiFaceSDK",
+					"$(PROJECT_DIR)/PLShortVideoKitDemo/EasyARSDK",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2646,8 +2820,8 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/PLShortVideoKitDemo",
 					"$(PROJECT_DIR)",
-					"$(PROJECT_DIR)/PLShortVideoKitDemo/Librarys",
 					"$(PROJECT_DIR)/PLShortVideoKitDemo/KiwiFaceSDK",
+					"$(PROJECT_DIR)/PLShortVideoKitDemo/EasyARSDK",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
