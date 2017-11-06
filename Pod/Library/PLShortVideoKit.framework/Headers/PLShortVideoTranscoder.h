@@ -33,7 +33,7 @@
 @property (strong, nonatomic) NSURL *outputURL;
 
 /**
- @abstract 视频转码后的格式，默认为 PLSFileType_MPEG4(.mp4)
+ @abstract 视频转码后的格式，默认为 PLSFileTypeMPEG4(.mp4)
  
  @since      v1.0.5
  */

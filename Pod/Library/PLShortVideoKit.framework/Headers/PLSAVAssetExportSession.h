@@ -65,11 +65,11 @@
 @property (assign, nonatomic) BOOL isExportMovieToPhotosAlbum;
 
 /**
- @brief 视频导出的文件类型，默认为 AVFileTypeMPEG4
- 
+ @brief 视频导出的文件类型，默认为 PLSFileTypeMPEG4(.mp4)
+
  @since      v1.1.0
  */
-@property (strong, nonatomic) NSString * _Nullable outputFileType;
+@property (assign, nonatomic) PLSFileType outputFileType;
 
 /**
  @brief 视频导出的路径
