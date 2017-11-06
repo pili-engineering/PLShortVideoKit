@@ -32,6 +32,14 @@
  */
 - (void)shortVideoRecorder:(PLShortVideoRecorder *__nonnull)recorder didGetMicrophoneAuthorizationStatus:(PLSAuthorizationStatus)status;
 
+#pragma mark -- 摄像头对焦位置的回调
+/**
+ @abstract 摄像头对焦位置的回调
+
+ @since      v1.6.0
+ */
+- (void)shortVideoRecorderDidFocusAtPoint:(CGPoint)point;
+
 #pragma mark -- 摄像头／麦克风采集数据的回调
 /**
  @abstract 获取到摄像头原数据时的回调, 便于开发者做滤镜等处理，需要注意的是这个回调在 camera 数据的输出线程，请不要做过于耗时的操作，否则可能会导致帧率下降
@@ -205,11 +213,21 @@
 @property (readwrite, nonatomic) PLSVideoRecoderRateType recoderRate;
 
 /**
+ @brief 视频的文件类型，默认为 PLSFileTypeMPEG4(.mp4)
+ 
+ @since      v1.6.0
+ */
+@property (assign, nonatomic) PLSFileType outputFileType;
+
+/**
  @abstract   初始化方法
  
  @since      v1.0.0
+ 
+ @discussion videoConfiguration 设置为 nil 时，不采集视频。
+             audioConfiguration 设置为 nil 时，不采集音频。
  */
-- (nonnull instancetype)initWithVideoConfiguration:(PLSVideoConfiguration *__nonnull)videoConfiguration audioConfiguration:(PLSAudioConfiguration *__nonnull)audioConfiguration;
+- (nonnull instancetype)initWithVideoConfiguration:(PLSVideoConfiguration *_Nullable)videoConfiguration audioConfiguration:(PLSAudioConfiguration *_Nullable)audioConfiguration;
 
 /**
  @abstract   初始化方法
@@ -317,6 +335,25 @@
 
 @end
 
+#pragma mark - Category (Dubber)
+
+/**
+ @category   PLShortVideoRecorder (Dubber)
+ @abstract   视频配音
+ 
+ @since      v1.6.0
+ */
+@interface PLShortVideoRecorder (Dubber)
+
+/**
+ @brief 纯音频录制时，将录制的纯音频 AVAsset *audio = [self.recorder assetRepresentingAllFiles] 与 asset 混合。
+ 
+ @since      v1.6.0
+ */
+- (AVAsset *_Nullable)mixAsset:(AVAsset *_Nullable)asset timeRange:(CMTimeRange)timeRange;
+
+@end
+
 #pragma mark - Category (CameraSource)
 
 /**
@@ -348,6 +385,14 @@
  @since      v1.0.0
 */
 @property (assign, nonatomic, getter=isTorchOn) BOOL torchOn;
+
+/**
+ @property  continuousAutofocusEnable
+ @abstract  手动对焦的视图动画。该属性默认开启。
+ 
+ @since      v1.6.0
+ */
+@property (assign, nonatomic) BOOL innerFocusViewShowEnable;
 
 /**
  @property  continuousAutofocusEnable

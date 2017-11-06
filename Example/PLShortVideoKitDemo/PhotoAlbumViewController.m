@@ -600,10 +600,12 @@ static NSString * const reuseIdentifier = @"Cell";
             __weak typeof(self)weakSelf = self;
             self.movieComposer = [[PLSMovieComposer alloc] initWithUrls:self.urls];
             if (self.isMovieLandscapeOrientation) {
-                self.movieComposer.videoSize = CGSizeMake(854, 480);
+                self.movieComposer.videoSize = CGSizeMake(960, 544);
             } else {
-                self.movieComposer.videoSize = CGSizeMake(480, 854);
+                self.movieComposer.videoSize = CGSizeMake(544, 960);
             }
+            self.movieComposer.videoFrameRate = 25;
+            self.movieComposer.outputFileType = PLSFileTypeMPEG4;
             
             [self.movieComposer setCompletionBlock:^(NSURL *url) {
                 NSLog(@"movieComposer ur: %@", url);

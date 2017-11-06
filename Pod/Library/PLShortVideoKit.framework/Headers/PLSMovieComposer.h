@@ -42,11 +42,11 @@
 @property (assign, nonatomic) BOOL isExportMovieToPhotosAlbum;
 
 /**
- @abstract 拼接后视频的质量，默认为 PLSFilePresetHighestQuality
+ @abstract 拼接后视频的格式，默认为 PLSFileTypeMPEG4(.mp4)
  
- @since      v1.4.0
+ @since      v1.6.0
  */
-@property (assign, nonatomic) PLSFilePreset outputFilePreset;
+@property (assign, nonatomic) PLSFileType outputFileType;
 
 /**
  @abstract 拼接后视频的分辨率，默认为第1个视频的分辨率
@@ -54,6 +54,20 @@
  @since      v1.4.0
  */
 @property (assign, nonatomic) CGSize videoSize;
+
+/**
+ @abstract 拼接后视频数据的帧率，默认为 25
+ 
+ @since      v1.6.0
+ */
+@property (assign, nonatomic) int videoFrameRate;
+
+/**
+ @abstract 拼接后视频的码率，默认码率为 1024*1000 bps
+ 
+ @since      v1.6.0
+ */
+@property (assign, nonatomic) float bitrate;
 
 /**
  @brief 初始化

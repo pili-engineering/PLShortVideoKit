@@ -9,6 +9,11 @@
 #import "AppDelegate.h"
 #import <Fabric/Fabric.h>
 #import <Crashlytics/Crashlytics.h>
+#import <easyar3d/EasyAR3D.h>
+#import "easyar3d/EasyARScene.h"
+#import "SPARManager.h"
+
+NSString *key = @"zYnUPaCAWtl4WDH3qLu290KRFA7gCCU2iyI9127chA6gvLQyr9CUlawIjMdC1OXxLwsUWvNN2zI2XIElU8AP2QitdZ4WFAfoA8DdJbos2FL4FnPKiSjX52Avh524oxXLF8iOuZXg4YFSQWgKrhkLsJs8K8NxsEdoWh2UCuRsONxjHAdDX0V871RQMydPAyFzx4L0fTUe";
 
 @interface AppDelegate ()
 
@@ -20,6 +25,24 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     [Fabric with:@[[Crashlytics class]]];
+    
+    [EasyAR3D initialize:key];
+    
+    NSString *path = [[NSBundle mainBundle] resourcePath];
+    [EasyARScene setUriTranslator:^ NSString * (NSString * uri) {
+        SPARManager * manager = [SPARManager sharedManager];
+        if ([uri isEqualToString:@"local://Recorder.json"]) {
+            return [NSString stringWithFormat:@"%@/Recorder.json",path];
+        }else if ([uri isEqualToString:@"local://Recorder.js"]){
+            return [NSString stringWithFormat:@"%@/Recorder.js",path];
+            
+        }else if ([uri isEqualToString:@"local://PostBasic.effect"]){
+            
+            return [NSString stringWithFormat:@"%@/PostBasic.effect",path];
+            
+        }
+        return [manager getLocalPathForURL:uri];
+    }];
     return YES;
 }
 
