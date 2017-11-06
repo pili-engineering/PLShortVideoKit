@@ -347,6 +347,18 @@
 		0AECA4F21E88466300AF2931 /* PlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AECA4F11E88466300AF2931 /* PlayViewController.m */; };
 		0AECA4F41E884CD200AF2931 /* btn_back.png in Resources */ = {isa = PBXBuildFile; fileRef = 0AECA4F31E884CD200AF2931 /* btn_back.png */; };
 		0AECA4F61E884D0900AF2931 /* video_play.png in Resources */ = {isa = PBXBuildFile; fileRef = 0AECA4F51E884D0900AF2931 /* video_play.png */; };
+		0AFB9DBD1FB083EB0057D8D8 /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AFB9DB41FB083EB0057D8D8 /* libavcodec.a */; };
+		0AFB9DBE1FB083EB0057D8D8 /* libavformat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AFB9DB51FB083EB0057D8D8 /* libavformat.a */; };
+		0AFB9DBF1FB083EB0057D8D8 /* libavutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AFB9DB61FB083EB0057D8D8 /* libavutil.a */; };
+		0AFB9DC01FB083EB0057D8D8 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AFB9DB71FB083EB0057D8D8 /* libcrypto.a */; };
+		0AFB9DC11FB083EB0057D8D8 /* libPLPlayerKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AFB9DB81FB083EB0057D8D8 /* libPLPlayerKit.a */; };
+		0AFB9DC21FB083EB0057D8D8 /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AFB9DB91FB083EB0057D8D8 /* libspeex.a */; };
+		0AFB9DC31FB083EB0057D8D8 /* libspeexdsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AFB9DBA1FB083EB0057D8D8 /* libspeexdsp.a */; };
+		0AFB9DC41FB083EB0057D8D8 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AFB9DBB1FB083EB0057D8D8 /* libssl.a */; };
+		0AFB9DC51FB083EB0057D8D8 /* libswresample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AFB9DBC1FB083EB0057D8D8 /* libswresample.a */; };
+		0AFB9DC71FB083F90057D8D8 /* libiconv.2.4.0.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AFB9DC61FB083F90057D8D8 /* libiconv.2.4.0.tbd */; };
+		0AFB9DC91FB083FF0057D8D8 /* libbz2.1.0.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AFB9DC81FB083FF0057D8D8 /* libbz2.1.0.tbd */; };
+		0AFB9DCB1FB084040057D8D8 /* libz.1.1.3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AFB9DCA1FB084040057D8D8 /* libz.1.1.3.tbd */; };
 		C39EA3E01F4EC6950007D1C3 /* PLSFormatGifView.m in Sources */ = {isa = PBXBuildFile; fileRef = C39EA3DF1F4EC6950007D1C3 /* PLSFormatGifView.m */; };
 		C39EA3E31F4EC6AC0007D1C3 /* GifFormatViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C39EA3E21F4EC6AB0007D1C3 /* GifFormatViewController.m */; };
 		C39EA3E61F4EC7490007D1C3 /* RecordViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C39EA3E51F4EC7490007D1C3 /* RecordViewController.m */; };
@@ -987,6 +999,23 @@
 		0AECA4F11E88466300AF2931 /* PlayViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayViewController.m; sourceTree = "<group>"; };
 		0AECA4F31E884CD200AF2931 /* btn_back.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = btn_back.png; path = images/btn_back.png; sourceTree = "<group>"; };
 		0AECA4F51E884D0900AF2931 /* video_play.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = video_play.png; path = images/video_play.png; sourceTree = "<group>"; };
+		0AFB9DAE1FB083EB0057D8D8 /* PLPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLPlayer.h; sourceTree = "<group>"; };
+		0AFB9DAF1FB083EB0057D8D8 /* PLPlayerEnv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLPlayerEnv.h; sourceTree = "<group>"; };
+		0AFB9DB01FB083EB0057D8D8 /* PLPlayerError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLPlayerError.h; sourceTree = "<group>"; };
+		0AFB9DB11FB083EB0057D8D8 /* PLPlayerKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLPlayerKit.h; sourceTree = "<group>"; };
+		0AFB9DB21FB083EB0057D8D8 /* PLPlayerOption.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLPlayerOption.h; sourceTree = "<group>"; };
+		0AFB9DB41FB083EB0057D8D8 /* libavcodec.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libavcodec.a; sourceTree = "<group>"; };
+		0AFB9DB51FB083EB0057D8D8 /* libavformat.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libavformat.a; sourceTree = "<group>"; };
+		0AFB9DB61FB083EB0057D8D8 /* libavutil.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libavutil.a; sourceTree = "<group>"; };
+		0AFB9DB71FB083EB0057D8D8 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libcrypto.a; sourceTree = "<group>"; };
+		0AFB9DB81FB083EB0057D8D8 /* libPLPlayerKit.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libPLPlayerKit.a; sourceTree = "<group>"; };
+		0AFB9DB91FB083EB0057D8D8 /* libspeex.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libspeex.a; sourceTree = "<group>"; };
+		0AFB9DBA1FB083EB0057D8D8 /* libspeexdsp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libspeexdsp.a; sourceTree = "<group>"; };
+		0AFB9DBB1FB083EB0057D8D8 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libssl.a; sourceTree = "<group>"; };
+		0AFB9DBC1FB083EB0057D8D8 /* libswresample.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libswresample.a; sourceTree = "<group>"; };
+		0AFB9DC61FB083F90057D8D8 /* libiconv.2.4.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.2.4.0.tbd; path = usr/lib/libiconv.2.4.0.tbd; sourceTree = SDKROOT; };
+		0AFB9DC81FB083FF0057D8D8 /* libbz2.1.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbz2.1.0.tbd; path = usr/lib/libbz2.1.0.tbd; sourceTree = SDKROOT; };
+		0AFB9DCA1FB084040057D8D8 /* libz.1.1.3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.1.1.3.tbd; path = usr/lib/libz.1.1.3.tbd; sourceTree = SDKROOT; };
 		29048327CD6F75BD8D75B80B /* Pods-PLShortVideoKitDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PLShortVideoKitDemo.debug.xcconfig"; path = "Pods/Target Support Files/Pods-PLShortVideoKitDemo/Pods-PLShortVideoKitDemo.debug.xcconfig"; sourceTree = "<group>"; };
 		57AEAFA0012D959C08AB23AE /* libPods-PLShortVideoKitDemo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PLShortVideoKitDemo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		85B60FAE619932ED649E6840 /* Pods-PLShortVideoKitDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PLShortVideoKitDemo.release.xcconfig"; path = "Pods/Target Support Files/Pods-PLShortVideoKitDemo/Pods-PLShortVideoKitDemo.release.xcconfig"; sourceTree = "<group>"; };
@@ -1009,11 +1038,23 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0AFB9DC21FB083EB0057D8D8 /* libspeex.a in Frameworks */,
 				0A8B8A091F8F8785001A3A48 /* libfaceTrackerSDK.a in Frameworks */,
 				0A8B89A61F8F8785001A3A48 /* libKwSDK.a in Frameworks */,
+				0AFB9DC31FB083EB0057D8D8 /* libspeexdsp.a in Frameworks */,
+				0AFB9DBE1FB083EB0057D8D8 /* libavformat.a in Frameworks */,
 				0A8B8A0B1F8F8785001A3A48 /* opencv2.framework in Frameworks */,
+				0AFB9DCB1FB084040057D8D8 /* libz.1.1.3.tbd in Frameworks */,
 				0A8B8A0C1F8F8786001A3A48 /* libGPUImage.a in Frameworks */,
+				0AFB9DC11FB083EB0057D8D8 /* libPLPlayerKit.a in Frameworks */,
+				0AFB9DC91FB083FF0057D8D8 /* libbz2.1.0.tbd in Frameworks */,
 				F360B89E036039A66815D9FE /* libPods-PLShortVideoKitDemo.a in Frameworks */,
+				0AFB9DBF1FB083EB0057D8D8 /* libavutil.a in Frameworks */,
+				0AFB9DBD1FB083EB0057D8D8 /* libavcodec.a in Frameworks */,
+				0AFB9DC71FB083F90057D8D8 /* libiconv.2.4.0.tbd in Frameworks */,
+				0AFB9DC41FB083EB0057D8D8 /* libssl.a in Frameworks */,
+				0AFB9DC51FB083EB0057D8D8 /* libswresample.a in Frameworks */,
+				0AFB9DC01FB083EB0057D8D8 /* libcrypto.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1717,6 +1758,7 @@
 			isa = PBXGroup;
 			children = (
 				0A4C4C8E1F3DB5F2003F63CF /* PLShortVideoKit.bundle */,
+				0AFB9DAB1FB083EB0057D8D8 /* PLPlayerKit */,
 				C3F91D2D1F1CBD4900698322 /* KiwiFaceSDK */,
 				0ACE7C281ED8B072002FF4C9 /* UI+Tools */,
 				0A9435821E6CA2E2008845A3 /* AppDelegate.h */,
@@ -1877,6 +1919,51 @@
 			path = "UI+Tools";
 			sourceTree = "<group>";
 		};
+		0AFB9DAB1FB083EB0057D8D8 /* PLPlayerKit */ = {
+			isa = PBXGroup;
+			children = (
+				0AFB9DAC1FB083EB0057D8D8 /* include */,
+				0AFB9DB31FB083EB0057D8D8 /* lib */,
+			);
+			path = PLPlayerKit;
+			sourceTree = "<group>";
+		};
+		0AFB9DAC1FB083EB0057D8D8 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				0AFB9DAD1FB083EB0057D8D8 /* PLPlayerKit */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		0AFB9DAD1FB083EB0057D8D8 /* PLPlayerKit */ = {
+			isa = PBXGroup;
+			children = (
+				0AFB9DAE1FB083EB0057D8D8 /* PLPlayer.h */,
+				0AFB9DAF1FB083EB0057D8D8 /* PLPlayerEnv.h */,
+				0AFB9DB01FB083EB0057D8D8 /* PLPlayerError.h */,
+				0AFB9DB11FB083EB0057D8D8 /* PLPlayerKit.h */,
+				0AFB9DB21FB083EB0057D8D8 /* PLPlayerOption.h */,
+			);
+			path = PLPlayerKit;
+			sourceTree = "<group>";
+		};
+		0AFB9DB31FB083EB0057D8D8 /* lib */ = {
+			isa = PBXGroup;
+			children = (
+				0AFB9DB41FB083EB0057D8D8 /* libavcodec.a */,
+				0AFB9DB51FB083EB0057D8D8 /* libavformat.a */,
+				0AFB9DB61FB083EB0057D8D8 /* libavutil.a */,
+				0AFB9DB71FB083EB0057D8D8 /* libcrypto.a */,
+				0AFB9DB81FB083EB0057D8D8 /* libPLPlayerKit.a */,
+				0AFB9DB91FB083EB0057D8D8 /* libspeex.a */,
+				0AFB9DBA1FB083EB0057D8D8 /* libspeexdsp.a */,
+				0AFB9DBB1FB083EB0057D8D8 /* libssl.a */,
+				0AFB9DBC1FB083EB0057D8D8 /* libswresample.a */,
+			);
+			path = lib;
+			sourceTree = "<group>";
+		};
 		32B90CBBA587775FFC5C4D5B /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -1889,6 +1976,9 @@
 		897018225EF668D16731032B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0AFB9DCA1FB084040057D8D8 /* libz.1.1.3.tbd */,
+				0AFB9DC81FB083FF0057D8D8 /* libbz2.1.0.tbd */,
+				0AFB9DC61FB083F90057D8D8 /* libiconv.2.4.0.tbd */,
 				57AEAFA0012D959C08AB23AE /* libPods-PLShortVideoKitDemo.a */,
 			);
 			name = Frameworks;
@@ -2525,17 +2615,20 @@
 					"$(PROJECT_DIR)/PLShortVideoKitDemo/Librarys",
 					"$(PROJECT_DIR)/PLShortVideoKitDemo/KiwiFaceSDK",
 				);
-				HEADER_SEARCH_PATHS = "$(inherited)";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/PLShortVideoKitDemo/PLPlayerKit/include\"",
+				);
 				INFOPLIST_FILE = PLShortVideoKitDemo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
-					"$(PROJECT_DIR)/PLShortVideoKitDemo/Librarys",
 					"$(PROJECT_DIR)/PLShortVideoKitDemo/KiwiFaceSDK/GPUImage",
 					"$(PROJECT_DIR)/PLShortVideoKitDemo/KiwiFaceSDK",
 					"$(PROJECT_DIR)/PLShortVideoKitDemo/KiwiFaceSDK/Tracker",
+					"$(PROJECT_DIR)/PLShortVideoKitDemo/PLPlayerKit/lib",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.qbox.PLShortVideoKitDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2556,17 +2649,20 @@
 					"$(PROJECT_DIR)/PLShortVideoKitDemo/Librarys",
 					"$(PROJECT_DIR)/PLShortVideoKitDemo/KiwiFaceSDK",
 				);
-				HEADER_SEARCH_PATHS = "$(inherited)";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/PLShortVideoKitDemo/PLPlayerKit/include\"",
+				);
 				INFOPLIST_FILE = PLShortVideoKitDemo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
-					"$(PROJECT_DIR)/PLShortVideoKitDemo/Librarys",
 					"$(PROJECT_DIR)/PLShortVideoKitDemo/KiwiFaceSDK/GPUImage",
 					"$(PROJECT_DIR)/PLShortVideoKitDemo/KiwiFaceSDK",
 					"$(PROJECT_DIR)/PLShortVideoKitDemo/KiwiFaceSDK/Tracker",
+					"$(PROJECT_DIR)/PLShortVideoKitDemo/PLPlayerKit/lib",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.qbox.PLShortVideoKitDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";

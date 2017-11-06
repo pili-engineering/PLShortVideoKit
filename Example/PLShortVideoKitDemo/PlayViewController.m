@@ -353,7 +353,7 @@ UIGestureRecognizerDelegate
         NSString *stat = [NSString stringWithFormat:@"connect:%.2f/first:%.2f", _player.connectTime, _player.firstVideoTime];
         self.statLabel.text = stat;
     }
-    if (state == PLPlayerStatusCompleted || state == PLPlayerStatusPaused) {
+    if (state == PLPlayerStatusStopped || state == PLPlayerStatusPaused) {
         self.currentTime.text = self.duration.text;
         self.playSlider.value = 1;
         [self removeDurationTimer];
