@@ -79,6 +79,13 @@
 @property (strong, nonatomic) NSURL * _Nullable outputURL;
 
 /**
+ @brief 视频旋转，默认为 PLSPreviewOrientationPortrait 视频的原始方向
+ 
+ @since      v1.7.0
+ */
+@property (assign, nonatomic) PLSPreviewOrientation videoLayerOrientation;
+
+/**
  @brief 视频导出的分辨率
  
  @since      v1.5.0

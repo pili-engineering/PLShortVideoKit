@@ -45,4 +45,6 @@
  */
 - (CVPixelBufferRef)process:(CVPixelBufferRef)pixelBuffer;
 
++ (UIImage *)applyFilter:(UIImage *)inputImage colorImagePath:(NSString *)colorImagePath;
+
 @end

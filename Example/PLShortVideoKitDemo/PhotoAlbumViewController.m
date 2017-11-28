@@ -174,8 +174,9 @@
     
     if (self.mediaType == PHAssetMediaTypeVideo) {
         PHVideoRequestOptions *options = [[PHVideoRequestOptions alloc] init];
-        options.version = PHImageRequestOptionsVersionCurrent;
+        options.version = PHVideoRequestOptionsVersionOriginal;
         options.deliveryMode = PHVideoRequestOptionsDeliveryModeAutomatic;
+        options.networkAccessAllowed = YES;
         
         PHImageManager *manager = [PHImageManager defaultManager];
         [manager requestAVAssetForVideo:self options:options resultHandler:^(AVAsset * _Nullable asset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
@@ -189,6 +190,20 @@
     dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
     
     return url;
+}
+
+- (UIImage *)imageURL:(PHAsset *)phAsset targetSize:(CGSize)targetSize {
+    __block UIImage *image = nil;
+    
+    PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
+    options.synchronous = YES;
+    
+    PHImageManager *manager = [PHImageManager defaultManager];
+    [manager requestImageForAsset:phAsset targetSize:targetSize contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+        image = result;
+    }];
+    
+    return image;
 }
 
 @end
@@ -293,6 +308,7 @@ static NSString * const reuseIdentifier = @"Cell";
     if (self) {
         self.urls = [[NSMutableArray alloc] init];
         self.maxSelectCount = 1;
+        self.mediaType = PHAssetMediaTypeVideo;
     }
     return self;
 }
@@ -328,7 +344,7 @@ static NSString * const reuseIdentifier = @"Cell";
     [self.collectionView addGestureRecognizer:press];
     
     if (PHPhotoLibrary.authorizationStatus == PHAuthorizationStatusAuthorized) {
-        [self fetchAssets];
+        [self fetchAssetsWithMediaType:self.mediaType];
     }
 }
 
@@ -339,8 +355,7 @@ static NSString * const reuseIdentifier = @"Cell";
         [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (status == PHAuthorizationStatusAuthorized) {
-                    [self fetchAssets];
-                    
+                    [self fetchAssetsWithMediaType:self.mediaType];
                     
                 } else {
                     [self showAssetsDeniedMessage];
@@ -441,7 +456,7 @@ static NSString * const reuseIdentifier = @"Cell";
     [alert show];
 }
 
-- (void)fetchAssets {
+- (void)fetchAssetsWithMediaType:(PHAssetMediaType)mediaType {
     __weak __typeof(self) weak = self;
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         PHFetchOptions *fetchOptions = [[PHFetchOptions alloc] init];
@@ -449,7 +464,7 @@ static NSString * const reuseIdentifier = @"Cell";
         fetchOptions.includeAllBurstAssets = NO;
         fetchOptions.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"modificationDate" ascending:NO],
                                          [NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
-        PHFetchResult *fetchResult = [PHAsset fetchAssetsWithMediaType:PHAssetMediaTypeVideo options:fetchOptions];
+        PHFetchResult *fetchResult = [PHAsset fetchAssetsWithMediaType:mediaType options:fetchOptions];
         
         NSMutableArray *assets = [[NSMutableArray alloc] init];
         [fetchResult enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
@@ -580,57 +595,82 @@ static NSString * const reuseIdentifier = @"Cell";
 
 #pragma mark -- 下一步
 - (void)nextButtonClick:(UIButton *)sender {
-    [self.urls removeAllObjects];
-    
-    for (PHAsset *asset in self.dynamicScrollView.selectedAssets) {
-        NSURL *url = [asset movieURL];
-        [self.urls addObject:url];
-    }
-    
-    // 视频选择器视图中视频的选取数目可以做限制的，限制为1个、多个、不限
-    if (self.urls.count > 0) {
-        if (self.urls.count == 1) {
-            MovieTransCodeViewController *transCodeViewController = [[MovieTransCodeViewController alloc] init];
-            transCodeViewController.url = self.urls[0];
-            [self presentViewController:transCodeViewController animated:YES completion:nil];
-        }
-        else {
-            [self loadActivityIndicatorView];
-
-            __weak typeof(self)weakSelf = self;
-            self.movieComposer = [[PLSMovieComposer alloc] initWithUrls:self.urls];
-            if (self.isMovieLandscapeOrientation) {
-                self.movieComposer.videoSize = CGSizeMake(960, 544);
-            } else {
-                self.movieComposer.videoSize = CGSizeMake(544, 960);
+    // 视频选择器视图中图片、视频的选取数目可以做限制的，限制为1个、多个、不限
+    if (self.dynamicScrollView.selectedAssets.count > 0) {
+        if (self.mediaType == PHAssetMediaTypeImage) {
+            [self.urls removeAllObjects];
+            for (PHAsset *asset in self.dynamicScrollView.selectedAssets) {
+                UIImage *image = [asset imageURL:asset targetSize:CGSizeMake(544, 960)];
+                [self.urls addObject:image];
             }
-            self.movieComposer.videoFrameRate = 25;
-            self.movieComposer.outputFileType = PLSFileTypeMPEG4;
             
-            [self.movieComposer setCompletionBlock:^(NSURL *url) {
-                NSLog(@"movieComposer ur: %@", url);
-
-                [weakSelf removeActivityIndicatorView];
-                weakSelf.progressLabel.text = @"";
-                
+            PLSImageToMovieComposer *imageToMovieComposer = [[PLSImageToMovieComposer alloc] initWithImages:self.urls];
+            imageToMovieComposer.videoSize = CGSizeMake(544, 960);
+            [imageToMovieComposer setCompletionBlock:^(NSURL *url) {
                 MovieTransCodeViewController *transCodeViewController = [[MovieTransCodeViewController alloc] init];
                 transCodeViewController.url = url;
-                [weakSelf presentViewController:transCodeViewController animated:YES completion:nil];
+                [self presentViewController:transCodeViewController animated:YES completion:nil];
             }];
-            [self.movieComposer setFailureBlock:^(NSError *error) {
-                NSLog(@"movieComposer failed");
-
-                [weakSelf removeActivityIndicatorView];
-                weakSelf.progressLabel.text = @"";
-
+            [imageToMovieComposer setFailureBlock:^(NSError *error) {
+                NSLog(@"imageToMovieComposer failed");
             }];
-            [self.movieComposer setProcessingBlock:^(float progress){
-                NSLog(@"movieComposer progress: %f", progress);
-                
-                weakSelf.progressLabel.text = [NSString stringWithFormat:@"拼接进度%d%%", (int)(progress * 100)];
+            [imageToMovieComposer setProcessingBlock:^(float progress) {
+                NSLog(@"imageToMovieComposer progress: %f", progress);
             }];
             
-            [self.movieComposer startComposing];
+            [imageToMovieComposer startComposing];
+            
+            
+        } else if (self.mediaType == PHAssetMediaTypeVideo) {
+            [self.urls removeAllObjects];
+            for (PHAsset *asset in self.dynamicScrollView.selectedAssets) {
+                NSURL *url = [asset movieURL];
+                [self.urls addObject:url];
+            }
+            
+            if (self.urls.count == 1) {
+                MovieTransCodeViewController *transCodeViewController = [[MovieTransCodeViewController alloc] init];
+                transCodeViewController.url = self.urls[0];
+                [self presentViewController:transCodeViewController animated:YES completion:nil];
+            }
+            else {
+                [self loadActivityIndicatorView];
+
+                __weak typeof(self)weakSelf = self;
+                self.movieComposer = [[PLSMovieComposer alloc] initWithUrls:self.urls];
+                if (self.isMovieLandscapeOrientation) {
+                    self.movieComposer.videoSize = CGSizeMake(960, 544);
+                } else {
+                    self.movieComposer.videoSize = CGSizeMake(544, 960);
+                }
+                self.movieComposer.videoFrameRate = 25;
+                self.movieComposer.outputFileType = PLSFileTypeMPEG4;
+                
+                [self.movieComposer setCompletionBlock:^(NSURL *url) {
+                    NSLog(@"movieComposer ur: %@", url);
+
+                    [weakSelf removeActivityIndicatorView];
+                    weakSelf.progressLabel.text = @"";
+                    
+                    MovieTransCodeViewController *transCodeViewController = [[MovieTransCodeViewController alloc] init];
+                    transCodeViewController.url = url;
+                    [weakSelf presentViewController:transCodeViewController animated:YES completion:nil];
+                }];
+                [self.movieComposer setFailureBlock:^(NSError *error) {
+                    NSLog(@"movieComposer failed");
+
+                    [weakSelf removeActivityIndicatorView];
+                    weakSelf.progressLabel.text = @"";
+
+                }];
+                [self.movieComposer setProcessingBlock:^(float progress){
+                    NSLog(@"movieComposer progress: %f", progress);
+                    
+                    weakSelf.progressLabel.text = [NSString stringWithFormat:@"拼接进度%d%%", (int)(progress * 100)];
+                }];
+                
+                [self.movieComposer startComposing];
+            }
         }
     }
 }

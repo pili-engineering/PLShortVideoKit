@@ -78,6 +78,12 @@ PLSRateButtonViewDelegate
 @property (strong, nonatomic) NSMutableArray<NSDictionary *> *filtersArray;
 @property (assign, nonatomic) NSInteger filterIndex;
 
+@property (strong, nonatomic) UIButton *draftButton;
+@property (strong, nonatomic) NSURL *URL;
+
+@property (strong, nonatomic) UIButton *musicButton;
+@property (strong, nonatomic) UIActivityIndicatorView *activityIndicatorView;
+
 // 录制前是否开启自动检测设备方向调整视频拍摄的角度（竖屏、横屏）
 @property (assign, nonatomic) BOOL isUseAutoCheckDeviceOrientationBeforeRecording;
 
@@ -237,6 +243,10 @@ PLSRateButtonViewDelegate
         [self.editVideoCollectionView reloadData];
         self.editVideoCollectionView.hidden = YES;
     }
+    
+    // 本地视频
+    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"video_draft_test" ofType:@"mp4"];
+    self.URL = [NSURL fileURLWithPath:filePath];
 }
 
 - (void)setupBaseToolboxView {
@@ -306,6 +316,31 @@ PLSRateButtonViewDelegate
     [toggleCameraButton setBackgroundImage:[UIImage imageNamed:@"toggle_camera"] forState:UIControlStateNormal];
     [toggleCameraButton addTarget:self action:@selector(toggleCameraButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
     [self.baseToolboxView addSubview:toggleCameraButton];
+    
+    // 加载草稿视频
+    self.draftButton = [[UIButton alloc] initWithFrame:CGRectMake(PLS_SCREEN_WIDTH - 60, 300, 46, 46)];
+    self.draftButton.layer.cornerRadius = 23;
+    self.draftButton.backgroundColor = [UIColor colorWithRed:116/255 green:116/255 blue:116/255 alpha:0.55];
+    [self.draftButton setImage:[UIImage imageNamed:@"draft_video"] forState:UIControlStateNormal];
+    self.draftButton.imageEdgeInsets = UIEdgeInsetsMake(6, 6, 6, 6);
+    [self.draftButton addTarget:self action:@selector(draftVideoButtonOnClick:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:_draftButton];
+    
+    // 是否使用背景音乐
+    self.musicButton = [[UIButton alloc] initWithFrame:CGRectMake(PLS_SCREEN_WIDTH - 60, 360, 46, 46)];
+    self.musicButton.layer.cornerRadius = 23;
+    self.musicButton.backgroundColor = [UIColor colorWithRed:116/255 green:116/255 blue:116/255 alpha:0.55];
+    [self.musicButton setImage:[UIImage imageNamed:@"music_no_selected"] forState:UIControlStateNormal];
+    [self.musicButton setImage:[UIImage imageNamed:@"music_selected"] forState:UIControlStateSelected];
+    self.musicButton.imageEdgeInsets = UIEdgeInsetsMake(6, 6, 6, 6);
+    [self.musicButton addTarget:self action:@selector(musicButtonOnClick:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:_musicButton];
+    
+    // 展示拼接视频的动画
+    self.activityIndicatorView = [[UIActivityIndicatorView alloc] initWithFrame:self.view.bounds];
+    self.activityIndicatorView.center = self.view.center;
+    [self.activityIndicatorView setActivityIndicatorViewStyle:UIActivityIndicatorViewStyleWhiteLarge];
+    self.activityIndicatorView.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.5];
 }
 
 - (void)setupRecordToolboxView {
@@ -366,7 +401,7 @@ PLSRateButtonViewDelegate
     
     self.durationLabel = [[UILabel alloc] initWithFrame:CGRectMake(PLS_SCREEN_WIDTH - 150, CGRectGetHeight(self.recordToolboxView.frame) - 45, 130, 40)];
     self.durationLabel.textColor = [UIColor whiteColor];
-    self.durationLabel.text = @"0.00s";
+    self.durationLabel.text = [NSString stringWithFormat:@"%.2fs", self.shortVideoRecorder.getTotalDuration];
     self.durationLabel.textAlignment = NSTextAlignmentRight;
     [self.recordToolboxView addSubview:self.durationLabel];
     
@@ -423,11 +458,13 @@ PLSRateButtonViewDelegate
     
     // 3.创建内置UI
     [self.UIManager createUI];
+    /* 横竖屏时更新sdk内置UI 坐标 */
+    [_UIManager resetScreemMode];
 }
 
 #pragma mark - EasyarSDK AR 入口
 - (void)setUpEasyarSDKARButton {
-    UIButton *ARButton = [[UIButton alloc] initWithFrame:CGRectMake(PLS_SCREEN_WIDTH - 60, 243, 46, 46)];
+    UIButton *ARButton = [[UIButton alloc] initWithFrame:CGRectMake(PLS_SCREEN_WIDTH - 60, 240, 46, 46)];
     ARButton.layer.cornerRadius = 23;
     ARButton.backgroundColor = [UIColor colorWithRed:116/255 green:116/255 blue:116/255 alpha:0.55];
     [ARButton setImage:[UIImage imageNamed:@"easyar_AR"] forState:UIControlStateNormal];
@@ -572,6 +609,41 @@ PLSRateButtonViewDelegate
 - (void)filterButtonEvent:(UIButton *)button {
     button.selected = !button.selected;
     self.editVideoCollectionView.hidden = !button.selected;
+}
+
+// 加载草稿视频
+- (void)draftVideoButtonOnClick:(id)sender{
+    AVAsset *asset = [AVAsset assetWithURL:_URL];
+    CGFloat duration = CMTimeGetSeconds(asset.duration);
+    if ((self.shortVideoRecorder.getTotalDuration + duration) < self.shortVideoRecorder.maxDuration) {
+        [self.shortVideoRecorder insertVideo:_URL];
+        if (self.shortVideoRecorder.getTotalDuration != 0) {
+            _deleteButton.style = PLSDeleteButtonStyleNormal;
+            _deleteButton.hidden = NO;
+            
+            [_progressBar addProgressView];
+            [_progressBar startShining];
+            [_progressBar setLastProgressToWidth:duration / self.shortVideoRecorder.maxDuration * _progressBar.frame.size.width];
+            [_progressBar stopShining];
+        }
+        self.durationLabel.text = [NSString stringWithFormat:@"%.2fs", self.shortVideoRecorder.getTotalDuration];
+        if (self.shortVideoRecorder.getTotalDuration >= self.shortVideoRecorder.maxDuration) {
+            self.importMovieButton.hidden = YES;
+            [self endButtonEvent:nil];
+        }
+    }
+}
+
+// 是否使用背景音乐
+- (void)musicButtonOnClick:(id)sender {
+    self.musicButton.selected = !self.musicButton.selected;
+    if (self.musicButton.selected) {
+        // 背景音乐
+        NSURL *audioURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"Fire_Breather" ofType:@"m4a"]];
+        [self.shortVideoRecorder mixAudio:audioURL];
+    } else{
+        [self.shortVideoRecorder mixAudio:nil];
+    }
 }
 
 // 删除上一段视频
@@ -729,11 +801,6 @@ PLSRateButtonViewDelegate
         pixelBuffer = [filter process:pixelBuffer];
     }
     
-    
-    /* 横竖屏时更新sdk内置UI 坐标 */
-    [_UIManager resetScreemMode];
-    
-    
     UIDeviceOrientation iDeviceOrientation = [[UIDevice currentDevice] orientation];
     //    BOOL mirrored = !self.kwSdkUI.kwSdk.cameraPositionBack;
     BOOL mirrored = NO;
@@ -788,6 +855,7 @@ PLSRateButtonViewDelegate
     self.deleteButton.hidden = YES;
     self.endButton.hidden = YES;
     self.importMovieView.hidden = YES;
+    self.musicButton.hidden = YES;
     
     self.durationLabel.text = [NSString stringWithFormat:@"%.2fs", totalDuration];
 }
@@ -803,7 +871,12 @@ PLSRateButtonViewDelegate
         self.deleteButton.hidden = YES;
         self.endButton.hidden = YES;
         self.importMovieView.hidden = NO;
+        self.musicButton.hidden = NO;
     }
+    
+    AVAsset *asset = [AVAsset assetWithURL:_URL];
+    CGFloat duration = CMTimeGetSeconds(asset.duration);
+    self.draftButton.hidden = (totalDuration +  duration) >= self.shortVideoRecorder.maxDuration;
 
     self.durationLabel.text = [NSString stringWithFormat:@"%.2fs", totalDuration];
 }
@@ -817,6 +890,9 @@ PLSRateButtonViewDelegate
     self.deleteButton.hidden = NO;
     self.endButton.hidden = NO;
 
+    AVAsset *asset = [AVAsset assetWithURL:_URL];
+    CGFloat duration = CMTimeGetSeconds(asset.duration);
+    self.draftButton.hidden = (totalDuration +  duration) >= self.shortVideoRecorder.maxDuration;
     
     if (totalDuration >= self.shortVideoRecorder.maxDuration) {
         [self endButtonEvent:nil];
@@ -838,20 +914,84 @@ PLSRateButtonViewDelegate
     // 获取当前会话的所有的视频段文件
     NSArray *filesURLArray = [self.shortVideoRecorder getAllFilesURL];
     NSLog(@"filesURLArray:%@", filesURLArray);
-    
+
+    __block AVAsset *movieAsset = asset;
+    if (self.musicButton.selected) {
+        dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+        [self loadActivityIndicatorView];
+        [self.shortVideoRecorder mixWithMusicVolume:0.3 videoVolume:0.8 completionHandler:^(AVMutableComposition * _Nullable composition, AVAudioMix * _Nullable audioMix, NSError * _Nullable error) {
+            AVAssetExportSession *exporter = [[AVAssetExportSession alloc]initWithAsset:composition presetName:AVAssetExportPresetHighestQuality];
+            NSURL *outputPath = [self exportAudioMixPath];
+            exporter.outputURL = outputPath;
+            exporter.outputFileType = AVFileTypeMPEG4;
+            exporter.shouldOptimizeForNetworkUse= YES;
+            exporter.audioMix = audioMix;
+            [exporter exportAsynchronouslyWithCompletionHandler:^{
+                switch ([exporter status]) {
+                    case AVAssetExportSessionStatusFailed: {
+                        NSLog(@"audio mix failed：%@",[[exporter error] description]);
+                    } break;
+                    case AVAssetExportSessionStatusCancelled: {
+                        NSLog(@"audio mix canceled");
+                    } break;
+                    case AVAssetExportSessionStatusCompleted: {
+                        NSLog(@"audio mix success");
+                        movieAsset = [AVAsset assetWithURL:outputPath];
+                    } break;
+                    default: {
+                        
+                    } break;
+                }
+                dispatch_semaphore_signal(semaphore);
+            }];
+        }];
+        [self removeActivityIndicatorView];
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+    }
     // 设置音视频、水印等编辑信息
     NSMutableDictionary *outputSettings = [[NSMutableDictionary alloc] init];
     // 待编辑的原始视频素材
     NSMutableDictionary *plsMovieSettings = [[NSMutableDictionary alloc] init];
-    plsMovieSettings[PLSAssetKey] = asset;
+    plsMovieSettings[PLSAssetKey] = movieAsset;
     plsMovieSettings[PLSStartTimeKey] = [NSNumber numberWithFloat:0.f];
     plsMovieSettings[PLSDurationKey] = [NSNumber numberWithFloat:[self.shortVideoRecorder getTotalDuration]];
     plsMovieSettings[PLSVolumeKey] = [NSNumber numberWithFloat:1.0f];
     outputSettings[PLSMovieSettingsKey] = plsMovieSettings;
-
+    
     EditViewController *videoEditViewController = [[EditViewController alloc] init];
     videoEditViewController.settings = outputSettings;
     [self presentViewController:videoEditViewController animated:YES completion:nil];
+}
+#pragma mark - 输出路径
+- (NSURL *)exportAudioMixPath {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *path = [paths objectAtIndex:0];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    if(![fileManager fileExistsAtPath:path]) {
+        [fileManager createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
+    }
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    formatter.dateFormat = @"yyyyMMddHHmmss";
+    NSString *nowTimeStr = [formatter stringFromDate:[NSDate dateWithTimeIntervalSinceNow:0]];
+    NSString *fileName = [path stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_mix.mp4",nowTimeStr]];
+    return [NSURL fileURLWithPath:fileName];
+}
+
+// 加载拼接视频的动画
+- (void)loadActivityIndicatorView {
+    if ([self.activityIndicatorView isAnimating]) {
+        [self.activityIndicatorView stopAnimating];
+        [self.activityIndicatorView removeFromSuperview];
+    }
+    
+    [self.view addSubview:self.activityIndicatorView];
+    [self.activityIndicatorView startAnimating];
+}
+
+// 移除拼接视频的动画
+- (void)removeActivityIndicatorView {
+    [self.activityIndicatorView removeFromSuperview];
+    [self.activityIndicatorView stopAnimating];
 }
 
 #pragma mark -- 隐藏状态栏
@@ -876,6 +1016,11 @@ PLSRateButtonViewDelegate
     /* 内存释放 */
     [self.renderManager releaseManager];
     [self.UIManager releaseManager];
+    
+    if ([self.activityIndicatorView isAnimating]) {
+        [self.activityIndicatorView stopAnimating];
+        self.activityIndicatorView = nil;
+    }
     
     NSLog(@"dealloc: %@", [[self class] description]);
 }

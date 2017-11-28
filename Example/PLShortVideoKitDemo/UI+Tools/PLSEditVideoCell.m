@@ -20,6 +20,7 @@
         [self addSubview:_iconPromptLabel];
         
         _iconImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 15, 45, 45)];
+        _iconImageView.contentMode = UIViewContentModeScaleAspectFill;
         _iconImageView.layer.cornerRadius = _iconImageView.frame.size.width / 2;
         _iconImageView.layer.masksToBounds = YES;
         [self addSubview:_iconImageView];

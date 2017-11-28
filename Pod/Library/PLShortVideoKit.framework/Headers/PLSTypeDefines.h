@@ -73,10 +73,10 @@ typedef enum {
  @since      v1.3.0
  */
 typedef NS_ENUM(NSInteger, PLSPreviewOrientation) {
-    PLSPreviewOrientationPortrait           = 1,
-    PLSPreviewOrientationPortraitUpsideDown = 2,
-    PLSPreviewOrientationLandscapeRight     = 3,
-    PLSPreviewOrientationLandscapeLeft      = 4,
+    PLSPreviewOrientationPortrait           = 0,
+    PLSPreviewOrientationPortraitUpsideDown = 1,
+    PLSPreviewOrientationLandscapeRight     = 2,
+    PLSPreviewOrientationLandscapeLeft      = 3,
 };
 
 /**
@@ -178,6 +178,17 @@ typedef NS_ENUM(NSUInteger, PLSFilePreset) {
     PLSFilePreset960x540,
     PLSFilePreset1280x720,
     PLSFilePreset1920x1080,
+};
+
+#pragma mark - Video File Transition Animation
+
+/**
+ @abstract 视频转场动画效果
+ 
+ @since      v1.7.0
+ */
+typedef NS_ENUM(NSUInteger, PLSTransitionType) {
+    PLSTransitionTypeFade    = 0, // 淡入淡出
 };
 
 #endif

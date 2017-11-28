@@ -460,14 +460,14 @@ static NSString *KWFilterCellIdentifier = @"KWFilterCellIdentifier";
 }
 
 - (void)resetScreemMode {
-    UIDeviceOrientation iDeviceOrientation = [[UIDevice currentDevice] orientation];
-
-    if (iDeviceOrientation != self.oldScreenMode) {
+//    UIDeviceOrientation iDeviceOrientation = [[UIDevice currentDevice] orientation];
+//
+//    if (iDeviceOrientation != self.oldScreenMode) {
 
         [self.renderManager resetDistortionParams];
         [self resetSdkUI];
-        self.oldScreenMode = iDeviceOrientation;
-    }
+//        self.oldScreenMode = iDeviceOrientation;
+//    }
 }
 
 /* Front and rear camera switch button */
@@ -687,15 +687,15 @@ static NSString *KWFilterCellIdentifier = @"KWFilterCellIdentifier";
 }
 
 - (void)resetSdkUI {
-    UIDeviceOrientation iDeviceOrientation = [[UIDevice currentDevice] orientation];
-    if (iDeviceOrientation != self.oldScreenMode) {
-        dispatch_sync(dispatch_get_main_queue(), ^{
-
-            UIDeviceOrientation iDeviceOrientation = [[UIDevice currentDevice] orientation];
-
-            switch (iDeviceOrientation) {
-                case UIDeviceOrientationPortrait:
-                case UIDeviceOrientationPortraitUpsideDown:
+//    UIDeviceOrientation iDeviceOrientation = [[UIDevice currentDevice] orientation];
+//    if (iDeviceOrientation != self.oldScreenMode) {
+//        dispatch_sync(dispatch_get_main_queue(), ^{
+//
+//            UIDeviceOrientation iDeviceOrientation = [[UIDevice currentDevice] orientation];
+//
+//            switch (iDeviceOrientation) {
+//                case UIDeviceOrientationPortrait:
+//                case UIDeviceOrientationPortraitUpsideDown:
                     [self resetWithUI:tapView frame:CGRectMake(0, 0, self.renderManager.varWidth, self.renderManager.varHeight)];
 
                     [self resetWithUI:self.toggleBtn frame:CGRectMake((self.renderManager.varWidth - 33) / 2 - 10, 11 - 10, 33 + 20, 28 + 20)];
@@ -732,10 +732,10 @@ static NSString *KWFilterCellIdentifier = @"KWFilterCellIdentifier";
 
                     [self resetWithUI:self.slideGlobalBeautifyOptionsBtn frame:CGRectMake((self.renderManager.varWidth - 46 * 5) / 6 * 5 + 46 * 4, 6, 46, 46)];
 
-                    break;
-
-                case UIDeviceOrientationLandscapeLeft:
-                case UIDeviceOrientationLandscapeRight:
+//                    break;
+//
+//                case UIDeviceOrientationLandscapeLeft:
+//                case UIDeviceOrientationLandscapeRight:
                     [self resetWithUI:tapView frame:CGRectMake(0, 0, self.renderManager.varWidth, self.renderManager.varHeight)];
 
                     [self resetWithUI:self.toggleBtn frame:CGRectMake((self.renderManager.varWidth - 33) / 2 - 10, 11 - 10, 33 + 20, 28 + 20)];
@@ -771,18 +771,18 @@ static NSString *KWFilterCellIdentifier = @"KWFilterCellIdentifier";
                     [self resetWithUI:self.beautifyNewBtn frame:CGRectMake((self.renderManager.varWidth - 46 * 5) / 6 * 4 + 46 * 3, 6, 46, 46)];
 
                     [self resetWithUI:self.slideGlobalBeautifyOptionsBtn frame:CGRectMake((self.renderManager.varWidth - 46 * 5) / 6 * 5 + 46 * 4, 6, 46, 46)];
-                    break;
-                default:
-
-                    break;
-            }
+//                    break;
+//                default:
+//
+//                    break;
+//            }
 
             /* agora 特有偏移效果 */
             [self setLeftBtn:CGPointMake(20, -20)];
             [self setRightBtn:CGPointMake(-20, -20)];
 
-        });
-    }
+//        });
+//    }
 }
 
 - (void)resetWithUI:(UIView *)sender frame:(CGRect)frame {

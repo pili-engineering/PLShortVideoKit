@@ -173,4 +173,20 @@
  */
 - (void)addMVLayerWithColor:(NSURL *_Nullable)colorURL alpha:(NSURL *_Nullable)alphaURL;
 
+/**
+ @brief 旋转视频的方向，能将竖屏视频旋转为横屏视频，横屏视频旋转为竖屏视频
+ *
+ *  return PLSPreviewOrientation 当前视频的方向
+ 
+ @since      v1.7.0
+ */
+- (PLSPreviewOrientation)rotateVideoLayer;
+
+/**
+ @brief 重置视频的旋转方向，视频的方向被置为视频的原始方向
+ 
+ @since      v1.7.0
+ */
+- (void)resetVideoLayerOrientation;
+
 @end

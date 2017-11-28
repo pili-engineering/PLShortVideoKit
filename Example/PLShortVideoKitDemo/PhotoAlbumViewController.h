@@ -52,6 +52,6 @@
 @interface PhotoAlbumViewController : UICollectionViewController
 
 @property (assign, nonatomic) NSInteger maxSelectCount;
-
+@property (assign, nonatomic) PHAssetMediaType mediaType;
 @end
 

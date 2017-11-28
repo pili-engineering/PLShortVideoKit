@@ -8,6 +8,9 @@
 
 #import "ViewController.h"
 #import "RecordViewController.h"
+#import "PhotoAlbumViewController.h"
+
+#define PLS_RGBCOLOR(r,g,b) [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:1]
 
 @interface ViewController () 
 
@@ -19,18 +22,19 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     
-    UIButton *recordButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 62, 62)];
-    [recordButton setImage:[UIImage imageNamed:@"btn_record_a"] forState:UIControlStateNormal];
-    [recordButton addTarget:self action:@selector(pressRecordButton:) forControlEvents:UIControlEventTouchDown];
-    recordButton.center = CGPointMake(CGRectGetWidth([UIScreen mainScreen].bounds) / 2, CGRectGetHeight([UIScreen mainScreen].bounds) / 2);
+    self.view.backgroundColor = PLS_RGBCOLOR(25, 24, 36);
+
+    UIButton *recordButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 64, self.view.bounds.size.width, 64)];
+    [recordButton setTitle:@"短视频录制" forState:UIControlStateNormal];
+    recordButton.backgroundColor = [UIColor grayColor];
+    [recordButton addTarget:self action:@selector(pressRecordButtonEvent:) forControlEvents:UIControlEventTouchDown];
     [self.view addSubview:recordButton];
     
-    UILabel *recordLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 100, 44)];
-    recordLabel.text = @"短视频";
-    recordLabel.textAlignment = NSTextAlignmentCenter;
-    recordLabel.textColor = [UIColor grayColor];
-    recordLabel.center = CGPointMake(recordButton.center.x, recordButton.center.y + 44);
-    [self.view addSubview:recordLabel];
+    UIButton *imagesToMovieButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 138, self.view.bounds.size.width, 64)];
+    [imagesToMovieButton setTitle:@"图片合成视频" forState:UIControlStateNormal];
+    imagesToMovieButton.backgroundColor = [UIColor grayColor];
+    [imagesToMovieButton addTarget:self action:@selector(imagesToMovieButtonEvent:) forControlEvents:UIControlEventTouchDown];
+    [self.view addSubview:imagesToMovieButton];
 };
 
 - (void)didReceiveMemoryWarning {
@@ -38,9 +42,18 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (void)pressRecordButton:(id)sender {
+// 短视频录制
+- (void)pressRecordButtonEvent:(id)sender {
     RecordViewController *recordViewController = [[RecordViewController alloc] init];
     [self presentViewController:recordViewController animated:YES completion:nil];
+}
+
+// 图片合成视频
+- (void)imagesToMovieButtonEvent:(id)sender {
+    PhotoAlbumViewController *photoAlbumViewController = [[PhotoAlbumViewController alloc] init];
+    photoAlbumViewController.mediaType = PHAssetMediaTypeImage;
+    photoAlbumViewController.maxSelectCount = 10;
+    [self presentViewController:photoAlbumViewController animated:YES completion:nil];
 }
 
 - (void)dealloc {
