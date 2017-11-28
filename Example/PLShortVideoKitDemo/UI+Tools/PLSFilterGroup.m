@@ -12,6 +12,11 @@
 
 @property (strong, nonatomic) NSMutableArray *colorFilterArray;
 
+/**
+ @abstract 将图片作为滤镜封面
+ */
+@property (strong, nonatomic) UIImage *coverImage;
+
 @end
 
 @implementation PLSFilterGroup
@@ -39,27 +44,36 @@
         _filtersInfo = [[NSMutableArray alloc] init];
         self.currentFilter = [[PLSFilter alloc] init];
         
-        [self setFilterModeOn:YES];
+        [self setupFilter];
     }
     return self;
 }
 
-- (void)setFilterModeOn:(BOOL)filterModeOn {
-    [self loadFilters];
+- (instancetype)initWithImage:(UIImage *)inputImage {
+    self = [super init];
+    if (self) {
+        self.coverImage = inputImage;
+
+        _colorFilterArray = [[NSMutableArray alloc] init];
+        _filtersInfo = [[NSMutableArray alloc] init];
+        self.currentFilter = [[PLSFilter alloc] init];
+
+        [self setupFilter];
+    }
+    return self;
+}
+
+- (void)setupFilter {
+    [self loadFilters:self.coverImage];
+}
+
+- (void)loadFilters:(UIImage *)inputImage {
+    if (_filtersInfo) {
+        [_filtersInfo removeAllObjects];
+    }
     
     if (_colorFilterArray) {
         [_colorFilterArray removeAllObjects];
-    }
-    
-    for (int i = 0; i < _filtersInfo.count; i++) {
-        NSString *colorImagePath = [_filtersInfo[i] objectForKey:@"colorImagePath"];
-        [_colorFilterArray addObject:colorImagePath];
-    }
-}
-
-- (void)loadFilters {
-    if (_filtersInfo) {
-        [_filtersInfo removeAllObjects];
     }
     
     NSString *bundlePath = [NSBundle mainBundle].bundlePath;
@@ -80,15 +94,23 @@
         NSString *coverImagePath = [filtersPath stringByAppendingString:[NSString stringWithFormat:@"/%@/thumb.png", dir]];
         NSString *colorImagePath = [filtersPath stringByAppendingString:[NSString stringWithFormat:@"/%@/filter.png", dir]];
         
+        UIImage *coverImage;
+        if (self.coverImage) {
+            coverImage = [PLSFilter applyFilter:self.coverImage colorImagePath:colorImagePath];
+        } else {
+            coverImage = [NSNull null];
+        }
+
         NSDictionary *dic = @{
                               @"name"            : name,
                               @"dir"             : dir,
                               @"coverImagePath"  : coverImagePath,
-                              @"colorImagePath"  : colorImagePath
+                              @"colorImagePath"  : colorImagePath,
+                              @"coverImage"      : coverImage
                               };
         [_filtersInfo addObject:dic];
+        [_colorFilterArray addObject:colorImagePath];
     }
-    
 }
 
 - (void)dealloc {

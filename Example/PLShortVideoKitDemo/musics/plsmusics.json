@@ -1,7 +1,11 @@
 {
   "musics": [
     {
-      "name": "counter.m4a",
+      "name": "counter-6s.m4a",
+      "category": "default"
+    },
+    {
+      "name": "counter-35s.m4a",
       "category": "default"
     },
     {
@@ -18,10 +22,6 @@
     },
     {
       "name": "Road_to_Moscow.mp3",
-      "category": "default"
-    },
-    {
-      "name": "Sophomore_Makeout.m4a",
       "category": "default"
     },
     {

@@ -32,4 +32,9 @@
  */
 @property (strong, nonatomic) PLSFilter *currentFilter;
 
+/**
+ @abstract 使用 inputImage 作为滤镜的封面图
+ */
+- (instancetype)initWithImage:(UIImage *)inputImage;
+
 @end
