@@ -256,6 +256,14 @@
  */
 - (void)writeSampleBuffer:(CMSampleBufferRef _Nonnull)sampleBuffer;
 
+/**
+ @abstract   插入视频，支持任意位置，通过该接口传入，成为 PLShortVideoRecorder 当前视频数组的下一个视频段
+ 
+ @warning   PLShortVideoRecorder 初始化后调用，当视频时长加上视频数组中的所有视频段时长，超过视频设置的最大时长 maxDuration 时，则传值无效
+ 
+ @since      v1.7.0
+ */
+- (void)insertVideo:(NSURL *_Nonnull)videoURL;
 
 /**
  @brief 开始录制视频
@@ -313,6 +321,32 @@
  */
 - (CGFloat)getTotalDuration;
 
+@end
+
+#pragma mark -- PLShortVideoRecorder (mixAudio)
+
+@interface PLShortVideoRecorder (mixAudio)
+/**
+ @abstract   设置录制时的背景音乐
+ 
+ @warning   PLShortVideoRecorder 初始化后调用，audioURL 为音频 URL
+ 
+ @since      v1.7.0
+ */
+- (void)mixAudio:(NSURL *_Nullable)audioURL;
+
+/**
+ @brief   获取添加背景音乐录制完成后的 audioMix
+ 
+ @warning   设置背景音乐后有效
+ *
+ *  @param musicVolume 背景音乐音量，范围 0 ～ 1
+ *  @param videoVolume 原视频音量，范围 0 ～ 1
+ *  @param completionHandler 获取 composition 及 audioMix
+ *
+ @since      v1.7.0
+ */
+- (void)mixWithMusicVolume:(float)musicVolume videoVolume:(float)videoVolume completionHandler:(void (^_Nonnull)(AVMutableComposition * _Nullable composition, AVAudioMix * _Nullable audioMix, NSError * _Nullable error))completionHandler;
 @end
 
 #pragma mark - Category (Info)

@@ -28,7 +28,7 @@
 @property (copy, nonatomic) void(^failureBlock)(NSError* error);
 
 /**
- @abstract 视频拼接进度的 block，可在该 block 中刷新转码进度条 UI
+ @abstract 视频拼接进度的 block，可在该 block 中刷新进度条 UI
  
  @since      v1.4.0
  */
