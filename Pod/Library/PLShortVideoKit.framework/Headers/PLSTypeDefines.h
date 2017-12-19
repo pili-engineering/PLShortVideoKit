@@ -191,6 +191,26 @@ typedef NS_ENUM(NSUInteger, PLSTransitionType) {
     PLSTransitionTypeFade    = 0, // 淡入淡出
 };
 
+/*!
+ @typedef    PLShortVideoLogLevel
+ @abstract   短视频日志级别。
+ @since      v2.1.0
+ */
+typedef NS_ENUM(NSUInteger, PLShortVideoLogLevel){
+    // No logs
+    PLShortVideoLogLevelOff       = 0,
+    // Error logs only
+    PLShortVideoLogLevelError,
+    // Error and warning logs
+    PLShortVideoLogLevelWarning,
+    // Error, warning and info logs
+    PLShortVideoLogLevelInfo,
+    // Error, warning, info and debug logs
+    PLShortVideoLogLevelDebug,
+    // Error, warning, info, debug and verbose logs
+    PLShortVideoLogLevelVerbose,
+};
+
 #endif
 
 

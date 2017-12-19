@@ -98,6 +98,16 @@
 @property (nonatomic, readonly) CGFloat musicVolume;
 
 /**
+ @brief 延迟背景音乐的播放，单位为毫秒，默认值为 0
+        建议使用 视频帧间隔*(视频帧率/2) * 1000 毫秒
+        比如：视频帧率为30帧/秒，延迟时间为 （1.0/30)*(30/2)*1000 = 500毫秒，
+        即 delayTimeForMusicToPlay = 500
+ 
+ @since      v1.8.0
+ */
+@property (assign, nonatomic) CGFloat delayTimeForMusicToPlay;
+
+/**
  @brief 使用 NSURL 初始化编辑实例
  
  @since      v1.1.0

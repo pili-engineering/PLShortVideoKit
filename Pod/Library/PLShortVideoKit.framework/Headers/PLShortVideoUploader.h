@@ -73,7 +73,7 @@
 @property (nonatomic, weak, nullable) id<PLShortVideoUploaderDelegate>  delegate;
 
 /**
- @abstract   创建 PLSUploaderConfiguration 单例对象
+ @abstract   创建 PLShortVideoUploader 单例对象
  
  @since      v1.0.4
  */

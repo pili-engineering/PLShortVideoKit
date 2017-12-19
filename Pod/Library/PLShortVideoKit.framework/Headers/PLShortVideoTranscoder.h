@@ -69,6 +69,17 @@
 @property (assign, nonatomic) BOOL isAdjustVideoOrientation;
 
 /**
+ @abstract 视频旋转方向，默认为 PLSPreviewOrientationPortrait。
+           PLSPreviewOrientationPortrait           = 0, 正立 0度
+           PLSPreviewOrientationPortraitUpsideDown = 1, 180度
+           PLSPreviewOrientationLandscapeRight     = 2, 270度
+           PLSPreviewOrientationLandscapeLeft      = 3, 90度
+
+ @since      v1.8.0
+ */
+@property (assign, nonatomic) PLSPreviewOrientation rotateOrientation;
+
+/**
  @abstract 视频转码完成的 block
  
  @since      v1.0.5
