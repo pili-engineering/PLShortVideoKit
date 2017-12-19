@@ -89,8 +89,8 @@ typedef void (^QNPrequeryReturn)(int code);
 
 @interface QNZone : NSObject
 
-@property (nonatomic, strong) NSArray <NSString *> * upDomainList;
-@property (nonatomic, strong) QNZoneInfo * zoneInfo;
+@property (nonatomic, strong) NSArray<NSString *> *upDomainList;
+@property (nonatomic, strong) QNZoneInfo *zoneInfo;
 
 /**
  *    默认上传服务器地址列表
@@ -107,11 +107,11 @@ typedef void (^QNPrequeryReturn)(int code);
 @interface QNZoneInfo : NSObject
 
 @property (readonly, nonatomic) long ttl;
-@property (readonly, nonatomic) NSMutableArray <NSString *> * upDomainsList;
-@property (readonly, nonatomic) NSMutableDictionary * upDomainsDic;
+@property (readonly, nonatomic) NSMutableArray<NSString *> *upDomainsList;
+@property (readonly, nonatomic) NSMutableDictionary *upDomainsDic;
 
 - (instancetype)init:(long)ttl
-       upDomainsList:(NSMutableArray <NSString *> *)upDomainsList
+       upDomainsList:(NSMutableArray<NSString *> *)upDomainsList
         upDomainsDic:(NSMutableDictionary *)upDomainsDic;
 - (QNZoneInfo *)buildInfoFromJson:(NSDictionary *)resp;
 
@@ -154,7 +154,7 @@ typedef void (^QNPrequeryReturn)(int code);
  *
  *    @return Zone实例
  */
-- (instancetype)initWithupDomainList:(NSArray <NSString *> *)upList;
+- (instancetype)initWithupDomainList:(NSArray<NSString *> *)upList;
 
 /**
  *    Zone初始化方法
@@ -163,7 +163,7 @@ typedef void (^QNPrequeryReturn)(int code);
  *
  *    @return Zone实例
  */
-+ (instancetype)createWithHost:(NSArray <NSString *> *)upList;
++ (instancetype)createWithHost:(NSArray<NSString *> *)upList;
 
 - (void)preQuery:(QNUpToken *)token
               on:(QNPrequeryReturn)ret;

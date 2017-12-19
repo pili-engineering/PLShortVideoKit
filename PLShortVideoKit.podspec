@@ -9,7 +9,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "PLShortVideoKit"
-  s.version      = "1.7.0"
+  s.version      = "1.8.0"
   s.summary      = "PILI iOS short video record SDK"
   s.homepage     = "https://github.com/pili-engineering/PLShortVideoKit"
   s.license      = "Apache License 2.0"
@@ -20,7 +20,7 @@ Pod::Spec.new do |s|
 
   s.ios.deployment_target	= "8.0"
  
-  s.dependency 'Qiniu', '7.1.7'
+  s.dependency 'Qiniu', '~> 7.1'
 
 
   s.subspec "ex-libMuseProcessor" do |ss1|

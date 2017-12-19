@@ -344,6 +344,7 @@
 		0A9CB4ED1EF042FB00EABA76 /* btn_close_sound@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0A9CB4E91EF042FB00EABA76 /* btn_close_sound@3x.png */; };
 		0A9CB4EE1EF042FB00EABA76 /* btn_sound@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0A9CB4EA1EF042FB00EABA76 /* btn_sound@2x.png */; };
 		0A9CB4EF1EF042FB00EABA76 /* btn_sound@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0A9CB4EB1EF042FB00EABA76 /* btn_sound@3x.png */; };
+		0A9F972B1FE91DD100B473F5 /* PLSColumnListView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A9F972A1FE91DD000B473F5 /* PLSColumnListView.m */; };
 		0AC9D55B1FB0AD4C003F7E8F /* arScene.js in Resources */ = {isa = PBXBuildFile; fileRef = 0AC9D53B1FB0AD4C003F7E8F /* arScene.js */; };
 		0AC9D55C1FB0AD4C003F7E8F /* easyar.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC9D53C1FB0AD4C003F7E8F /* easyar.framework */; };
 		0AC9D55D1FB0AD4C003F7E8F /* easyar3d.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC9D53D1FB0AD4C003F7E8F /* easyar3d.framework */; };
@@ -1042,6 +1043,8 @@
 		0A9CB4E91EF042FB00EABA76 /* btn_close_sound@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "btn_close_sound@3x.png"; path = "images/btn_close_sound@3x.png"; sourceTree = "<group>"; };
 		0A9CB4EA1EF042FB00EABA76 /* btn_sound@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "btn_sound@2x.png"; path = "images/btn_sound@2x.png"; sourceTree = "<group>"; };
 		0A9CB4EB1EF042FB00EABA76 /* btn_sound@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "btn_sound@3x.png"; path = "images/btn_sound@3x.png"; sourceTree = "<group>"; };
+		0A9F97291FE91DD000B473F5 /* PLSColumnListView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLSColumnListView.h; sourceTree = "<group>"; };
+		0A9F972A1FE91DD000B473F5 /* PLSColumnListView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLSColumnListView.m; sourceTree = "<group>"; };
 		0AC9D53B1FB0AD4C003F7E8F /* arScene.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = arScene.js; sourceTree = "<group>"; };
 		0AC9D53C1FB0AD4C003F7E8F /* easyar.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = easyar.framework; sourceTree = "<group>"; };
 		0AC9D53D1FB0AD4C003F7E8F /* easyar3d.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = easyar3d.framework; sourceTree = "<group>"; };
@@ -2104,6 +2107,8 @@
 			isa = PBXGroup;
 			children = (
 				0A439A5F1FCDA2320077204E /* TextEffect */,
+				0A9F97291FE91DD000B473F5 /* PLSColumnListView.h */,
+				0A9F972A1FE91DD000B473F5 /* PLSColumnListView.m */,
 				0A439A5D1FCDA2310077204E /* UIView+PLSLightFrame.h */,
 				0A439A5E1FCDA2320077204E /* UIView+PLSLightFrame.m */,
 				0AC9D5721FB0AFCF003F7E8F /* PLSLoadAnimationView.h */,
@@ -2563,13 +2568,16 @@
 			files = (
 			);
 			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-PLShortVideoKitDemo-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		B051BAB51EADFEF900385FF0 /* ShellScript */ = {
@@ -2688,6 +2696,7 @@
 				0A439A731FCDA2320077204E /* PLSStickerBar.m in Sources */,
 				0AC9D56D1FB0AD4C003F7E8F /* Unpacker.m in Sources */,
 				0A8B8A531F8F8786001A3A48 /* unzip.c in Sources */,
+				0A9F972B1FE91DD100B473F5 /* PLSColumnListView.m in Sources */,
 				0AECA4F21E88466300AF2931 /* PlayViewController.m in Sources */,
 				0A8B8A3F1F8F8786001A3A48 /* KWSaveData.m in Sources */,
 				0A8B8A2D1F8F8786001A3A48 /* row_any.cc in Sources */,

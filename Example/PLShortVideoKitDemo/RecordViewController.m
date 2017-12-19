@@ -68,6 +68,10 @@ PLSRateButtonViewDelegate
 @property (strong, nonatomic) UIView *importMovieView;
 @property (strong, nonatomic) UIButton *importMovieButton;
 
+// 录制的视频文件的存储路径设置
+@property (strong, nonatomic) UIButton *filePathButton;
+@property (assign, nonatomic) BOOL useSDKInternalPath;
+
 // 录制时是否使用滤镜
 @property (assign, nonatomic) BOOL isUseFilterWhenRecording;
 
@@ -335,6 +339,18 @@ PLSRateButtonViewDelegate
     self.musicButton.imageEdgeInsets = UIEdgeInsetsMake(6, 6, 6, 6);
     [self.musicButton addTarget:self action:@selector(musicButtonOnClick:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:_musicButton];
+    
+    // 录制的视频文件的存储路径设置
+    self.filePathButton = [[UIButton alloc] initWithFrame:CGRectMake(PLS_SCREEN_WIDTH - 60, 420, 46, 46)];
+    self.filePathButton.layer.cornerRadius = 23;
+    self.filePathButton.backgroundColor = [UIColor colorWithRed:116/255 green:116/255 blue:116/255 alpha:0.55];
+    [self.filePathButton setImage:[UIImage imageNamed:@"file_path"] forState:UIControlStateNormal];
+    self.filePathButton.imageEdgeInsets = UIEdgeInsetsMake(6, 6, 6, 6);
+    [self.filePathButton addTarget:self action:@selector(filePathButtonClickedEvent:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.filePathButton];
+    
+    self.filePathButton.selected = NO;
+    self.useSDKInternalPath = YES;
     
     // 展示拼接视频的动画
     self.activityIndicatorView = [[UIActivityIndicatorView alloc] initWithFrame:self.view.bounds];
@@ -646,6 +662,16 @@ PLSRateButtonViewDelegate
     }
 }
 
+//
+- (void)filePathButtonClickedEvent:(id)sender {
+    self.filePathButton.selected = !self.filePathButton.selected;
+    if (self.filePathButton.selected) {
+        self.useSDKInternalPath = NO;
+    } else {
+        self.useSDKInternalPath = YES;
+    }
+}
+
 // 删除上一段视频
 - (void)deleteButtonEvent:(id)sender {
     if (_deleteButton.style == PLSDeleteButtonStyleNormal) {
@@ -668,8 +694,39 @@ PLSRateButtonViewDelegate
     if (self.shortVideoRecorder.isRecording) {
         [self.shortVideoRecorder stopRecording];
     } else {
-        [self.shortVideoRecorder startRecording];
+        if (self.useSDKInternalPath) {
+            // 方式1
+            // 录制的视频的存放地址由 SDK 内部自动生成
+             [self.shortVideoRecorder startRecording];
+        } else {
+            // 方式2
+            // fileURL 录制的视频的存放地址，该参数可以在外部设置，录制的视频会保存到该位置
+            [self.shortVideoRecorder startRecording:[self getFileURL]];
+        }
     }
+}
+
+- (NSURL *)getFileURL {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *path = [paths objectAtIndex:0];
+    
+    path = [path stringByAppendingPathComponent:@"TestPath"];
+    
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    if(![fileManager fileExistsAtPath:path]) {
+        // 如果不存在,则说明是第一次运行这个程序，那么建立这个文件夹
+        [fileManager createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
+    }
+    
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    formatter.dateFormat = @"yyyyMMddHHmmss";
+    NSString *nowTimeStr = [formatter stringFromDate:[NSDate dateWithTimeIntervalSinceNow:0]];
+    
+    NSString *fileName = [[path stringByAppendingPathComponent:nowTimeStr] stringByAppendingString:@".mp4"];
+    
+    NSURL *fileURL = [NSURL fileURLWithPath:fileName];
+    
+    return fileURL;
 }
 
 // 结束录制
@@ -856,6 +913,7 @@ PLSRateButtonViewDelegate
     self.endButton.hidden = YES;
     self.importMovieView.hidden = YES;
     self.musicButton.hidden = YES;
+    self.filePathButton.hidden = YES;
     
     self.durationLabel.text = [NSString stringWithFormat:@"%.2fs", totalDuration];
 }
@@ -872,6 +930,7 @@ PLSRateButtonViewDelegate
         self.endButton.hidden = YES;
         self.importMovieView.hidden = NO;
         self.musicButton.hidden = NO;
+        self.filePathButton.hidden = NO;
     }
     
     AVAsset *asset = [AVAsset assetWithURL:_URL];
@@ -960,6 +1019,7 @@ PLSRateButtonViewDelegate
     
     EditViewController *videoEditViewController = [[EditViewController alloc] init];
     videoEditViewController.settings = outputSettings;
+    videoEditViewController.filesURLArray = filesURLArray;
     [self presentViewController:videoEditViewController animated:YES completion:nil];
 }
 #pragma mark - 输出路径

@@ -604,18 +604,36 @@ static NSString * const reuseIdentifier = @"Cell";
                 [self.urls addObject:image];
             }
             
+            [self loadActivityIndicatorView];
+
+            __weak typeof(self)weakSelf = self;
             PLSImageToMovieComposer *imageToMovieComposer = [[PLSImageToMovieComposer alloc] initWithImages:self.urls];
-            imageToMovieComposer.videoSize = CGSizeMake(544, 960);
+            if (self.isMovieLandscapeOrientation) {
+                imageToMovieComposer.videoSize = CGSizeMake(960, 544);
+            } else {
+                imageToMovieComposer.videoSize = CGSizeMake(544, 960);
+            }
+            
             [imageToMovieComposer setCompletionBlock:^(NSURL *url) {
+                NSLog(@"imageToMovieComposer ur: %@", url);
+
+                [weakSelf removeActivityIndicatorView];
+                weakSelf.progressLabel.text = @"";
+                
                 MovieTransCodeViewController *transCodeViewController = [[MovieTransCodeViewController alloc] init];
                 transCodeViewController.url = url;
                 [self presentViewController:transCodeViewController animated:YES completion:nil];
             }];
             [imageToMovieComposer setFailureBlock:^(NSError *error) {
                 NSLog(@"imageToMovieComposer failed");
+                
+                [weakSelf removeActivityIndicatorView];
+                weakSelf.progressLabel.text = @"";
             }];
             [imageToMovieComposer setProcessingBlock:^(float progress) {
                 NSLog(@"imageToMovieComposer progress: %f", progress);
+                
+                weakSelf.progressLabel.text = [NSString stringWithFormat:@"合成进度%d%%", (int)(progress * 100)];
             }];
             
             [imageToMovieComposer startComposing];

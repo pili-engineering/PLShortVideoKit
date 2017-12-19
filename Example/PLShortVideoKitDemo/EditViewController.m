@@ -17,7 +17,7 @@
 #import "PLSRateButtonView.h"
 #import "PLShortVideoKit/PLShortVideoKit.h"
 #import <AssetsLibrary/AssetsLibrary.h>
-
+#import "PLSColumnListView.h"
 #import "PLSVideoEditingController.h"
 
 
@@ -95,6 +95,10 @@ PLSVideoEditingControllerDelegate
 
 // 添加文字、图片、涂鸦, 需要保存到编辑数据
 @property (strong, nonatomic) PLSVideoEdit *videoEdit;
+@property (assign, nonatomic) BOOL isNeedVideoEdit;
+
+// 视频列表
+@property (strong, nonatomic) PLSColumnListView *videoListView;
 
 @end
 
@@ -159,6 +163,10 @@ PLSVideoEditingControllerDelegate
     // 原始视频
     [self.movieSettings addEntriesFromDictionary:self.settings[PLSMovieSettingsKey]];
     self.movieSettings[PLSVolumeKey] = [NSNumber numberWithFloat:1.0];
+    
+    // 备份原始视频的信息
+    self.originMovieSettings = [[NSMutableDictionary alloc] init];
+    [self.originMovieSettings addEntriesFromDictionary:self.movieSettings];
 
     // 背景音乐
     self.audioSettings[PLSVolumeKey] = [NSNumber numberWithFloat:1.0];
@@ -176,10 +184,6 @@ PLSVideoEditingControllerDelegate
     
     // 视频编辑类
     AVAsset *asset = self.movieSettings[PLSAssetKey];
-    self.originMovieSettings = [[NSMutableDictionary alloc] init];
-    [self.originMovieSettings addEntriesFromDictionary:self.settings[PLSMovieSettingsKey]];
-
-   
     self.shortVideoEditor = [[PLShortVideoEditor alloc] initWithAsset:asset videoSize:CGSizeZero];
     self.shortVideoEditor.delegate = self;
     self.shortVideoEditor.loopEnabled = YES;
@@ -373,6 +377,16 @@ PLSVideoEditingControllerDelegate
     [addTextButton addTarget:self action:@selector(addTextButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
     [buttonScrollView addSubview:addTextButton];
     
+    // 视频列表
+    UIButton *videoListButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    videoListButton.frame = CGRectMake(5, 40, 60, 35);
+    videoListButton.selected = NO;
+    [videoListButton setTitle:@"视频列表" forState:UIControlStateNormal];
+    [videoListButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    videoListButton.titleLabel.font = [UIFont systemFontOfSize:14];
+    [videoListButton addTarget:self action:@selector(videoListButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
+    [self.editToolboxView addSubview:videoListButton];
+    
     // 倍数处理
     self.titleArray = @[@"极慢", @"慢", @"正常", @"快", @"极快"];
     self.titleIndex = 2;
@@ -422,6 +436,31 @@ PLSVideoEditingControllerDelegate
 - (void)removeActivityIndicatorView {
     [self.activityIndicatorView removeFromSuperview];
     [self.activityIndicatorView stopAnimating];
+}
+
+// 加载视频列表
+- (void)loadVideoListView {
+    NSMutableArray *listArray = [[NSMutableArray alloc] init];
+    
+    for (NSURL *url in self.filesURLArray) {
+        NSDictionary *dic = @{
+                              @"url"        : url,
+                              @"name"       : [url absoluteString],
+                              };
+        
+        [listArray addObject:dic];
+    }
+    
+    // 视频列表
+    self.videoListView = [[PLSColumnListView alloc] initWithFrame:CGRectMake(0, 64, PLS_SCREEN_WIDTH, PLS_SCREEN_WIDTH) listArray:listArray titleArray:nil listType:PLSNormalType];
+    [self.videoListView reloadData];
+    
+    [self.view addSubview:self.videoListView];
+}
+
+// 移除视频列表
+- (void)removeVideoListView {
+    [self.videoListView removeFromSuperview];
 }
 
 #pragma mark -- 滤镜资源
@@ -910,7 +949,17 @@ PLSVideoEditingControllerDelegate
     [self presentViewController:videoEditingVC animated:YES completion:nil];
 }
 
-#pragma mark - PLSVideoEditingControllerDelegate
+#pragma mark -- 视频列表
+- (void)videoListButtonEvent:(UIButton *)button {
+    button.selected = !button.selected;
+    if (button.selected) {
+        [self loadVideoListView];
+    } else {
+        [self removeVideoListView];
+    }
+}
+
+#pragma mark - PLSVideoEditingControllerDelegate 涂鸦、文字、贴纸效果的回调
 - (void)VideoEditingController:(PLSVideoEditingController *)videoEditingVC didCancelPhotoEdit:(PLSVideoEdit *)videoEdit {
     [videoEditingVC dismissViewControllerAnimated:YES completion:nil];
 }
@@ -920,15 +969,26 @@ PLSVideoEditingControllerDelegate
     
     [videoEditingVC dismissViewControllerAnimated:YES completion:nil];
     
+    // 重置视频的方向
+    self.videoLayerOrientation = PLSPreviewOrientationPortrait;
+    [self.shortVideoEditor resetVideoLayerOrientation];
+    AVAsset *asset = nil;
+    
     if (self.videoEdit && self.videoEdit.editFinalURL) {
-        // 重置视频的方向
-        self.videoLayerOrientation = PLSPreviewOrientationPortrait;
-        [self.shortVideoEditor resetVideoLayerOrientation];
         // 更新视频
         NSURL *url = self.videoEdit.editFinalURL;
-        AVAsset *asset = [AVAsset assetWithURL:url];
-        [self.shortVideoEditor replaceCurrentAssetWithAsset:asset];
+        asset = [AVAsset assetWithURL:url];
+        
+        self.isNeedVideoEdit = YES;
+        
+    } else {
+        // 更新视频
+        asset = self.movieSettings[PLSAssetKey];
+      
+        self.isNeedVideoEdit = NO;
     }
+    
+    [self.shortVideoEditor replaceCurrentAssetWithAsset:asset];
 }
 
 #pragma mark -- PLSClipAudioViewDelegate 裁剪背景音乐 的 回调
@@ -973,19 +1033,39 @@ PLSVideoEditingControllerDelegate
             rateType = PLSVideoRecoderRateTopFast;
             break;
     }
-    
-    /// PLShortVideoAsset 初始化
-    PLShortVideoAsset *shortVideoAsset = [[PLShortVideoAsset alloc]initWithAsset:self.originMovieSettings[PLSAssetKey]];
-    CMTime originStart = CMTimeMake([self.originMovieSettings[PLSStartTimeKey] floatValue] * 1e9, 1e9);
-    CMTime originDuration = CMTimeMake([self.originMovieSettings[PLSDurationKey] floatValue] * 1e9, 1e9);
-    
-    /// 倍数处理
-    AVAsset *outputAsset = [shortVideoAsset scaleAsset:self.originMovieSettings[PLSAssetKey] timeRange:CMTimeRangeMake(originStart, originDuration) rateType:rateType];
-    
-    /// 处理后的视频信息
-    CGFloat scaleFloat = [self getRateNumberWithRateType:rateType];
+
+
+    AVAsset *outputAsset = nil;
+    if (self.videoEdit && self.videoEdit.editFinalURL) {
+        NSURL *url = self.videoEdit.editFinalURL;
+        AVAsset *asset = [AVAsset assetWithURL:url];
+        
+        // PLShortVideoAsset 初始化
+        PLShortVideoAsset *shortVideoAsset = [[PLShortVideoAsset alloc] initWithAsset:asset];
+        CMTime originStart = kCMTimeZero;
+        CMTime originDuration = asset.duration;
+        
+        // 倍数处理
+        outputAsset = [shortVideoAsset scaleTimeRange:CMTimeRangeMake(originStart, originDuration) toRateType:rateType];
+        
+        // 处理后的视频信息
+        self.movieSettings[PLSStartTimeKey] = [NSNumber numberWithFloat:CMTimeGetSeconds(kCMTimeZero)];
+        
+        self.isNeedVideoEdit = NO;
+        
+    } else {
+        // PLShortVideoAsset 初始化
+        PLShortVideoAsset *shortVideoAsset = [[PLShortVideoAsset alloc] initWithAsset:self.originMovieSettings[PLSAssetKey]];
+        CMTime originStart = CMTimeMake([self.originMovieSettings[PLSStartTimeKey] floatValue] * 1e9, 1e9);
+        CMTime originDuration = CMTimeMake([self.originMovieSettings[PLSDurationKey] floatValue] * 1e9, 1e9);
+        
+        // 倍数处理
+        outputAsset = [shortVideoAsset scaleTimeRange:CMTimeRangeMake(originStart, originDuration) toRateType:rateType];
+    }
+
+    // 处理后的视频信息
     self.movieSettings[PLSAssetKey]  = outputAsset;
-    self.movieSettings[PLSDurationKey] = [NSNumber numberWithFloat:[self.originMovieSettings[PLSDurationKey] floatValue] * scaleFloat];
+    self.movieSettings[PLSDurationKey] = [NSNumber numberWithFloat:CMTimeGetSeconds(outputAsset.duration)];
     
     CMTime start = CMTimeMake([self.movieSettings[PLSStartTimeKey] floatValue] * 1e9, 1e9);
     CMTime duration = CMTimeMake([self.movieSettings[PLSDurationKey] floatValue] * 1e9, 1e9);
@@ -1030,13 +1110,15 @@ PLSVideoEditingControllerDelegate
 
     [self loadActivityIndicatorView];
     
-    // 判断是否加了文字、图片、涂鸦特效
-    if (self.videoEdit && self.videoEdit.editFinalURL) {
-        NSURL *url = self.videoEdit.editFinalURL;
-        AVAsset *asset = [AVAsset assetWithURL:url];
-        self.movieSettings[PLSAssetKey] = asset;
-        self.movieSettings[PLSStartTimeKey] = [NSNumber numberWithFloat:0.f];
-        self.movieSettings[PLSDurationKey] = [NSNumber numberWithFloat:CMTimeGetSeconds(asset.duration)];
+    if (self.isNeedVideoEdit) {
+        // 说明加了文字、图片、涂鸦特效
+        if (self.videoEdit && self.videoEdit.editFinalURL) {
+            NSURL *url = self.videoEdit.editFinalURL;
+            AVAsset *asset = [AVAsset assetWithURL:url];
+            self.movieSettings[PLSAssetKey] = asset;
+            self.movieSettings[PLSStartTimeKey] = [NSNumber numberWithFloat:0.f];
+            self.movieSettings[PLSDurationKey] = [NSNumber numberWithFloat:CMTimeGetSeconds(asset.duration)];
+        }
     }
 
     AVAsset *asset = self.movieSettings[PLSAssetKey];

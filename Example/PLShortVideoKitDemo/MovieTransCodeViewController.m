@@ -38,6 +38,9 @@ PLSSelectionViewDelegate
 // 选取转码质量
 @property (strong, nonatomic) PLSSelectionView *selectionView;
 
+// 选取视频需要旋转的方向
+@property (strong, nonatomic) PLSSelectionView *rotateVideoSelectionView;
+
 // 播放器
 @property (strong, nonatomic) AVPlayer *player;
 @property (strong, nonatomic) AVPlayerLayer *playerLayer;
@@ -46,6 +49,7 @@ PLSSelectionViewDelegate
 // 客户端转码，能压缩视频的大小 + 剪辑视频
 @property (assign, nonatomic) PLSFilePreset transcoderPreset;
 @property (strong, nonatomic) PLShortVideoTranscoder *shortVideoTranscoder;
+@property (assign, nonatomic) PLSPreviewOrientation rotateOrientation;
 
 @end
 
@@ -65,6 +69,8 @@ PLSSelectionViewDelegate
     [self setupBaseToolboxView];
     
     [self setupSelectionView];
+    
+    [self setupRotateVideoSelectionView];
     
     [self setupClipMovieView];
     
@@ -140,6 +146,16 @@ PLSSelectionViewDelegate
     [self.view addSubview:self.selectionView];
     
     self.transcoderPreset = PLSFilePreset960x540; // 默认, 对应 selectItemNumber:3
+}
+
+- (void)setupRotateVideoSelectionView {
+    self.rotateVideoSelectionView = [[PLSSelectionView alloc] initWithFrame:CGRectMake(0, PLS_BaseToolboxView_HEIGHT + PLS_SCREEN_WIDTH + 32, PLS_SCREEN_WIDTH, 35) lineWidth:1 lineColor:[UIColor blackColor]];
+    [self.rotateVideoSelectionView setItemsWithTitle:[NSArray arrayWithObjects:@"正立", @"左横", @"倒立", @"右横", nil] normalItemColor:[UIColor whiteColor] selectItemColor:[UIColor blackColor] normalTitleColor:[UIColor blackColor] selectTitleColor:[UIColor whiteColor] titleTextSize:15 selectItemNumber:0];
+    self.rotateVideoSelectionView.delegate = self;
+    self.rotateVideoSelectionView.layer.cornerRadius = 5.0;
+    [self.view addSubview:self.rotateVideoSelectionView];
+    
+    self.rotateOrientation = PLSPreviewOrientationPortrait; // 默认正立
 }
 
 - (void)setupClipMovieView {
@@ -220,29 +236,50 @@ PLSSelectionViewDelegate
 
 #pragma mark -- PLSSelectionViewDelegate
 - (void)selectionView:(PLSSelectionView *)selectionView didSelectedItemNumber:(NSInteger)number {
-    switch (number) {
-        case 0:
-            self.transcoderPreset = PLSFilePresetMediumQuality;
-            break;
-        case 1:
-            self.transcoderPreset = PLSFilePresetHighestQuality;
-            break;
-        case 2:
-            self.transcoderPreset = PLSFilePreset640x480;
-            break;
-        case 3:
-            self.transcoderPreset = PLSFilePreset960x540;
-            break;
-        case 4:
-            self.transcoderPreset = PLSFilePreset1280x720;
-            break;
-        case 5:
-            self.transcoderPreset = PLSFilePreset1920x1080;
-            break;
-            
-        default:
-            self.transcoderPreset = PLSFilePreset960x540;
-            break;
+    if (selectionView == self.selectionView) {
+        switch (number) {
+            case 0:
+                self.transcoderPreset = PLSFilePresetMediumQuality;
+                break;
+            case 1:
+                self.transcoderPreset = PLSFilePresetHighestQuality;
+                break;
+            case 2:
+                self.transcoderPreset = PLSFilePreset640x480;
+                break;
+            case 3:
+                self.transcoderPreset = PLSFilePreset960x540;
+                break;
+            case 4:
+                self.transcoderPreset = PLSFilePreset1280x720;
+                break;
+            case 5:
+                self.transcoderPreset = PLSFilePreset1920x1080;
+                break;
+                
+            default:
+                self.transcoderPreset = PLSFilePreset960x540;
+                break;
+        }
+    } else if (selectionView == self.rotateVideoSelectionView) {
+        switch (number) {
+            case 0:
+                self.rotateOrientation = PLSPreviewOrientationPortrait;
+                break;
+            case 1:
+                self.rotateOrientation = PLSPreviewOrientationLandscapeLeft;
+                break;
+            case 2:
+                self.rotateOrientation = PLSPreviewOrientationPortraitUpsideDown;
+                break;
+            case 3:
+                self.rotateOrientation = PLSPreviewOrientationLandscapeRight;
+                break;
+        
+            default:
+                self.rotateOrientation = PLSPreviewOrientationPortrait;
+                break;
+        }
     }
 }
 
@@ -270,6 +307,7 @@ PLSSelectionViewDelegate
     self.shortVideoTranscoder.outputFileType = PLSFileTypeMPEG4;
     self.shortVideoTranscoder.outputFilePreset = self.transcoderPreset;
     self.shortVideoTranscoder.timeRange = timeRange;
+    self.shortVideoTranscoder.rotateOrientation = self.rotateOrientation;
     [self.shortVideoTranscoder startTranscoding];
     
     [self.shortVideoTranscoder setCompletionBlock:^(NSURL *url){

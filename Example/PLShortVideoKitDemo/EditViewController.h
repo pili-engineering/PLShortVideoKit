@@ -15,4 +15,6 @@
 
 @property (strong, nonatomic) NSDictionary *settings;
 
+@property (strong, nonatomic) NSArray *filesURLArray;
+
 @end

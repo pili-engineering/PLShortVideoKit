@@ -12,8 +12,10 @@
 #import <easyar3d/EasyAR3D.h>
 #import "easyar3d/EasyARScene.h"
 #import "SPARManager.h"
+#import "PLShortVideoKit/PLShortVideoKit.h"
 
-NSString *key = @"zYnUPaCAWtl4WDH3qLu290KRFA7gCCU2iyI9127chA6gvLQyr9CUlawIjMdC1OXxLwsUWvNN2zI2XIElU8AP2QitdZ4WFAfoA8DdJbos2FL4FnPKiSjX52Avh524oxXLF8iOuZXg4YFSQWgKrhkLsJs8K8NxsEdoWh2UCuRsONxjHAdDX0V871RQMydPAyFzx4L0fTUe";
+// AR 特效的 key
+NSString *easyAR3DKey = @"zYnUPaCAWtl4WDH3qLu290KRFA7gCCU2iyI9127chA6gvLQyr9CUlawIjMdC1OXxLwsUWvNN2zI2XIElU8AP2QitdZ4WFAfoA8DdJbos2FL4FnPKiSjX52Avh524oxXLF8iOuZXg4YFSQWgKrhkLsJs8K8NxsEdoWh2UCuRsONxjHAdDX0V871RQMydPAyFzx4L0fTUe";
 
 @interface AppDelegate ()
 
@@ -24,10 +26,17 @@ NSString *key = @"zYnUPaCAWtl4WDH3qLu290KRFA7gCCU2iyI9127chA6gvLQyr9CUlawIjMdC1O
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    
+    // pili 短视频日志系统
+    [PLShortVideoKitEnv initEnv];
+    [PLShortVideoKitEnv setLogLevel:PLShortVideoLogLevelDebug];
+    [PLShortVideoKitEnv enableFileLogging];
+    
+    // crash 收集
     [Fabric with:@[[Crashlytics class]]];
     
-    [EasyAR3D initialize:key];
-    
+    // AR 特效
+    [EasyAR3D initialize:easyAR3DKey];
     NSString *path = [[NSBundle mainBundle] resourcePath];
     [EasyARScene setUriTranslator:^ NSString * (NSString * uri) {
         SPARManager * manager = [SPARManager sharedManager];
@@ -43,6 +52,7 @@ NSString *key = @"zYnUPaCAWtl4WDH3qLu290KRFA7gCCU2iyI9127chA6gvLQyr9CUlawIjMdC1O
         }
         return [manager getLocalPathForURL:uri];
     }];
+    
     return YES;
 }
 

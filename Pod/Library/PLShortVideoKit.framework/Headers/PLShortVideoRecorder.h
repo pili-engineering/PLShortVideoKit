@@ -266,11 +266,25 @@
 - (void)insertVideo:(NSURL *_Nonnull)videoURL;
 
 /**
- @brief 开始录制视频
+ @brief 开始录制视频，录制的视频的存放地址由 SDK 内部自动生成
+ 
+ @warning 获取所有录制的视频段的地址，可以使用 - (NSArray<NSURL *> *__nullable)getAllFilesURL
+
  
  @since      v1.0.0
  */
 - (void)startRecording;
+
+/**
+ @brief 开始录制视频
+ @param fileURL 录制的视频的存放地址，该参数可以在外部设置，录制的视频会保存到该位置
+ 
+ @warning 生成 URL 需使用 [NSURL fileURLWithPath:fileName] 方式，让 URL 的 scheme 合法（file://，http://，https:// 等）。
+          获取所有录制的视频段的地址，可以使用 - (NSArray<NSURL *> *__nullable)getAllFilesURL
+ 
+ @since      v1.8.0
+ */
+- (void)startRecording:(NSURL *_Nonnull)fileURL;
 
 /**
  @brief 停止录制视频

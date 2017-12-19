@@ -62,6 +62,20 @@
 @property (assign, nonatomic) PLSTransitionType transitionType;
 
 /**
+ @abstract 转场动画持续的时长，默认为1.0，即1秒
+ 
+ @since      v1.8.0
+ */
+@property (assign, nonatomic) CGFloat transitionDuration;
+
+/**
+ @abstract 每张图片持续的时长，默认为2.0，即2秒
+ 
+ @since      v1.8.0
+ */
+@property (assign, nonatomic) CGFloat imageDuration;
+
+/**
  @brief 视频的文件类型，默认为 PLSFileTypeMPEG4(.mp4)
  
  @since      v1.7.0

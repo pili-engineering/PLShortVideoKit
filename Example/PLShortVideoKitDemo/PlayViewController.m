@@ -104,7 +104,7 @@ UIGestureRecognizerDelegate
     [super viewDidDisappear:animated];
     
     if (self.actionType == PLSActionTypePlayer) {
-        [self.player pause];
+        [self.player stop];
     }
 }
 
