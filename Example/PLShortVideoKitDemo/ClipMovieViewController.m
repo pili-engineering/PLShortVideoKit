@@ -162,6 +162,7 @@
     
     EditViewController *videoEditViewController = [[EditViewController alloc] init];
     videoEditViewController.settings = outputSettings;
+    videoEditViewController.filesURLArray = @[self.url];
     [self presentViewController:videoEditViewController animated:YES completion:nil];
 }
 
