@@ -20,7 +20,7 @@ Pod::Spec.new do |s|
 
   s.ios.deployment_target	= "8.0"
  
-  s.dependency 'Qiniu', '7.1.7'
+  s.dependency 'Qiniu'
 
 
   s.subspec "ex-libMuseProcessor" do |ss1|
