@@ -7,11 +7,11 @@ PODS:
   - PLShortVideoKit (1.8.0):
     - PLShortVideoKit/ex-libMuseProcessor (= 1.8.0)
     - PLShortVideoKit/libMuseProcessor (= 1.8.0)
-    - Qiniu
+    - Qiniu (~> 7.1)
   - PLShortVideoKit/ex-libMuseProcessor (1.8.0):
-    - Qiniu
+    - Qiniu (~> 7.1)
   - PLShortVideoKit/libMuseProcessor (1.8.0):
-    - Qiniu
+    - Qiniu (~> 7.1)
   - Qiniu (7.2.2):
     - HappyDNS (~> 0.3)
 
@@ -30,7 +30,7 @@ SPEC CHECKSUMS:
   Fabric: 5911403591946b8228ab1c51d98f1d7137e863c6
   HappyDNS: 691a3041128055d09866f86e6e9ca90f24da1f18
   Masonry: 7c429b56da9d4ee0bbb3ed77a5ea710d6a5df39e
-  PLShortVideoKit: db8cf6391f2d8943671d770ec80d13d6d63cf830
+  PLShortVideoKit: 9e16affa36f6001b5d579a4edafb7352c610ea72
   Qiniu: ef9fcc56ea11d5f31e2f1309ed3bbd98c2ac4def
 
 PODFILE CHECKSUM: 613fdf88dc45f2e01aa56061a7239bd27687cd50
