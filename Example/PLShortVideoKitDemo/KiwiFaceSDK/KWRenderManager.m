@@ -209,14 +209,14 @@ KWRenderManager *instanceManager = nil;
 
 - (void)resetDistortionParams {
     if ([[Global sharedManager] isPixcelBufferRotateVertical]) {
-        self.smallFaceBigEyeFilter.y_scale = self.varHeight / self.varWidth;
-
+        self.smallFaceBigEyeFilter.y_scale = self.varWidth / self.varHeight;
+        
         ((ETDistortionFilter *) self.distortionFilters[1]).y_scale = self.varHeight / self.varWidth;
         ((FatFaceDistortionFilter *) self.distortionFilters[2]).y_scale = self.varHeight / self.varWidth;
         ((SlimFaceDistortionFilter *) self.distortionFilters[3]).y_scale = self.varHeight / self.varWidth;
         ((PearFaceDistortionFilter *) self.distortionFilters[4]).y_scale = self.varHeight / self.varWidth;
     } else {
-        self.smallFaceBigEyeFilter.y_scale = self.varWidth / self.varHeight;
+        self.smallFaceBigEyeFilter.y_scale = self.varHeight / self.varWidth;
 
         ((ETDistortionFilter *) self.distortionFilters[1]).y_scale = self.varWidth / self.varHeight;
         ((FatFaceDistortionFilter *) self.distortionFilters[2]).y_scale = self.varWidth / self.varHeight;
