@@ -24,6 +24,7 @@
 #import "KWUIManager.h"
 #import "EasyarARViewController.h"
 
+#define AlertViewShow(msg) [[[UIAlertView alloc] initWithTitle:@"warning" message:[NSString stringWithFormat:@"%@", msg] delegate:nil cancelButtonTitle:@"ok" otherButtonTitles:nil] show]
 
 #define PLS_CLOSE_CONTROLLER_ALERTVIEW_TAG 10001
 #define PLS_SCREEN_WIDTH CGRectGetWidth([UIScreen mainScreen].bounds)
@@ -88,6 +89,9 @@ PLSRateButtonViewDelegate
 @property (strong, nonatomic) UIButton *musicButton;
 @property (strong, nonatomic) UIActivityIndicatorView *activityIndicatorView;
 
+// 实时截图按钮
+@property (strong, nonatomic) UIButton *snapshotButton;
+
 // 录制前是否开启自动检测设备方向调整视频拍摄的角度（竖屏、横屏）
 @property (assign, nonatomic) BOOL isUseAutoCheckDeviceOrientationBeforeRecording;
 
@@ -133,6 +137,11 @@ PLSRateButtonViewDelegate
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    // --------------------------
+    // 通过手势切换滤镜
+    [self setupGestureRecognizer];
+    
+    // --------------------------
     [self setUpEasyarSDKARButton];
 
     // --------------------------
@@ -241,8 +250,11 @@ PLSRateButtonViewDelegate
         
         // 展示多种滤镜的 UICollectionView
         CGRect frame = self.editVideoCollectionView.frame;
-        CGFloat y = self.baseToolboxView.frame.origin.y + self.baseToolboxView.frame.size.height + PLS_SCREEN_WIDTH;
-        self.editVideoCollectionView.frame = CGRectMake(0, y, frame.size.width, frame.size.height);
+        CGFloat x = PLS_BaseToolboxView_HEIGHT;
+        CGFloat y = PLS_BaseToolboxView_HEIGHT;
+        CGFloat width = frame.size.width - 2*x;
+        CGFloat height = frame.size.height;
+        self.editVideoCollectionView.frame = CGRectMake(x, y, width, height);
         [self.view addSubview:self.editVideoCollectionView];
         [self.editVideoCollectionView reloadData];
         self.editVideoCollectionView.hidden = YES;
@@ -254,7 +266,7 @@ PLSRateButtonViewDelegate
 }
 
 - (void)setupBaseToolboxView {
-    self.baseToolboxView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, PLS_SCREEN_WIDTH, PLS_BaseToolboxView_HEIGHT)];
+    self.baseToolboxView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, PLS_BaseToolboxView_HEIGHT, PLS_BaseToolboxView_HEIGHT + PLS_SCREEN_WIDTH)];
     self.baseToolboxView.backgroundColor = [UIColor clearColor];
     [self.view addSubview:self.baseToolboxView];
     
@@ -268,7 +280,7 @@ PLSRateButtonViewDelegate
     
     // 七牛滤镜
     UIButton *filterButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    filterButton.frame = CGRectMake(PLS_SCREEN_WIDTH - 310, 10, 35, 35);
+    filterButton.frame = CGRectMake(10, 55, 35, 35);
     [filterButton setTitle:@"滤镜" forState:UIControlStateNormal];
     [filterButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     filterButton.titleLabel.font = [UIFont systemFontOfSize:14];
@@ -277,7 +289,7 @@ PLSRateButtonViewDelegate
     
     // 录屏按钮
     self.viewRecordButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.viewRecordButton.frame = CGRectMake(PLS_SCREEN_WIDTH - 255, 10, 35, 35);
+    self.viewRecordButton.frame = CGRectMake(10, 100, 35, 35);
     [self.viewRecordButton setTitle:@"录屏" forState:UIControlStateNormal];
     [self.viewRecordButton setTitle:@"完成" forState:UIControlStateSelected];
     self.viewRecordButton.selected = NO;
@@ -288,7 +300,7 @@ PLSRateButtonViewDelegate
     
     // 全屏／正方形录制模式
     self.squareRecordButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.squareRecordButton.frame = CGRectMake(PLS_SCREEN_WIDTH - 200, 10, 35, 35);
+    self.squareRecordButton.frame = CGRectMake(10, 145, 35, 35);
     [self.squareRecordButton setTitle:@"1:1" forState:UIControlStateNormal];
     [self.squareRecordButton setTitle:@"全屏" forState:UIControlStateSelected];
     self.squareRecordButton.selected = NO;
@@ -299,7 +311,7 @@ PLSRateButtonViewDelegate
     
     // 闪光灯
     UIButton *flashButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    flashButton.frame = CGRectMake(PLS_SCREEN_WIDTH - 145, 10, 35, 35);
+    flashButton.frame = CGRectMake(10, 190, 35, 35);
     [flashButton setBackgroundImage:[UIImage imageNamed:@"flash_close"] forState:UIControlStateNormal];
     [flashButton setBackgroundImage:[UIImage imageNamed:@"flash_open"] forState:UIControlStateSelected];
     [flashButton addTarget:self action:@selector(flashButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
@@ -307,7 +319,7 @@ PLSRateButtonViewDelegate
     
     // 美颜
     UIButton *beautyFaceButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    beautyFaceButton.frame = CGRectMake(PLS_SCREEN_WIDTH - 90, 10, 30, 30);
+    beautyFaceButton.frame = CGRectMake(10, 235, 30, 30);
     [beautyFaceButton setTitle:@"美颜" forState:UIControlStateNormal];
     [beautyFaceButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     beautyFaceButton.titleLabel.font = [UIFont systemFontOfSize:14];
@@ -316,10 +328,20 @@ PLSRateButtonViewDelegate
     
     // 切换摄像头
     UIButton *toggleCameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    toggleCameraButton.frame = CGRectMake(PLS_SCREEN_WIDTH - 45, 10, 35, 35);
+    toggleCameraButton.frame = CGRectMake(10, 280, 35, 35);
     [toggleCameraButton setBackgroundImage:[UIImage imageNamed:@"toggle_camera"] forState:UIControlStateNormal];
     [toggleCameraButton addTarget:self action:@selector(toggleCameraButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
     [self.baseToolboxView addSubview:toggleCameraButton];
+    
+    // 录制的视频文件的存储路径设置
+    self.filePathButton = [[UIButton alloc] init];
+    self.filePathButton.frame = CGRectMake(10, 325, 35, 35);
+    [self.filePathButton setImage:[UIImage imageNamed:@"file_path"] forState:UIControlStateNormal];
+    [self.filePathButton addTarget:self action:@selector(filePathButtonClickedEvent:) forControlEvents:UIControlEventTouchUpInside];
+    [self.baseToolboxView addSubview:self.filePathButton];
+    
+    self.filePathButton.selected = NO;
+    self.useSDKInternalPath = YES;
     
     // 加载草稿视频
     self.draftButton = [[UIButton alloc] initWithFrame:CGRectMake(PLS_SCREEN_WIDTH - 60, 300, 46, 46)];
@@ -340,17 +362,14 @@ PLSRateButtonViewDelegate
     [self.musicButton addTarget:self action:@selector(musicButtonOnClick:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:_musicButton];
     
-    // 录制的视频文件的存储路径设置
-    self.filePathButton = [[UIButton alloc] initWithFrame:CGRectMake(PLS_SCREEN_WIDTH - 60, 420, 46, 46)];
-    self.filePathButton.layer.cornerRadius = 23;
-    self.filePathButton.backgroundColor = [UIColor colorWithRed:116/255 green:116/255 blue:116/255 alpha:0.55];
-    [self.filePathButton setImage:[UIImage imageNamed:@"file_path"] forState:UIControlStateNormal];
-    self.filePathButton.imageEdgeInsets = UIEdgeInsetsMake(6, 6, 6, 6);
-    [self.filePathButton addTarget:self action:@selector(filePathButtonClickedEvent:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:self.filePathButton];
-    
-    self.filePathButton.selected = NO;
-    self.useSDKInternalPath = YES;
+    // 拍照
+    self.snapshotButton = [[UIButton alloc] initWithFrame:CGRectMake(PLS_SCREEN_WIDTH - 60, 10, 46, 46)];
+    self.snapshotButton.layer.cornerRadius = 23;
+    self.snapshotButton.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.55];
+    [self.snapshotButton setImage:[UIImage imageNamed:@"icon_trim"] forState:UIControlStateNormal];
+    self.snapshotButton.imageEdgeInsets = UIEdgeInsetsMake(6, 6, 6, 6);
+    [self.snapshotButton addTarget:self action:@selector(snapshotButtonOnClick:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:_snapshotButton];
     
     // 展示拼接视频的动画
     self.activityIndicatorView = [[UIActivityIndicatorView alloc] initWithFrame:self.view.bounds];
@@ -360,14 +379,21 @@ PLSRateButtonViewDelegate
 }
 
 - (void)setupRecordToolboxView {
-    CGFloat y = self.baseToolboxView.frame.origin.y + self.baseToolboxView.frame.size.height + PLS_SCREEN_WIDTH;
+    CGFloat y = PLS_BaseToolboxView_HEIGHT + PLS_SCREEN_WIDTH;
     self.recordToolboxView = [[UIView alloc] initWithFrame:CGRectMake(0, y, PLS_SCREEN_WIDTH, PLS_SCREEN_HEIGHT- y)];
     self.recordToolboxView.backgroundColor = [UIColor clearColor];
     [self.view addSubview:self.recordToolboxView];
+
     
     // 倍数拍摄
     self.titleArray = @[@"极慢", @"慢", @"正常", @"快", @"极快"];
-    self.rateButtonView = [[PLSRateButtonView alloc]initWithFrame:CGRectMake(PLS_SCREEN_WIDTH/2 - 130, 35, 260, 34) defaultIndex:2];
+    CGFloat rateTopSapce;
+    if (PLS_SCREEN_HEIGHT > 568) {
+        rateTopSapce = 35;
+    } else{
+        rateTopSapce = 30;
+    }
+    self.rateButtonView = [[PLSRateButtonView alloc] initWithFrame:CGRectMake(PLS_SCREEN_WIDTH/2 - 130, rateTopSapce, 260, 34) defaultIndex:2];
     self.rateButtonView.hidden = NO;
     self.titleIndex = 2;
     CGFloat countSpace = 200 /self.titleArray.count / 6;
@@ -662,6 +688,20 @@ PLSRateButtonViewDelegate
     }
 }
 
+// 拍照
+-(void)snapshotButtonOnClick:(UIButton *)sender {
+    sender.enabled = NO;
+
+    [self.shortVideoRecorder getScreenShotWithCompletionHandler:^(UIImage * _Nullable image) {
+        sender.enabled = YES;
+        if (image) {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil);
+            });
+        }
+    }];
+}
+
 //
 - (void)filePathButtonClickedEvent:(id)sender {
     self.filePathButton.selected = !self.filePathButton.selected;
@@ -844,8 +884,8 @@ PLSRateButtonViewDelegate
 }
 
 #pragma mark - PLShortVideoRecorderDelegate 摄像头对焦位置的回调
-- (void)shortVideoRecorderDidFocusAtPoint:(CGPoint)point {
-    NSLog(@"shortVideoRecorderDidFocusAtPoint:%@", NSStringFromCGPoint(point));
+- (void)shortVideoRecorder:(PLShortVideoRecorder *)recorder didFocusAtPoint:(CGPoint)point {
+    NSLog(@"shortVideoRecorder: didFocusAtPoint: %@", NSStringFromCGPoint(point));
 }
 
 #pragma mark - PLShortVideoRecorderDelegate 摄像头采集的视频数据的回调
@@ -988,7 +1028,8 @@ PLSRateButtonViewDelegate
             [exporter exportAsynchronouslyWithCompletionHandler:^{
                 switch ([exporter status]) {
                     case AVAssetExportSessionStatusFailed: {
-                        NSLog(@"audio mix failed：%@",[[exporter error] description]);
+                        NSLog(@"audio mix failed：%@", [[exporter error] description]);
+                        AlertViewShow([[exporter error] description]);
                     } break;
                     case AVAssetExportSessionStatusCancelled: {
                         NSLog(@"audio mix canceled");
@@ -1134,6 +1175,58 @@ PLSRateButtonViewDelegate
 
     // 滤镜
     self.filterGroup.filterIndex = indexPath.row;
+}
+
+#pragma mark - 通过手势切换滤镜
+- (void)setupGestureRecognizer {
+    UISwipeGestureRecognizer *recognizer;
+    // 添加右滑手势
+    recognizer = [[UISwipeGestureRecognizer alloc]initWithTarget:self action:@selector(handleSwipeFrom:)];
+    [recognizer setDirection:(UISwipeGestureRecognizerDirectionRight)];
+    [self.view addGestureRecognizer:recognizer];
+    // 添加左滑手势
+    recognizer = [[UISwipeGestureRecognizer alloc]initWithTarget:self action:@selector(handleSwipeFrom:)];
+    [recognizer setDirection:(UISwipeGestureRecognizerDirectionLeft)];
+    [self.view addGestureRecognizer:recognizer];
+    // 添加上滑手势
+    recognizer = [[UISwipeGestureRecognizer alloc]initWithTarget:self action:@selector(handleSwipeFrom:)];
+    [recognizer setDirection:(UISwipeGestureRecognizerDirectionUp)];
+    [self.view addGestureRecognizer:recognizer];
+    // 添加下滑手势
+    recognizer = [[UISwipeGestureRecognizer alloc]initWithTarget:self action:@selector(handleSwipeFrom:)];
+    [recognizer setDirection:(UISwipeGestureRecognizerDirectionDown)];
+    [self.view addGestureRecognizer:recognizer];
+}
+
+// 添加手势的响应事件
+- (void)handleSwipeFrom:(UISwipeGestureRecognizer *)recognizer{
+    if(recognizer.direction == UISwipeGestureRecognizerDirectionDown) {
+        NSLog(@"swipe down");
+        self.filterIndex++;
+        self.filterIndex %= self.filterGroup.filtersInfo.count;
+    }
+    if(recognizer.direction == UISwipeGestureRecognizerDirectionUp) {
+        NSLog(@"swipe up");
+        self.filterIndex--;
+        if (self.filterIndex < 0) {
+            self.filterIndex = self.filterGroup.filtersInfo.count - 1;
+        }
+    }
+    if(recognizer.direction == UISwipeGestureRecognizerDirectionLeft) {
+        NSLog(@"swipe left");
+        self.filterIndex--;
+        if (self.filterIndex < 0) {
+            self.filterIndex = self.filterGroup.filtersInfo.count - 1;
+        }
+    }
+    if(recognizer.direction == UISwipeGestureRecognizerDirectionRight) {
+        NSLog(@"swipe right");
+        self.filterIndex++;
+        self.filterIndex %= self.filterGroup.filtersInfo.count;
+    }
+    
+    // 滤镜
+    self.filterGroup.filterIndex = self.filterIndex;
 }
 
 @end

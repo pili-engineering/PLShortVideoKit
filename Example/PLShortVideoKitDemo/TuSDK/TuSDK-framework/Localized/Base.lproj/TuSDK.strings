@@ -1,0 +1,21 @@
+/* 
+  TuSDK.strings
+  TuSDKVideoDemo
+
+  Created by Yanlin Qiu on 24/10/2016.
+  Copyright © 2016 TuSDK. All rights reserved.
+*/
+
+"lsq_cancel" = "取消";
+"lsq_setting" = "设置";
+
+"lsq_sticker_loading" = "正在加载贴纸...";
+"lsq_sticker_load_unexsit" = "贴纸不存在，请换一个试试";
+"lsq_sticker_over_limit%ld" = "OMG, 同时仅允许使用 %ld 张贴纸";
+
+"lsq_save_saveToAlbum_succeed" = "保存成功";
+"lsq_save_saveToAlbum_failed" = "保存到相册失败";
+
+// location
+"lsq_location_error_title" = "无法获取地理信息";
+"lsq_location_AccessUserDeniedError%@" = "无法获取地理信息.请在'设置->隐私->定位服务'设置 定位服务以及 %@ 为打开状态.";

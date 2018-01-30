@@ -14,6 +14,9 @@
 #import "SPARManager.h"
 #import "PLShortVideoKit/PLShortVideoKit.h"
 
+// TuSDK mark
+#import <TuSDK/TuSDK.h>
+
 // AR 特效的 key
 NSString *easyAR3DKey = @"zYnUPaCAWtl4WDH3qLu290KRFA7gCCU2iyI9127chA6gvLQyr9CUlawIjMdC1OXxLwsUWvNN2zI2XIElU8AP2QitdZ4WFAfoA8DdJbos2FL4FnPKiSjX52Avh524oxXLF8iOuZXg4YFSQWgKrhkLsJs8K8NxsEdoWh2UCuRsONxjHAdDX0V871RQMydPAyFzx4L0fTUe";
 
@@ -34,6 +37,10 @@ NSString *easyAR3DKey = @"zYnUPaCAWtl4WDH3qLu290KRFA7gCCU2iyI9127chA6gvLQyr9CUla
     
     // crash 收集
     [Fabric with:@[[Crashlytics class]]];
+    
+    // TuSDK mark - 初始化 TuSDK
+    [TuSDK setLogLevel:lsqLogLevelDEBUG]; // 可选: 设置日志输出级别 (默认不输出)
+    [TuSDK initSdkWithAppKey:@"d72964a2c6e50a7e-03-bshmr1"];
     
     // AR 特效
     [EasyAR3D initialize:easyAR3DKey];

@@ -22,7 +22,16 @@
  
  @since      v1.1.0
  */
-- (CVPixelBufferRef __nonnull)assetExportSession:(PLSAVAssetExportSession *__nonnull)assetExportSession didOutputPixelBuffer:(CVPixelBufferRef __nonnull)pixelBuffer;
+- (CVPixelBufferRef __nonnull)assetExportSession:(PLSAVAssetExportSession *__nonnull)assetExportSession didOutputPixelBuffer:(CVPixelBufferRef __nonnull)pixelBuffer __deprecated_msg("Method deprecated in v1.9.0. Use `assetExportSession: didOutputPixelBuffer: timestamp:`");
+
+/**
+ @abstract 输出视频文件的视频数据，用来做滤镜处理
+ @param pixelBuffer 视频帧
+ @param timestamp 视频帧的时间戳
+ 
+ @since      v1.9.0
+ */
+- (CVPixelBufferRef __nonnull)assetExportSession:(PLSAVAssetExportSession *__nonnull)assetExportSession didOutputPixelBuffer:(CVPixelBufferRef __nonnull)pixelBuffer timestamp:(CMTime)timestamp;
 
 @end
 

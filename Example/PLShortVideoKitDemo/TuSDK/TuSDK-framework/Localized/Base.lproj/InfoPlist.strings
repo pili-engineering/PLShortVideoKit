@@ -1,0 +1,10 @@
+/*
+ InfoPlist.strings
+ TuSDKDemo
+ 
+ Created by idealhack on 16/3/10.
+ Copyright (c) 2016 tusdk.com. All rights reserved.
+ */
+
+"CFBundleDisplayName" = "涂图视频";
+"CFBundleName" = "涂图视频";

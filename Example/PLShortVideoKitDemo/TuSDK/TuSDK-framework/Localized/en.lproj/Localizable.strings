@@ -1,0 +1,246 @@
+/* 
+  Localizable.strings
+  TuSDKLiveVideoDemo
+
+  Created by Yanlin on 3/7/16.
+  Copyright © 2016 tusdk.com. All rights reserved.
+*/
+
+"app_name" = "TuSDK Video";
+"back" = "Back";
+
+"live_camera_sample" = "Live camera sample";
+"live_processor_sample" = "Image process engine";
+"record_camera_sample" = "Record camera sample";
+"record_camera_square_sample" = "Record camera sample (Square)";
+"edit_camera_sample" = "Movie editor sample";
+
+"beauty_on" = "Beauty Mode On";
+"beauty_off" = "Beauty Mode Off";
+
+"lsq_filter_VideoFair" = "Nature";
+"lsq_filter_VideoYoungGirl" = "Pink";
+"lsq_filter_VideoWhiteSkin" = "WhiteSkin";
+"lsq_filter_VideoFaceu01" = "Faceu 01";
+"lsq_filter_VideoHuaJiao" = "HuaJiao";
+"lsq_filter_VideoJelly" = "Jelly";
+
+// Beauty
+"lsq_filter_SkinNature" = "Nature";
+"lsq_filter_SkinPink" = "Pink";
+"lsq_filter_SkinJelly" = "Jelly";
+"lsq_filter_SkinNoir" = "Noir";
+"lsq_filter_SkinRuddy" = "Ruddy";
+"lsq_filter_SkinPowder" = "Pink";
+"lsq_filter_SkinSugar" = "Sugar";
+
+"lsq_reset" = "Reset";
+"lsq_filter_set_smoothing" = "Smoothing";
+"lsq_filter_set_whitening" = "Whitening";
+"lsq_filter_set_blurSize" = "Blur Size";
+"lsq_filter_set_mixied" = "Mixed";
+"lsq_filter_set_distanceFactor" = "Radius";
+"lsq_filter_set_eyeSize" = "Eye";
+"lsq_filter_set_chinSize" = "Chin";
+
+
+// 滤镜 17种
+"lsq_filter_SkinSugar" = "SkinSugar";
+"lsq_filter_DeepWhitening" = "DeepWhitening";
+"lsq_filter_ClearWhite" = "ClearWhite";
+"lsq_filter_WarmSunshine" = "WarmSunshine";
+"lsq_filter_Leica" = "Leica";
+"lsq_filter_Mamiya" = "Mamiya";
+"lsq_filter_1940s" = "1940s";
+"lsq_filter_Jingxiang" = "Jingxiang";
+"lsq_filter_Coloration" = "Coloration";
+"lsq_filter_Summersunshine" = "Summersunshine";
+"lsq_filter_SilentEra" = "SilentEra";
+"lsq_filter_AmericaPast" = "AmericaPast";
+"lsq_filter_T2" = "T2";
+"lsq_filter_J5" = "J5";
+"lsq_filter_Newborn" = "Newborn";
+"lsq_filter_Morning" = "Morning";
+"lsq_filter_Original" = "Normal";
+"lsq_filter_Glaze" = "Glaze";
+"lsq_filter_Snow" = "Snow";
+"lsq_filter_Agar" = "Agar";
+"lsq_filter_Firework" = "Firework";
+"lsq_filter_Fine" = "Fine";
+
+// new filter
+"lsq_filter_Fair01" = "Fair";
+"lsq_filter_Pink01" = "Pink";
+"lsq_filter_Forest01" = "Forest";
+"lsq_filter_Sundown" = "Sundown";
+"lsq_filter_Sakura" = "Sakura";
+"lsq_filter_Paul01" = "Paul";
+"lsq_filter_Lavender" = "Lavender";
+"lsq_filter_Manhattan" = "Manhattan";
+"lsq_filter_Dusk" = "Dusk";
+"lsq_filter_TinyTimes" = "TinyTimes";
+"lsq_filter_Vivid01" = "Vivid";
+"lsq_filter_Year1950" = "1950";
+"lsq_filter_Missing01" = "MissingYou";
+"lsq_filter_Grapefruit01" = "Grapefruit";
+"lsq_filter_RoseCarmine001" = "RoseCarmine";
+"lsq_filter_Nude01" = "Nude";
+"lsq_filter_Orange01" = "Orange";
+"lsq_filter_BabyPink001" = "BabyPink";
+
+// new filter
+"lsq_filter_Fair06" = "白皙";
+"lsq_filter_Pink06" = "粉嫩";
+"lsq_filter_Forest06" = "小森林";
+"lsq_filter_Sundown06" = "日不落";
+"lsq_filter_Sakura06" = "樱花草";
+"lsq_filter_Paul06" = "阿宝";
+"lsq_filter_Lavender06" = "薰衣草";
+"lsq_filter_Manhattan06" = "曼哈顿";
+"lsq_filter_Dusk06" = "黄昏";
+"lsq_filter_TinyTimes06" = "小时代";
+"lsq_filter_Vivid06" = "小清新";
+"lsq_filter_Year195006" = "1950";
+"lsq_filter_Missing06" = "想你色";
+"lsq_filter_Grapefruit06" = "西柚色";
+"lsq_filter_RoseCarmine06" = "玫红色";
+"lsq_filter_Nude01" = "裸色";
+"lsq_filter_Orange01" = "橘色";
+"lsq_filter_BabyPink001" = "粉色";
+
+"lsq_filter_Natural06" = "自然";
+"lsq_filter_Skinwhitening06" = "白皙";
+"lsq_filter_Tangerine06" = "蜜桔";
+"lsq_filter_Bruce06" = "布鲁斯";
+"lsq_filter_Rococo06" = "洛可可";
+"lsq_filter_MintGreen06" = "薄荷绿";
+"lsq_filter_Latte06" = "拿铁";
+
+// effect
+"lsq_filter_LiveShake01" = "Shake";
+"lsq_filter_LiveMegrim01" = "Megrim";
+"lsq_filter_EdgeMagic01" = "Magic";
+"lsq_filter_LiveFancy01_1" = "70s";
+"lsq_filter_LiveSoulOut01" = "Soul";
+"lsq_filter_LiveSignal01" = "Signal";
+
+// audio
+"lsq_audio_lively" = "lively";
+"lsq_audio_oldmovie" = "oldmovie";
+"lsq_audio_relieve" = "relieve";
+
+// video
+"lsq_record_preview_editor"= "Record & Edit Video Compenent";
+"lsq_video_preview_editor" = "Edit Video Compenent";
+"lsq_capture_record_camera" = "Record Camera Component";
+"lsq_record_camera" = "Record Video Camera Component";
+"lsq_normal_record_camera" = "Normal Record Camera Component";
+"lsq_album_video_timecut" = "Cut Video By Time Component";
+"lsq_album_video_editor" = "Video Filter Editor Component";
+"lsq_full_screen_record_preview_editor" = "Full Screen：Record & Edit Video Compenent";
+"lsq_full_screen_record_preview_ratio_editor" = "Full Screen：Record Camera & Edit Video Compenent（Ratio Adapted)";
+"lsq_full_screen_album_video_timecut_editor" = "Full Screen：Video Cut Time Editor";
+"lsq_audio_mixed" = "Mix Two Audio";
+"lsq_video_bgm" = "Add BGM To Video";
+"lsq_gain_thumbnail" = "Get Thumbnais From Video";
+"lsq_video_mixed" = "Contact Two Video";
+"lsq_video_timecut_save" = "Cut Video";
+"lsq_composite_components" = "Composite Components";
+"lsq_common_components" = "Common Components";
+"lsq_custom_components" = "Custom Components";
+"lsq_api_usage_example" = "API Usage Examples";
+"lsq_api_usage_record_audio" = "Record Audio";
+"lsq_video_mainVC_record" = "Record Video";
+"lsq_video_componentlist" = "Component List";
+"lsq_video_mainVC_import" = "Import Video";
+"lsq_video_mainVC_clickPress" = "Capture Record";
+"lsq_go_back" = "Back";
+"lsq_filter_button_text" = "Filter";
+"lsq_sticker_button_text" = "Sticker";
+"lsq_album_button_text" = "Album";
+"lsq_cancel_button_text" = "Back";
+"lsq_complete_button_text" = "Done";
+"lsq_save_video" = "Save";
+"lsq_clip_video" = "Clip";
+"lsq_delete_video" = "Delete";
+"lsq_next_step" = "Next";
+"lsq_movieEditor" = "Movie Editor";
+"lsq_cut_video" = "Video Clip";
+"lsq_video_time_default" = "00:00";
+"lsq_filter_beautyArg" = "Beauty";
+"lsq_deleteBtn_title" = "No Effect";
+"lsq_record_title" = "Record";
+"lsq_movieEditor_filterBtn" = "Filter";
+"lsq_movieEditor_MVBtn" = "MV";
+"lsq_movieEditor_dubBtn" = "Dub";
+"lsq_movieEditor_orignVolume_title" = "Audio";
+"lsq_movieEditor_dubVolume_title" = "Dub";
+"lsq_movieEditor_remainSecond_text" = "rest %ld seconds";
+"lsq_movieEditor_reminder_text" = "Long press for recording";
+
+"lsq_api_usage_start_recording" = "StartRecord";
+"lsq_api_usage_pause_recording" = "PauseRecord";
+"lsq_api_usage_finish_recording" = "FinishRecord";
+"lsq_api_usage_cancel_recording" = "CancelRecord";
+"lsq_api_usage_play_result_audio" = "PlayAudio";
+
+// API example
+"lsq_api_origin_audio" = "Origin Audio";
+"lsq_api_first_mix_audio" = "Audio One";
+"lsq_api_second_mix_audio" = "Audio Two";
+"lsq_api_cancel_mix_audio" = "Cancel";
+"lsq_api_play_mix_audio" = "Play Mixed Audio";
+"lsq_api_pause_mix_audio_playing" = "Pause";
+"lsq_api_mix_movie_audio"  = "Mix Video";
+"lsq_api_start_mix_movie_audio" = "Start Mix";
+"lsq_api_reset_thumbnail" = "Reset";
+"lsq_api_gain_thumbnail" = "Gain Thumb";
+"lsq_api_start_mix_audio" = "Start Mixing";
+"lsq_api_play_material_audios" = "Play Sample";
+"lsq_api_pause_material_audios_playing" = "Pause Sample";
+"lsq_record_audio_save" = "Record Audio";
+"lsq_api_Splice_movie" = "Splice Videos";
+
+"lsq_api_delete_mixed_audio" = "Delete Audio";
+"lsq_api_play_mixed_audio" = "Play Audio";
+"lsq_api_start_mix_audio" = "Start Mix";
+"lsq_api_pause_mixed_music" = "Pause";
+"lsq_api_mixed_audio_explaination" = "Please adjust the music volume, and then click 「Start Mix」 to generate a new music. Remember to turn on the system volume";
+"lsq_api_splice_movie_explaination"  = "Click the 「Video Splicing」 button to make the video. After save successly check the new video in the system album";
+"lsq_api_splice_movie_success" = "Operation is done，check the new video in the system album";
+"lsq_api_splice_movie_failed" = "Operation is failed";
+"lsq_api_splice_movie_cancelled" = "Operation is cancelled";
+"lsq_api_audio_record_explaination" = "Click 「Start Recording」 button to start recording audio, click 「Finish Recording」 to generate a new audio ，then click 「Play Audio」 to play the audio";
+"lsq_api_movie_clipper_explaination" = "Please select the time range in the thumbnail preview area, then click the 「Cut」 button to generate video";
+"lsq_api_reset_volume_mix_again" = "Please reset the volume and mix the audio";
+"lsq_api_start_mixing_audio" = "Audio start mixing";
+"lsq_api_status_play_mixed_audio" = "Operation is done，please click「Play Audio」to play the mixed audio";
+
+// reminder
+"lsq_movie_saving" = "Saving...";
+"lsq_cut_durationTime" = "Suggest select more than 3 seconds, less than 60 seconds of video";
+"lsq_save_error_too_short" = "should not be below the minimum time";
+"lsq_save_saveToAlbum_succeed" = "Saved successfully";
+"lsq_save_saveToAlbum_failed" = "Failed to save";
+"lsq_record_moreMaxDuration" = "Is greater than the maximum length, please keep continue after video recording";
+"lsq_record_complete" = "Recording success";
+"lsq_record_failed" = "Recording failure";
+"lsq_record_cancelled" = "Recording to cancel";
+"lsq_record_audio_started" = "Recording has started";
+"lsq_record_audio_finished" = "Recroding has finished，play the audio please";
+"lsq_record_audio_cancelled" = "Recording has been cancelled";
+"lsq_record_audio_failed" = "Recording failed，please record again";
+"lsq_record_dealing" = "Processing";
+
+"lsq_cancel" = "Cancel";
+"lsq_setting" = "Settings";
+"lsq_sticker_loading" = "Loading stickers...";
+"lsq_sticker_load_unexsit" = "Stickers doesn’t exists, please try another.";
+"lsq_sticker_over_limit%ld" = "Oops, Can’t use more than %ld stickers";
+"lsq_save_saveToAlbum_succeed" = "Saved successfully";
+"lsq_save_saveToAlbum_failed" = "Failed to save";
+
+// location
+"lsq_location_error_title" = "Can’t get location";
+"lsq_location_AccessUserDeniedError%@" = "Can’t get location. Please trun %@ on in Settings - Privacy - Location Services.";
+
