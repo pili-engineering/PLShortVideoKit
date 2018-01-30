@@ -13,6 +13,7 @@
 #import <Masonry/Masonry.h>
 #import "PLSSelectionView.h"
 
+#define iPhoneX ([UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(1125, 2436), [[UIScreen mainScreen] currentMode].size) : NO)
 #define PLS_RGBCOLOR(r,g,b) [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:1]
 #define PLS_BaseToolboxView_HEIGHT 64
 #define PLS_SCREEN_WIDTH CGRectGetWidth([UIScreen mainScreen].bounds)
@@ -103,7 +104,11 @@ PLSSelectionViewDelegate
     
     // 标题
     UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(100, 0, 100, 64)];
-    titleLabel.center = CGPointMake(PLS_SCREEN_WIDTH / 2, 32);
+    if (iPhoneX) {
+        titleLabel.center = CGPointMake(PLS_SCREEN_WIDTH / 2, 48);
+    } else {
+        titleLabel.center = CGPointMake(PLS_SCREEN_WIDTH / 2, 32);
+    }
     titleLabel.text = @"转码";
     titleLabel.textAlignment = NSTextAlignmentCenter;
     titleLabel.textColor = [UIColor grayColor];
@@ -149,7 +154,13 @@ PLSSelectionViewDelegate
 }
 
 - (void)setupRotateVideoSelectionView {
-    self.rotateVideoSelectionView = [[PLSSelectionView alloc] initWithFrame:CGRectMake(0, PLS_BaseToolboxView_HEIGHT + PLS_SCREEN_WIDTH + 32, PLS_SCREEN_WIDTH, 35) lineWidth:1 lineColor:[UIColor blackColor]];
+    CGFloat rotateViewTopSpace;
+    if (PLS_SCREEN_HEIGHT > 568) {
+        rotateViewTopSpace = PLS_BaseToolboxView_HEIGHT + PLS_SCREEN_WIDTH + 32;
+    } else{
+        rotateViewTopSpace = PLS_BaseToolboxView_HEIGHT + PLS_SCREEN_WIDTH;
+    }
+    self.rotateVideoSelectionView = [[PLSSelectionView alloc] initWithFrame:CGRectMake(0, rotateViewTopSpace, PLS_SCREEN_WIDTH, 35) lineWidth:1 lineColor:[UIColor blackColor]];
     [self.rotateVideoSelectionView setItemsWithTitle:[NSArray arrayWithObjects:@"正立", @"左横", @"倒立", @"右横", nil] normalItemColor:[UIColor whiteColor] selectItemColor:[UIColor blackColor] normalTitleColor:[UIColor blackColor] selectTitleColor:[UIColor whiteColor] titleTextSize:15 selectItemNumber:0];
     self.rotateVideoSelectionView.delegate = self;
     self.rotateVideoSelectionView.layer.cornerRadius = 5.0;

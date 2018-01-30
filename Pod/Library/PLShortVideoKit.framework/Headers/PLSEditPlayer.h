@@ -25,7 +25,35 @@
 
  @since      v1.1.0
  */
-- (CVPixelBufferRef __nonnull)player:(PLSEditPlayer *__nonnull)player didGetOriginPixelBuffer:(CVPixelBufferRef __nonnull)pixelBuffer;
+- (CVPixelBufferRef __nonnull)player:(PLSEditPlayer *__nonnull)player didGetOriginPixelBuffer:(CVPixelBufferRef __nonnull)pixelBuffer __deprecated_msg("Method deprecated in v1.9.0. Use `player: didGetOriginPixelBuffer: timestamp:`");
+
+/**
+ @brief 视频数据回调, pixelBuffer 类型为 kCVPixelFormatType_32BGRA
+ @param timestamp 视频帧的时间戳
+
+ @return 返回 kCVPixelFormatType_32BGRA 类型的 CVPixelBufferRef
+ 
+ @since      v1.9.0
+ */
+- (CVPixelBufferRef __nonnull)player:(PLSEditPlayer *__nonnull)player didGetOriginPixelBuffer:(CVPixelBufferRef __nonnull)pixelBuffer timestamp:(CMTime)timestamp;
+
+/**
+ @brief 当前视频的播放时刻达到了视频开头
+ @param item 当前视频
+ @param timeRange 当前视频的有效视频区域，对应 PLSEditPlayer 的属性 @property (assign, nonatomic) CMTimeRange timeRange
+ 
+ @since      v1.9.0
+ */
+- (void)player:(PLSEditPlayer *__nonnull)player didReadyToPlayForItem:(AVPlayerItem *__nonnull)item timeRange:(CMTimeRange)timeRange;
+
+/**
+ @brief 当前视频的播放时刻达到了视频结尾
+ @param item 当前视频
+ @param timeRange 当前视频的有效视频区域，对应 PLSEditPlayer 的属性 @property (assign, nonatomic) CMTimeRange timeRange
+ 
+ @since      v1.9.0
+ */
+- (void)player:(PLSEditPlayer *__nonnull)player didReachEndForItem:(AVPlayerItem *__nonnull)item timeRange:(CMTimeRange)timeRange;
 
 @end
 

@@ -24,7 +24,35 @@
  
  @since      v1.5.0
  */
-- (CVPixelBufferRef)shortVideoEditor:(PLShortVideoEditor *)editor didGetOriginPixelBuffer:(CVPixelBufferRef)pixelBuffer;
+- (CVPixelBufferRef)shortVideoEditor:(PLShortVideoEditor *)editor didGetOriginPixelBuffer:(CVPixelBufferRef)pixelBuffer __deprecated_msg("Method deprecated in v1.9.0. Use `shortVideoEditor: didGetOriginPixelBuffer: timestamp:`");
+
+/**
+ @brief 视频数据回调, pixelBuffer 类型为 kCVPixelFormatType_32BGRA
+ @param timestamp 视频帧的时间戳
+ 
+ @return 返回 kCVPixelFormatType_32BGRA 类型的 CVPixelBufferRef
+ 
+ @since      v1.9.0
+ */
+- (CVPixelBufferRef)shortVideoEditor:(PLShortVideoEditor *)editor didGetOriginPixelBuffer:(CVPixelBufferRef)pixelBuffer timestamp:(CMTime)timestamp;
+
+/**
+ @brief 当前视频的播放时刻达到了视频开头
+ @param asset 当前视频
+ @param timeRange 当前视频的有效视频区域，对应 PLShortVideoEditor 的属性 @property (assign, nonatomic) CMTimeRange timeRange
+ 
+ @since      v1.9.0
+ */
+- (void)shortVideoEditor:(PLShortVideoEditor *)editor didReadyToPlayForAsset:(AVAsset *)asset timeRange:(CMTimeRange)timeRange;
+
+/**
+ @brief 当前视频的播放时刻达到了视频结尾
+ @param asset 当前视频
+ @param timeRange 当前视频的有效视频区域，对应 PLShortVideoEditor 的属性 @property (assign, nonatomic) CMTimeRange timeRange
+
+ @since      v1.9.0
+ */
+- (void)shortVideoEditor:(PLShortVideoEditor *)editor didReachEndForAsset:(AVAsset *)asset timeRange:(CMTimeRange)timeRange;
 
 @end
 
@@ -68,6 +96,13 @@
  @since      v1.5.0
  */
 @property (assign, nonatomic) BOOL loopEnabled;
+
+/**
+ @brief  处于编辑状态时为 YES
+ 
+ @since      v1.9.0
+ */
+@property (assign, nonatomic, readonly) BOOL isEditing;
 
 /**
  @brief 播放文件的 timeRange 范围内 [start, duration] 片段
@@ -151,6 +186,20 @@
  @since      v1.5.0
  */
 - (void)replaceCurrentAssetWithAsset:(AVAsset *)asset;
+
+/**
+ @brief 当前播放时刻
+ 
+ @since      v1.9.0
+ */
+- (CMTime)currentTime;
+
+/**
+ @brief seek 到视频的 time 时刻
+ 
+ @since      v1.9.0
+ */
+- (void)seekToTime:(CMTime)time completionHandler:(void (^)(BOOL finished))completionHandler;
 
 /**
  *  添加滤镜效果

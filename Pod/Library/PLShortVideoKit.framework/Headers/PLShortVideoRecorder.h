@@ -38,7 +38,14 @@
 
  @since      v1.6.0
  */
-- (void)shortVideoRecorderDidFocusAtPoint:(CGPoint)point;
+- (void)shortVideoRecorderDidFocusAtPoint:(CGPoint)point __deprecated_msg("Method deprecated in v1.9.0. Use `shortVideoRecorder: didFocusAtPoint:`");;
+
+/**
+ @abstract 摄像头对焦位置的回调
+ 
+ @since      v1.9.0
+ */
+- (void)shortVideoRecorder:(PLShortVideoRecorder *__nonnull)recorder didFocusAtPoint:(CGPoint)point;
 
 #pragma mark -- 摄像头／麦克风采集数据的回调
 /**
@@ -334,6 +341,13 @@
  @since      v1.0.0
  */
 - (CGFloat)getTotalDuration;
+
+/**
+ @brief 实时截图, 异步返回截图结果image
+ 
+ @since      v1.9.0
+ */
+- (void)getScreenShotWithCompletionHandler:(void(^_Nullable)(UIImage * _Nullable image))handle;
 
 @end
 

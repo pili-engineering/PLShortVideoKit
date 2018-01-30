@@ -11,8 +11,8 @@
 #import "PLShortVideoKit/PLShortVideoKit.h"
 #import "PLSRateButtonView.h"
 
+#define iPhoneX ([UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(1125, 2436), [[UIScreen mainScreen] currentMode].size) : NO)
 #define PLS_RGBCOLOR(r,g,b) [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:1]
-
 #define PLS_SCREEN_WIDTH CGRectGetWidth([UIScreen mainScreen].bounds)
 #define PLS_SCREEN_HEIGHT CGRectGetHeight([UIScreen mainScreen].bounds)
 
@@ -378,7 +378,11 @@ static NSString * const reuseIdentifier = @"Cell";
     
     // 标题
     UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(100, 0, 100, 64)];
-    titleLabel.center = CGPointMake(PLS_SCREEN_WIDTH / 2, 32);
+    if (iPhoneX) {
+        titleLabel.center = CGPointMake(PLS_SCREEN_WIDTH / 2, 48);
+    } else {
+        titleLabel.center = CGPointMake(PLS_SCREEN_WIDTH / 2, 32);
+    }
     titleLabel.text = @"相机胶卷";
     titleLabel.textAlignment = NSTextAlignmentCenter;
     titleLabel.textColor = [UIColor grayColor];

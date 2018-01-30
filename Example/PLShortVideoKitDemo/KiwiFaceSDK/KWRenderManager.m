@@ -210,7 +210,7 @@ KWRenderManager *instanceManager = nil;
 - (void)resetDistortionParams {
     if ([[Global sharedManager] isPixcelBufferRotateVertical]) {
         self.smallFaceBigEyeFilter.y_scale = self.varWidth / self.varHeight;
-        
+
         ((ETDistortionFilter *) self.distortionFilters[1]).y_scale = self.varHeight / self.varWidth;
         ((FatFaceDistortionFilter *) self.distortionFilters[2]).y_scale = self.varHeight / self.varWidth;
         ((SlimFaceDistortionFilter *) self.distortionFilters[3]).y_scale = self.varHeight / self.varWidth;

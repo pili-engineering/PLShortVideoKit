@@ -1,0 +1,169 @@
+{
+    "filters": [
+                {
+                "name": "原色",
+                "dir": "normal",
+                "category": "default"
+                },
+                {
+                "name": "黑白",
+                "dir": "1960s",
+                "category": "default"
+                },
+                {
+                "name": "甘菊",
+                "dir": "camomile",
+                "category": "default"
+                },
+                {
+                "name": "糖果",
+                "dir": "candy",
+                "category": "default"
+                },
+                {
+                "name": "冷色",
+                "dir": "cold",
+                "category": "default"
+                },
+                {
+                "name": "暗色",
+                "dir": "dark",
+                "category": "default"
+                },
+                {
+                "name": "梦幻",
+                "dir": "dreamy",
+                "category": "default"
+                },
+                {
+                "name": "优雅",
+                "dir": "elegance",
+                "category": "default"
+                },
+                {
+                "name": "青涩",
+                "dir": "frog",
+                "category": "default"
+                },
+                {
+                "name": "时髦",
+                "dir": "funky",
+                "category": "default"
+                },
+                {
+                "name": "漂亮",
+                "dir": "good",
+                "category": "default"
+                },
+                {
+                "name": "灰色",
+                "dir": "gray",
+                "category": "default"
+                },
+                {
+                "name": "哈瓦那",
+                "dir": "habana",
+                "category": "default"
+                },
+                {
+                "name": "快乐",
+                "dir": "happy",
+                "category": "default"
+                },
+                {
+                "name": "收获",
+                "dir": "harvest",
+                "category": "default"
+                },
+                {
+                "name": "旅行",
+                "dir": "kc",
+                "category": "default"
+                },
+                {
+                "name": "蓝紫色",
+                "dir": "lyon",
+                "category": "default"
+                },
+                {
+                "name": "零点",
+                "dir": "lzp",
+                "category": "default"
+                },
+                {
+                "name": "心念",
+                "dir": "miss",
+                "category": "default"
+                },
+                {
+                "name": "模糊",
+                "dir": "misty",
+                "category": "default"
+                },
+                {
+                "name": "拍立得",
+                "dir": "pailide",
+                "category": "default"
+                },
+                {
+                "name": "粉红",
+                "dir": "pink",
+                "category": "default"
+                },
+                {
+                "name": "拍立",
+                "dir": "pld",
+                "category": "default"
+                },
+                {
+                "name": "胶片",
+                "dir": "print",
+                "category": "default"
+                },
+                {
+                "name": "紫色",
+                "dir": "purple",
+                "category": "default"
+                },
+                {
+                "name": "旅行",
+                "dir": "railway",
+                "category": "default"
+                },
+                {
+                "name": "红色",
+                "dir": "red",
+                "category": "default"
+                },
+                {
+                "name": "怀旧",
+                "dir": "retro",
+                "category": "default"
+                },
+                {
+                "name": "和煦",
+                "dir": "sunny",
+                "category": "default"
+                },
+                {
+                "name": "高雅",
+                "dir": "tasty",
+                "category": "default"
+                },
+                {
+                "name": "青花瓷",
+                "dir": "turkish",
+                "category": "default"
+                },
+                {
+                "name": "华尔兹",
+                "dir": "waltz",
+                "category": "default"
+                },
+                {
+                "name": "西方",
+                "dir": "west",
+                "category": "default"
+                },
+                ]
+}
