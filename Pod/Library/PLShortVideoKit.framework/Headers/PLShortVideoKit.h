@@ -43,5 +43,14 @@ FOUNDATION_EXPORT const unsigned char PLShortVideoKitVersionString[];
 #import <PLShortVideoKit/PLSReverserEffect.h>
 #import <PLShortVideoKit/PLShortVideoAsset.h>
 
+#import <PLShortVideoKit/PLSTextSetting.h>
+#import <PLShortVideoKit/PLSImageSetting.h>
+#import <PLShortVideoKit/PLSFadeTranstion.h>
+#import <PLShortVideoKit/PLSScaleTransition.h>
+#import <PLShortVideoKit/PLSRotateTransition.h>
+#import <PLShortVideoKit/PLSPositionTransition.h>
+#import <PLShortVideoKit/PLSTransitionMaker.h>
 
-
+#import <PLShortVideoKit/PLSRangeMedia.h>
+#import <PLShortVideoKit/PLSRangeMovieExport.h>
+#import <PLShortVideoKit/PLSRangeMediaTools.h>

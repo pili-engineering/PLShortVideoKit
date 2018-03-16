@@ -209,18 +209,18 @@ KWRenderManager *instanceManager = nil;
 
 - (void)resetDistortionParams {
     if ([[Global sharedManager] isPixcelBufferRotateVertical]) {
-        self.smallFaceBigEyeFilter.y_scale = self.varWidth / self.varHeight;
-
-        ((ETDistortionFilter *) self.distortionFilters[1]).y_scale = self.varHeight / self.varWidth;
-        ((FatFaceDistortionFilter *) self.distortionFilters[2]).y_scale = self.varHeight / self.varWidth;
-        ((SlimFaceDistortionFilter *) self.distortionFilters[3]).y_scale = self.varHeight / self.varWidth;
-        ((PearFaceDistortionFilter *) self.distortionFilters[4]).y_scale = self.varHeight / self.varWidth;
-    } else {
         self.smallFaceBigEyeFilter.y_scale = self.varHeight / self.varWidth;
 
         ((ETDistortionFilter *) self.distortionFilters[1]).y_scale = self.varWidth / self.varHeight;
         ((FatFaceDistortionFilter *) self.distortionFilters[2]).y_scale = self.varWidth / self.varHeight;
         ((SlimFaceDistortionFilter *) self.distortionFilters[3]).y_scale = self.varWidth / self.varHeight;
+        ((PearFaceDistortionFilter *) self.distortionFilters[4]).y_scale = self.varHeight / self.varWidth;
+    } else {
+        self.smallFaceBigEyeFilter.y_scale = self.varWidth / self.varHeight;
+
+        ((ETDistortionFilter *) self.distortionFilters[1]).y_scale = self.varHeight / self.varWidth;
+        ((FatFaceDistortionFilter *) self.distortionFilters[2]).y_scale = self.varHeight / self.varWidth;
+        ((SlimFaceDistortionFilter *) self.distortionFilters[3]).y_scale = self.varHeight / self.varWidth;
         ((PearFaceDistortionFilter *) self.distortionFilters[4]).y_scale = self.varWidth / self.varHeight;
     }
 
@@ -238,26 +238,30 @@ KWRenderManager *instanceManager = nil;
     
     switch (iDeviceOrientation) {
         case UIDeviceOrientationPortrait:
-            cvMobileRotate = CV_CLOCKWISE_ROTATE_0;
-            break;
-            
+        cvMobileRotate = CV_CLOCKWISE_ROTATE_0;
+        [Global sharedManager].PIXCELBUFFER_ROTATE = KW_PIXELBUFFER_ROTATE_270;
+        break;
+        
         case UIDeviceOrientationLandscapeLeft:
-            cvMobileRotate = mirrored ? CV_CLOCKWISE_ROTATE_90 : CV_CLOCKWISE_ROTATE_270;
-            break;
-            
+        cvMobileRotate = mirrored ? CV_CLOCKWISE_ROTATE_90 : CV_CLOCKWISE_ROTATE_270;
+        [Global sharedManager].PIXCELBUFFER_ROTATE = KW_PIXELBUFFER_ROTATE_180;
+        break;
+        
         case UIDeviceOrientationLandscapeRight:
-            cvMobileRotate = mirrored ? CV_CLOCKWISE_ROTATE_270 : CV_CLOCKWISE_ROTATE_90;
-            break;
-            
+        cvMobileRotate = mirrored ? CV_CLOCKWISE_ROTATE_270 : CV_CLOCKWISE_ROTATE_90;
+        [Global sharedManager].PIXCELBUFFER_ROTATE = KW_PIXELBUFFER_ROTATE_90;
+        break;
+        
         case UIDeviceOrientationPortraitUpsideDown:
-            cvMobileRotate = CV_CLOCKWISE_ROTATE_180;
-            break;
-            
+        cvMobileRotate = CV_CLOCKWISE_ROTATE_180;
+        [Global sharedManager].PIXCELBUFFER_ROTATE = KW_PIXELBUFFER_ROTATE_0;
+        break;
+        
         default:
-            cvMobileRotate = CV_CLOCKWISE_ROTATE_0;
-            break;
+        cvMobileRotate = CV_CLOCKWISE_ROTATE_0;
+        [Global sharedManager].PIXCELBUFFER_ROTATE = KW_PIXELBUFFER_ROTATE_270;
+        break;
     }
-    
     [instanceManager.renderer processPixelBuffer:pixelBuffer withRotation:cvMobileRotate mirrored:mirrored];
 }
 
@@ -456,13 +460,14 @@ KWRenderManager *instanceManager = nil;
 }
 
 - (void)releaseManager {
+    
     [self.stickerRender setSticker:nil];
     [self.presentStickerRenderer setSticker:nil];
     [self.smiliesStickerRenderer setSticker:nil];
     self.presentStickerRenderer.presentStickerRendererPlayOverBlock = nil;
     self.smiliesStickerRenderer.smiliesStickerRendererPlayOverBlock = nil;
     [self.renderer removeAllFilters];
-
+    
     //release array
     [KWGlobalFilterManager removeAllColorFilters];
     self.currentDistortionFilter = nil;
@@ -471,7 +476,7 @@ KWRenderManager *instanceManager = nil;
     self.presentStickers = nil;
     self.distortionTitleInfosArr = nil;
     self.distortionFilters = nil;
-
+    
     //release render
     self.stickerRender = nil;
     self.currentGlobalFilter = nil;
@@ -480,9 +485,9 @@ KWRenderManager *instanceManager = nil;
     self.smiliesStickerRenderer = nil;
     self.presentStickerRenderer = nil;
     self.smallFaceBigEyeFilter = nil;
+    [self.renderer releaseRender];
     self.renderer = nil;
     instanceManager = nil;
-
 }
 
 
