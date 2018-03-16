@@ -43,6 +43,13 @@
 @property (nonatomic, strong)NSString * _Nullable recorder;
 
 /**
+ @brief 上传视频空间设置的 key,默认为当前上传视频文件的 hash 值
+
+ @since      v1.0.4
+ */
+@property (nonatomic, strong)NSDictionary * _Nullable params;
+
+/**
  @abstract   PLSUploaderConfiguration 初始化方法
  @warning    token 必填，不能为空
  
@@ -59,5 +66,17 @@
  @since      v1.0.4
  */
 + (instancetype _Nullable)defaultWithToken:(NSString * _Nonnull)token;
+
+/**
+ @abstract   PLSUploaderConfiguration 初始化方法
+ @warning    token 必填，不能为空
+
+ @since      v1.0.4
+ */
+- (instancetype _Nullable)initWithToken:(NSString * _Nonnull)token
+                               videoKey:(NSString * _Nullable)videoKey
+                                  https:(BOOL)https
+                               recorder:(NSString * _Nullable)recorder
+                                 params:(NSDictionary * _Nullable)params;
 
 @end
