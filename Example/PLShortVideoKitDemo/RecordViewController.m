@@ -681,7 +681,7 @@ PLSRateButtonViewDelegate
     self.musicButton.selected = !self.musicButton.selected;
     if (self.musicButton.selected) {
         // 背景音乐
-        NSURL *audioURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"Fire_Breather" ofType:@"m4a"]];
+        NSURL *audioURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"counter-35s" ofType:@"m4a"]];
         [self.shortVideoRecorder mixAudio:audioURL];
     } else{
         [self.shortVideoRecorder mixAudio:nil];
@@ -1018,7 +1018,8 @@ PLSRateButtonViewDelegate
     if (self.musicButton.selected) {
         dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
         [self loadActivityIndicatorView];
-        [self.shortVideoRecorder mixWithMusicVolume:0.3 videoVolume:0.8 completionHandler:^(AVMutableComposition * _Nullable composition, AVAudioMix * _Nullable audioMix, NSError * _Nullable error) {
+        // MusicVolume：1.0，videoVolume:0.0 即完全丢弃掉拍摄时的所有声音，只保留背景音乐的声音
+        [self.shortVideoRecorder mixWithMusicVolume:1.0 videoVolume:0.0 completionHandler:^(AVMutableComposition * _Nullable composition, AVAudioMix * _Nullable audioMix, NSError * _Nullable error) {
             AVAssetExportSession *exporter = [[AVAssetExportSession alloc]initWithAsset:composition presetName:AVAssetExportPresetHighestQuality];
             NSURL *outputPath = [self exportAudioMixPath];
             exporter.outputURL = outputPath;

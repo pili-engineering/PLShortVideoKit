@@ -287,7 +287,10 @@ static NSString * const PLSClipMovieViewCellId = @"PLSClipMovieViewCellId";
     AVAsset *asset = [AVAsset assetWithURL:self.url];
     CMTime cmtime = asset.duration;
     self.totalSeconds = CMTimeGetSeconds(cmtime);
-    self.frameRate = [[asset tracksWithMediaType:AVMediaTypeVideo][0] nominalFrameRate];
+    
+    if ([[asset tracksWithMediaType:AVMediaTypeVideo] count] != 0) {
+        self.frameRate = [[asset tracksWithMediaType:AVMediaTypeVideo][0] nominalFrameRate];
+    }
     self.imageGenerator = [[AVAssetImageGenerator alloc] initWithAsset:asset];
 
     NSUInteger imageCount = 0;

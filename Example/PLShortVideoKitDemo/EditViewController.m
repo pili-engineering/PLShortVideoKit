@@ -588,7 +588,7 @@ PLSVideoEditingControllerDelegate
     // 传入图像的方向是否为原始朝向(相机采集的原始朝向)，SDK 将依据该属性来调整人脸检测时图片的角度。如果没有对图片进行旋转，则为 YES
     BOOL isOriginalOrientation = NO;
     self.filterProcessor = [[TuSDKFilterProcessor alloc] initWithFormatType:kCVPixelFormatType_32BGRA isOriginalOrientation:isOriginalOrientation];
-    [self.filterProcessor setEnableLiveSticker:YES];
+    [self.filterProcessor setEnableLiveSticker:NO];
     self.filterProcessor.delegate = self;
     
     self.effectTools = [[SceneEffectTools alloc] init];

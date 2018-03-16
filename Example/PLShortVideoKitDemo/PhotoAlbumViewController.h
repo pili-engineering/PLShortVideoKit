@@ -53,5 +53,9 @@
 
 @property (assign, nonatomic) NSInteger maxSelectCount;
 @property (assign, nonatomic) PHAssetMediaType mediaType;
+
+@property (strong, nonatomic) PLSScrollView *dynamicScrollView;
+- (void)nextButtonClick:(UIButton *)sender;
+
 @end
 

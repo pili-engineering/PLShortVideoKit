@@ -196,6 +196,7 @@
     __block UIImage *image = nil;
     
     PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
+    options.networkAccessAllowed = YES;
     options.synchronous = YES;
     
     PHImageManager *manager = [PHImageManager defaultManager];
@@ -285,12 +286,13 @@
 @property (strong, nonatomic) UIButton *nextButton;
 @property (strong, nonatomic) PLSRateButtonView *rateButtonView;
 @property (assign, nonatomic) BOOL isMovieLandscapeOrientation;
-@property (strong, nonatomic) PLSScrollView *dynamicScrollView;
 
 @property (strong, nonatomic) PLSMovieComposer *movieComposer;
 
 @property (strong, nonatomic) UIActivityIndicatorView *activityIndicatorView;
 @property (strong, nonatomic) UILabel *progressLabel;
+
+@property (assign, nonatomic) CGFloat imageDuration;
 
 @end
 
@@ -443,6 +445,23 @@ static NSString * const reuseIdentifier = @"Cell";
     CGFloat height = ([UIScreen mainScreen].bounds.size.width / 5);
     self.dynamicScrollView = [[PLSScrollView alloc] initWithFrame:CGRectMake(0, CGRectGetHeight(self.editToolboxView.frame) - height - 10, CGRectGetWidth(self.editToolboxView.frame), height) withImages:nil];
     [self.editToolboxView addSubview:self.dynamicScrollView];
+    
+    if (self.mediaType == PHAssetMediaTypeImage) {
+        // 处理图片转视频模块，就加个按钮来决定图片的持续时间
+        UIButton *imageDurationButton = [[UIButton alloc] initWithFrame:CGRectMake(CGRectGetWidth(self.editToolboxView.frame) - 230, 5, 90, 30)];
+        [imageDurationButton setTitle:@"图片时长2秒" forState:UIControlStateNormal];
+        [imageDurationButton setTitle:@"图片时长3秒" forState:UIControlStateSelected];
+        imageDurationButton.selected = NO;
+        [imageDurationButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        imageDurationButton.titleLabel.font = [UIFont systemFontOfSize:14];
+        imageDurationButton.backgroundColor = [UIColor grayColor];
+        imageDurationButton.layer.cornerRadius = 4.0f;
+        imageDurationButton.layer.masksToBounds = YES;
+        [imageDurationButton addTarget:self action:@selector(imageDurationButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
+        [self.editToolboxView addSubview:imageDurationButton];
+        
+        self.imageDuration = 2.0f; // 默认为 2 秒
+    }
 }
 
 #pragma mark - Assets
@@ -480,16 +499,6 @@ static NSString * const reuseIdentifier = @"Cell";
             [weak.collectionView reloadData];
         });
     });
-}
-
-#pragma mark - UIAlertViewDelegate
-
-- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
-    if (buttonIndex == alertView.firstOtherButtonIndex) {
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
-    }
-    
-    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark <UICollectionViewDataSource>
@@ -597,51 +606,25 @@ static NSString * const reuseIdentifier = @"Cell";
     }
 }
 
+#pragma mark -- imageDurationButtonClicked
+- (void)imageDurationButtonClicked:(UIButton *)sender {
+    sender.selected = !sender.selected;
+    if (sender.selected) {
+        self.imageDuration = 3.0f;
+    } else {
+        self.imageDuration = 2.0f;
+    }
+}
+
 #pragma mark -- 下一步
 - (void)nextButtonClick:(UIButton *)sender {
     // 视频选择器视图中图片、视频的选取数目可以做限制的，限制为1个、多个、不限
     if (self.dynamicScrollView.selectedAssets.count > 0) {
         if (self.mediaType == PHAssetMediaTypeImage) {
-            [self.urls removeAllObjects];
-            for (PHAsset *asset in self.dynamicScrollView.selectedAssets) {
-                UIImage *image = [asset imageURL:asset targetSize:CGSizeMake(544, 960)];
-                [self.urls addObject:image];
-            }
-            
-            [self loadActivityIndicatorView];
-
-            __weak typeof(self)weakSelf = self;
-            PLSImageToMovieComposer *imageToMovieComposer = [[PLSImageToMovieComposer alloc] initWithImages:self.urls];
-            if (self.isMovieLandscapeOrientation) {
-                imageToMovieComposer.videoSize = CGSizeMake(960, 544);
-            } else {
-                imageToMovieComposer.videoSize = CGSizeMake(544, 960);
-            }
-            
-            [imageToMovieComposer setCompletionBlock:^(NSURL *url) {
-                NSLog(@"imageToMovieComposer ur: %@", url);
-
-                [weakSelf removeActivityIndicatorView];
-                weakSelf.progressLabel.text = @"";
-                
-                MovieTransCodeViewController *transCodeViewController = [[MovieTransCodeViewController alloc] init];
-                transCodeViewController.url = url;
-                [self presentViewController:transCodeViewController animated:YES completion:nil];
-            }];
-            [imageToMovieComposer setFailureBlock:^(NSError *error) {
-                NSLog(@"imageToMovieComposer failed");
-                
-                [weakSelf removeActivityIndicatorView];
-                weakSelf.progressLabel.text = @"";
-            }];
-            [imageToMovieComposer setProcessingBlock:^(float progress) {
-                NSLog(@"imageToMovieComposer progress: %f", progress);
-                
-                weakSelf.progressLabel.text = [NSString stringWithFormat:@"合成进度%d%%", (int)(progress * 100)];
-            }];
-            
-            [imageToMovieComposer startComposing];
-            
+            // 图片合成为视频
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:@"图片合成为视频" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
+            alertView.tag = 10001;
+            [alertView show];
             
         } else if (self.mediaType == PHAssetMediaTypeVideo) {
             [self.urls removeAllObjects];
@@ -651,50 +634,146 @@ static NSString * const reuseIdentifier = @"Cell";
             }
             
             if (self.urls.count == 1) {
-                MovieTransCodeViewController *transCodeViewController = [[MovieTransCodeViewController alloc] init];
-                transCodeViewController.url = self.urls[0];
-                [self presentViewController:transCodeViewController animated:YES completion:nil];
-            }
-            else {
-                [self loadActivityIndicatorView];
-
-                __weak typeof(self)weakSelf = self;
-                self.movieComposer = [[PLSMovieComposer alloc] initWithUrls:self.urls];
-                if (self.isMovieLandscapeOrientation) {
-                    self.movieComposer.videoSize = CGSizeMake(960, 544);
-                } else {
-                    self.movieComposer.videoSize = CGSizeMake(544, 960);
-                }
-                self.movieComposer.videoFrameRate = 25;
-                self.movieComposer.outputFileType = PLSFileTypeMPEG4;
+                // 视频转码
+                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:@"视频转码" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
+                alertView.tag = 10002;
+                [alertView show];
                 
-                [self.movieComposer setCompletionBlock:^(NSURL *url) {
-                    NSLog(@"movieComposer ur: %@", url);
-
-                    [weakSelf removeActivityIndicatorView];
-                    weakSelf.progressLabel.text = @"";
-                    
-                    MovieTransCodeViewController *transCodeViewController = [[MovieTransCodeViewController alloc] init];
-                    transCodeViewController.url = url;
-                    [weakSelf presentViewController:transCodeViewController animated:YES completion:nil];
-                }];
-                [self.movieComposer setFailureBlock:^(NSError *error) {
-                    NSLog(@"movieComposer failed");
-
-                    [weakSelf removeActivityIndicatorView];
-                    weakSelf.progressLabel.text = @"";
-
-                }];
-                [self.movieComposer setProcessingBlock:^(float progress){
-                    NSLog(@"movieComposer progress: %f", progress);
-                    
-                    weakSelf.progressLabel.text = [NSString stringWithFormat:@"拼接进度%d%%", (int)(progress * 100)];
-                }];
-                
-                [self.movieComposer startComposing];
+            }else {
+                // 多个视频拼接 或者 单个视频转码 都可以用 PLSMovieComposer
+                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:@"视频拼接" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
+                alertView.tag = 10003;
+                [alertView show];
             }
         }
     }
+}
+
+#pragma mark -- UIAlertView delegate
+- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
+    // 检测是否授权访问相册，没有授权就跳转到 App 的设置页
+    if (10001 != alertView.tag && 10002 != alertView.tag && 10003 != alertView.tag) {
+        if (buttonIndex == alertView.firstOtherButtonIndex) {
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
+        }
+        
+        [self dismissViewControllerAnimated:YES completion:nil];
+    }
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    if (10001 == alertView.tag) {
+        if (1 == buttonIndex) {
+            // 图片合成为视频
+            [self imageToMovieEvent];
+        }
+        
+    } else if (10002 == alertView.tag) {
+        if (1 == buttonIndex) {
+            // 视频转码
+            [self movieTransCodeEvent];
+        }
+        
+    } else if (10003 == alertView.tag) {
+        if (1 == buttonIndex) {
+            // 多个视频拼接 或者 单个视频转码 都可以用 PLSMovieComposer
+            [self movieComposerEvent];
+        }
+    }
+}
+
+// 图片合成为视频
+- (void)imageToMovieEvent {
+    [self.urls removeAllObjects];
+    for (PHAsset *asset in self.dynamicScrollView.selectedAssets) {
+        UIImage *image = [asset imageURL:asset targetSize:CGSizeMake(544, 960)];
+        [self.urls addObject:image];
+    }
+    
+    [self loadActivityIndicatorView];
+    
+    __weak typeof(self)weakSelf = self;
+    PLSImageToMovieComposer *imageToMovieComposer = [[PLSImageToMovieComposer alloc] initWithImages:self.urls];
+    if (self.isMovieLandscapeOrientation) {
+        imageToMovieComposer.videoSize = CGSizeMake(960, 544);
+    } else {
+        imageToMovieComposer.videoSize = CGSizeMake(544, 960);
+    }
+    
+    // Warning：在这之前一定要给 self.imageDuration 赋值，不然就会 crash。
+    // 在 - (void)setupEditToolboxView 里设置了 self.imageDuration = 2.0f;，self.imageDuration 的值的改变通过 - (void)imageDurationButtonClicked:(UIButton *)sender 事件。
+    imageToMovieComposer.imageDuration = self.imageDuration;
+    
+    [imageToMovieComposer setCompletionBlock:^(NSURL *url) {
+        NSLog(@"imageToMovieComposer ur: %@", url);
+        
+        [weakSelf removeActivityIndicatorView];
+        weakSelf.progressLabel.text = @"";
+        
+        MovieTransCodeViewController *transCodeViewController = [[MovieTransCodeViewController alloc] init];
+        transCodeViewController.url = url;
+        [self presentViewController:transCodeViewController animated:YES completion:nil];
+    }];
+    [imageToMovieComposer setFailureBlock:^(NSError *error) {
+        NSLog(@"imageToMovieComposer failed");
+        
+        [weakSelf removeActivityIndicatorView];
+        weakSelf.progressLabel.text = @"";
+    }];
+    [imageToMovieComposer setProcessingBlock:^(float progress) {
+        NSLog(@"imageToMovieComposer progress: %f", progress);
+        
+        weakSelf.progressLabel.text = [NSString stringWithFormat:@"合成进度%d%%", (int)(progress * 100)];
+    }];
+    
+    [imageToMovieComposer startComposing];
+}
+
+// 视频转码
+- (void)movieTransCodeEvent {
+    MovieTransCodeViewController *transCodeViewController = [[MovieTransCodeViewController alloc] init];
+    transCodeViewController.url = self.urls[0];
+    [self presentViewController:transCodeViewController animated:YES completion:nil];
+}
+
+// 多个视频拼接 或者 单个视频转码 都可以用 PLSMovieComposer
+- (void)movieComposerEvent {
+    [self loadActivityIndicatorView];
+    
+    __weak typeof(self)weakSelf = self;
+    self.movieComposer = [[PLSMovieComposer alloc] initWithUrls:self.urls];
+    if (self.isMovieLandscapeOrientation) {
+        self.movieComposer.videoSize = CGSizeMake(960, 544);
+    } else {
+        self.movieComposer.videoSize = CGSizeMake(544, 960);
+    }
+    self.movieComposer.videoFrameRate = 25;
+    self.movieComposer.outputFileType = PLSFileTypeMPEG4;
+    
+    [self.movieComposer setCompletionBlock:^(NSURL *url) {
+        NSLog(@"movieComposer ur: %@", url);
+        
+        [weakSelf removeActivityIndicatorView];
+        weakSelf.progressLabel.text = @"";
+        
+        MovieTransCodeViewController *transCodeViewController = [[MovieTransCodeViewController alloc] init];
+        transCodeViewController.url = url;
+        [weakSelf presentViewController:transCodeViewController animated:YES completion:nil];
+    }];
+    [self.movieComposer setFailureBlock:^(NSError *error) {
+        NSLog(@"movieComposer failed");
+        
+        [weakSelf removeActivityIndicatorView];
+        weakSelf.progressLabel.text = @"";
+        
+    }];
+    [self.movieComposer setProcessingBlock:^(float progress){
+        NSLog(@"movieComposer progress: %f", progress);
+        
+        weakSelf.progressLabel.text = [NSString stringWithFormat:@"拼接进度%d%%", (int)(progress * 100)];
+    }];
+    
+    [self.movieComposer startComposing];
 }
 
 // 加载拼接视频的动画
