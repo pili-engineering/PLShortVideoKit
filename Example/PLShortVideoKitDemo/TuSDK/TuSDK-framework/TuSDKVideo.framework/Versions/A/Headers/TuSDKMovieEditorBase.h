@@ -13,34 +13,7 @@
 #import "TuSDKTimeRange.h"
 #import "TuSDKMVStickerAudioEffectData.h"
 #import "TuSDKMediaSceneEffectData.h"
-
-/**
- *  TuSDKMovieEditor状态
- */
-typedef NS_ENUM(NSInteger, lsqMovieEditorStatus)
-{
-    //  未知
-    lsqMovieEditorStatusUnknow,
-    // 加载失败
-    lsqMovieEditorStatusLoadFailed,
-    // 加载完成
-    lsqMovieEditorStatusLoaded,
-    // 正在播放
-    lsqMovieEditorStatusPreviewing,
-    // 正在录制
-    lsqMovieEditorStatusRecording,
-    // 录制完成
-    lsqMovieEditorStatusRecordingCompleted,
-    // 录制失败
-    lsqMovieEditorStatusRecordingFailed,
-    // 取消录制
-    lsqMovieEditorStatusRecordingCancelled,
-    // 预览完成
-    lsqMovieEditorStatusPreviewingCompleted,
-    // 暂停预览
-    lsqMovieEditorStatusPreviewingPause,
-};
-
+#import "TuSDKMovieEditorMode.h"
 /**
  *  视频编辑基类
  */
@@ -123,9 +96,14 @@ typedef NS_ENUM(NSInteger, lsqMovieEditorStatus)
 @property (nonatomic, assign) CGFloat videoSoundVolume;
 
 /**
- *  场景特效设置数组
+ *  场景特效设置数组  注：处理一个视频时，只能单独使用滤镜，或单独使用场景特效，或单独使用粒子特效    例如：添加场景特效后，设置滤镜，则场景特效不生效
  */
-@property (nonatomic, strong) NSArray<TuSDKMediaSceneEffectData *> *sceneEffects;
+@property (nonatomic, strong) NSArray<TuSDKMediaSceneEffectData *> *sceneEffects __attribute__((deprecated("即将过期, 用addEffectWithCode: withMode:替换")));
+
+/**
+ *  设置生效的特效模式  注：滤镜、场景特效、粒子特效不能同时添加，当 EfficientEffectMode 为Default时 以后添加的特效为准，当Mode进行限定时，则以限定的模式为准
+ */
+@property (nonatomic, assign) lsqMovieEditorEfficientEffectMode efficientEffectMode;
 
 #pragma mark - waterMark
 
@@ -237,16 +215,83 @@ typedef NS_ENUM(NSInteger, lsqMovieEditorStatus)
 #pragma mark - media effect
 
 /**
- 添加一个特效
+ 添加一个多媒体特效 (MV、配音中使用)
 
- @param effect 特效对象，需使用 TuSDKMediaEffectData 的子类
+ @param effect 特效对象，需使用 MV 或 配音 对应的 TuSDKMediaEffectData 的子类
  */
 - (void)addMediaEffect:(TuSDKMediaEffectData *)effect;
 
 /**
- 移除所有特效
+ 移除所有特效 (MV、配音中使用)
  */
-- (void)removeAllEffect;
+- (void)removeAllEffect  __attribute__((deprecated("已过期, 用removeAllMediaEffect替换")));
+
+/**
+ 移除所有特效 (MV、配音中使用)
+ */
+- (void)removeAllMediaEffect;
+
+#pragma mark - particle scene
+
+/**
+ 开始添加特效  包含：场景特效、粒子特效  使用effectMode 进行区分
+
+ @param particleCode 粒子特效code
+ @param effectMode 特效类型
+ @since      v2.0
+ */
+- (void)addEffectWithCode:(NSString *)particleCode withMode:(lsqMovieEditorEffectMode)effectMode;
+
+/**
+ 结束正在添加的特效  包含：场景特效、粒子特效
+ @param effectMode 特效类型
+ @since      v2.0
+ */
+- (void)addEndEffectWithMode:(lsqMovieEditorEffectMode)effectMode;
+
+/**
+ 取消正在添加的粒子特效
+ @param effectMode 特效类型
+ */
+- (void)cancleAddingEffectWithMode:(lsqMovieEditorEffectMode)effectMode;
+
+/**
+ 更新粒子特效的发射器位置
+ 
+ @param point 粒子发射器位置  左上角为(0,0)  右下角为(1,1)
+ @since      v2.0
+ */
+- (void)updateParticleEmitPosition:(CGPoint)point;
+
+/**
+ 更新 下一次添加的 粒子特效材质大小  0~1  注：对当前正在添加或已添加的粒子不生效
+
+ @param size 粒子特效材质大小
+ @since      v2.0
+ */
+- (void)updateParticleEmitSize:(CGFloat)size;
+
+/**
+ 更新 下一次添加的 粒子特效颜色  注：对当前正在添加或已添加的粒子不生效
+ 
+ @param color 粒子特效颜色
+ @since      v2.0
+ */
+- (void)updateParticleEmitColor:(UIColor *)color;
+
+/**
+ 移除上一个添加的特效  包含：场景特效、粒子特效  使用effectMode 进行区分
+ @param effectMode 特效类型
+ @since      v2.0
+ */
+- (void)removeLastEffectWithMode:(lsqMovieEditorEffectMode)effectMode;
+
+/**
+ 移除所有添加的特效  包含：场景特效、粒子特效  使用effectMode 进行区分
+ @param effectMode 特效类型
+ @since      v2.0
+ */
+- (void)removeAllEffectWithMode:(lsqMovieEditorEffectMode)effectMode;
 
 #pragma mark - destroy
 

@@ -12,6 +12,10 @@
 #import "TuSDKFaceImport.h"
 
 #pragma mark - TuSDKFace
+
+/** Video版本号 */
+extern NSString * const lsqFaceVersion;
+
 /**
  *  人脸检测
  */
@@ -19,6 +23,9 @@
 
 // 人脸检测
 + (TuSDKFace *)shared;
+
+/** 设置检测框最小倍数 [取值范围: 0.1 < x < 0.5, 默认: 0.2] 值越大性能越高距离越近 */
++ (void) setDetectScale: (CGFloat) scale;
 
 /**
  *  检测人脸并识别

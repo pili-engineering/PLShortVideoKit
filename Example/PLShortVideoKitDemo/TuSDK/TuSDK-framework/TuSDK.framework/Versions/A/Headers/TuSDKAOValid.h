@@ -166,8 +166,11 @@
 // video editor resolution support 编辑视频 自定义分辨率
 - (BOOL)videoEditorResolutionSupport;
 
-//  video editor effects filter support 编辑视频 是否支持特效滤镜
-- (BOOL)videoEditorEffectsfilterSupport;
+//  video editor scene effects filter support 编辑视频 是否支持场景特效滤镜
+- (BOOL)videoEditorSceneEffectsFilterSupport;
+
+//  video editor particle effects filter support 编辑视频 是否支持粒子特效滤镜
+- (BOOL)videoEditorParticleEffectsFilterSupport;
 
 /**
  *  解密文本

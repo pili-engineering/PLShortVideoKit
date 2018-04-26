@@ -10,6 +10,7 @@
 #import "GPUImageImport.h"
 #import "TuSDKFilterOption.h"
 #import "TuSDKFilterParameter.h"
+#import "TuSDKParticleFilterInterface.h"
 
 /** 滤镜对象包装*/
 @interface TuSDKFilterWrap : NSObject{
@@ -113,8 +114,39 @@
  */
 - (nullable UIImage *)processWithImage:(nullable UIImage *)image orientation:(UIImageOrientation)imageOrientation;
 
-/** 销毁*/
-- (void)destroy;
+/**
+ *  是否为同一个滤镜代号
+ *
+ *  @param code 滤镜代号
+ *
+ *  @return BOOL 是否为同一个滤镜代号
+ */
+- (BOOL)isEqualCode:(nullable NSString *)code;
+
+#pragma mark - particle
+
+/**
+ 更新粒子发射器位置
+ 
+ @param point 粒子发射器位置  左上角为(0,0)  右下角为(1,1)
+ */
+- (void)updateParticleEmitPosition:(CGPoint)point;
+
+/**
+ 更新粒子特效材质大小 0~1
+ 
+ @param size 粒子特效材质大小
+ @since      v2.0
+ */
+- (void)updateParticleEmitSize:(CGFloat)size;
+
+/**
+ 更新 下一次添加的 粒子特效颜色  注：对当前正在添加或已添加的粒子不生效
+ 
+ @param color 粒子特效颜色
+ @since      v2.0
+ */
+- (void)updateParticleEmitColor:(UIColor *)color;
 
 /**
  *  克隆滤镜对象包装
@@ -124,11 +156,8 @@
 - (nullable instancetype)clone;
 
 /**
- *  是否为同一个滤镜代号
- *
- *  @param code 滤镜代号
- *
- *  @return BOOL 是否为同一个滤镜代号
+ 销毁
  */
-- (BOOL) isEqualCode:(nullable NSString *)code;
+- (void)destroy;
+
 @end

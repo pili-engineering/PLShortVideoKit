@@ -25,6 +25,7 @@
 #import "TuSDKTSMovieSplicer.h"
 #import "TuSDKMovieClipper.h"
 #import "TuSDKTSAudioRecorder.h"
+#import "TuSDKTSMovieCompresser.h"
 
 #import "TuSDKVideoResult.h"
 #import "TuSDKAudioResult.h"

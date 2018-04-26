@@ -84,13 +84,22 @@
 - (BOOL)isNormalFilter:(NSString *)code;
 
 /**
- *  是否是特效滤镜
+ *  是否是场景特效滤镜
  *
  *  @param code 滤镜代号
  *
  *  @return
  */
-- (BOOL)isMagicFilter:(NSString *)code;
+- (BOOL)isSceneEffectFilter:(NSString *)code;
+
+/**
+ *  是否是场景特效滤镜
+ *
+ *  @param code 滤镜代号
+ *
+ *  @return
+ */
+- (BOOL)isParticleEffectFilter:(NSString *)code;
 
 /**
  *  执行滤镜 并输出图形

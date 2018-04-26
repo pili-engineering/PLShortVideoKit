@@ -24,8 +24,8 @@ extern NSInteger const lsqParticleStartRadiusEqualToEndRadius;
 }
 /** 配置文件名称*/
 @property (readonly, nonatomic) TuSDKParticleConfig *config;
-/** 是否激活*/
-@property (readonly, nonatomic) BOOL isActive;
+/** 是否激活 默认：YES*/
+@property (nonatomic) BOOL isActive;
 /** 是否暂停*/
 @property (nonatomic) BOOL isPaused;
 /** 材质大小*/
@@ -37,6 +37,9 @@ extern NSInteger const lsqParticleStartRadiusEqualToEndRadius;
 + (id) initWithConfigFile:(NSString *)file;
 /** 初始化粒子系统 读取json配置*/
 + (id) initWithJson:(NSString *)json;
+/** 初始化粒子系统 读取json字典配置*/
++ (id) initWithDic:(NSDictionary *)jsonDic;
+
 /** 重置粒子管理器*/
 - (void) resetWithTotalParticles:(NSUInteger)numberOfParticles;
 /** 开始*/
@@ -47,6 +50,10 @@ extern NSInteger const lsqParticleStartRadiusEqualToEndRadius;
 - (void)update:(CGFloat)dt;
 /** 重置开始时间*/
 - (void)updateWithNoTime;
+/** 更新粒子特效材质大小*/
+- (void)updateParticleEmitSize:(CGFloat)size;
+/** 更新粒子特效颜色*/
+- (void)updateParticleEmitColor:(UIColor *)color;
 
 /** 顶点一组总数 默认2*/
 @property(readonly) GLint positionSize;

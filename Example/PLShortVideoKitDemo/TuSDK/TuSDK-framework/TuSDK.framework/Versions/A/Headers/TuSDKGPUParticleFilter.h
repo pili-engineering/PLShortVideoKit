@@ -7,7 +7,13 @@
 //
 
 #import "TuSDKFilterAdapter.h"
+#import "TuSDKParticleFilterInterface.h"
+
 /** Particle Filter*/
-@interface TuSDKGPUParticleFilter : TuSDKTwoInputFilter
+@interface TuSDKGPUParticleFilter : TuSDKTwoInputFilter<TuSDKParticleFilterProtocol>
+
+- (instancetype)initWithArgList:(NSDictionary *)argList;
+
 - (void) loadTexture;
+
 @end

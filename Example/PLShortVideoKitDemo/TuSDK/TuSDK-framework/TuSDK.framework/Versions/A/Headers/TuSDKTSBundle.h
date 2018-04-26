@@ -11,44 +11,31 @@
 #import "TuSDKTSAVAudioPlayer+Extend.h"
 #import "TuSDKICView+Extend.h"
 
-/**
- *  SDK资源文件包 (TuSDK.bundle)
- */
+/** SDK资源文件包 (TuSDK.bundle) */
 extern NSString * const lsqSdkBundle;
 
-/**
- *  滤镜材质包 (TuSDK.bundle/textures)
- */
+/** 滤镜材质包 (TuSDK.bundle/textures) */
 extern NSString * const lsqFilterTextures;
 
-/**
- *  默认UI资源包 (TuSDK.bundle/ui_default)
- */
+/** 默认UI资源包 (TuSDK.bundle/ui_default) */
 extern NSString * const lsqSdkUIDefault;
 
-/**
- *  SDK其他资源包 (TuSDK.bundle/others)
- */
+/** SDK其他资源包 (TuSDK.bundle/others) */
 extern NSString * const lsqSdkOthers;
 
-/**
- *  SDK本地贴纸包 (TuSDK.bundle/stickers)
- */
+/** SDK本地贴纸包 (TuSDK.bundle/stickers) */
 extern NSString * const lsqLocalStickers;
 
-/**
- *  相机聚焦音效 (camera_focus_beep.mp3)
- */
+/** SDK本地模型 (TuSDK.bundle/model) */
+extern NSString * const lsqLocalModels;
+
+/** 相机聚焦音效 (camera_focus_beep.mp3) */
 extern NSString * const lsqCameraFocusBeepAudio;
 
-/**
- * 内部滤镜配置 (lsq_internal_filters.filter)
- */
+/** 内部滤镜配置 (lsq_internal_filters.filter) */
 extern NSString * const lsqInternalFiltersConfig;
 
-/**
- *  SDK资源包帮助类
- */
+/** SDK资源包帮助类 */
 @interface TuSDKTSBundle : NSObject
 
 /**
