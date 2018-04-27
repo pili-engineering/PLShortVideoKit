@@ -17,12 +17,12 @@
 #import "PLSFilterGroup.h"
 #import "PLSViewRecorderManager.h"
 #import "PLSRateButtonView.h"
-
-#import "FaceTracker.h"
-#import "KWRenderManager.h"
-#import "Global.h"
-#import "KWUIManager.h"
 #import "EasyarARViewController.h"
+
+// TuSDK mark - 导入
+#import "FilterView.h"
+#import "StickerScrollView.h"
+#import <TuSDKVideo/TuSDKVideo.h>
 
 #define AlertViewShow(msg) [[[UIAlertView alloc] initWithTitle:@"warning" message:[NSString stringWithFormat:@"%@", msg] delegate:nil cancelButtonTitle:@"ok" otherButtonTitles:nil] show]
 
@@ -43,7 +43,8 @@ UICollectionViewDelegate,
 UICollectionViewDataSource,
 UICollectionViewDelegateFlowLayout,
 PLSViewRecorderManagerDelegate,
-PLSRateButtonViewDelegate
+PLSRateButtonViewDelegate,
+FilterViewEventDelegate, StickerViewClickDelegate, TuSDKFilterProcessorDelegate
 >
 
 @property (strong, nonatomic) PLSVideoConfiguration *videoConfiguration;
@@ -73,8 +74,10 @@ PLSRateButtonViewDelegate
 @property (strong, nonatomic) UIButton *filePathButton;
 @property (assign, nonatomic) BOOL useSDKInternalPath;
 
-// 录制时是否使用滤镜
+// 录制时是否使用SDK内部滤镜
 @property (assign, nonatomic) BOOL isUseFilterWhenRecording;
+// 录制时是否使用外部滤镜
+@property (assign, nonatomic) BOOL isUseExternalFilterWhenRecording;
 
 // 所有滤镜
 @property (strong, nonatomic) PLSFilterGroup *filterGroup;
@@ -95,9 +98,21 @@ PLSRateButtonViewDelegate
 // 录制前是否开启自动检测设备方向调整视频拍摄的角度（竖屏、横屏）
 @property (assign, nonatomic) BOOL isUseAutoCheckDeviceOrientationBeforeRecording;
 
-@property (nonatomic, strong) KWUIManager *UIManager;
-@property (nonatomic, strong) KWRenderManager *renderManager;
-@property (nonatomic, copy) NSString *modelPath;
+// TuSDK mark - 初始化数据
+// 滤镜列表
+@property (strong, nonatomic) NSArray *videoFilters;
+// 当前的滤镜索引
+@property (assign, nonatomic) NSInteger videoFilterIndex;
+
+// TuSDK mark - 初始化对象
+// 滤镜栏
+@property (nonatomic, strong) FilterView *filterView;
+// 贴纸栏
+@property (nonatomic, strong) StickerScrollView *stickerView;
+// TuSDK美颜处理类
+@property (nonatomic,strong) TuSDKFilterProcessor *filterProcessor;
+// 当前获取的滤镜对象
+@property (nonatomic,strong) TuSDKFilterWrap *currentFilter;
 
 @end
 
@@ -106,8 +121,10 @@ PLSRateButtonViewDelegate
 - (instancetype)init {
     self = [super init];
     if (self) {
-        // 录制时默认关闭滤镜
+        // 录制时默认开启SDK内部滤镜功能
         self.isUseFilterWhenRecording = YES;
+        // 录制时默认开启外部滤镜功能
+        self.isUseExternalFilterWhenRecording = NO;
         
         // 录制前默认打开自动检测设备方向调整视频拍摄的角度（竖屏、横屏）
         self.isUseAutoCheckDeviceOrientationBeforeRecording = YES;
@@ -138,16 +155,8 @@ PLSRateButtonViewDelegate
     // Do any additional setup after loading the view.
     
     // --------------------------
-    // 通过手势切换滤镜
-    [self setupGestureRecognizer];
-    
-    // --------------------------
-    [self setUpEasyarSDKARButton];
-
-    // --------------------------
-    [self setupRenderManager];
-    [self setupKiwiFaceUI];
-    // --------------------------
+    // TuSDK mark - 初始化
+    [self initTUSDK];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -189,8 +198,8 @@ PLSRateButtonViewDelegate
     // 录制前是否开启自动检测设备方向调整视频拍摄的角度（竖屏、横屏）
     if (self.isUseAutoCheckDeviceOrientationBeforeRecording) {
         UIView *deviceOrientationView = [[UIView alloc] init];
-        deviceOrientationView.frame = CGRectMake(0, 0, PLS_SCREEN_WIDTH/2, 44);
-        deviceOrientationView.center = CGPointMake(PLS_SCREEN_WIDTH/2, 44/2);
+        deviceOrientationView.frame = CGRectMake(0, 0, PLS_SCREEN_WIDTH/2, 22);
+        deviceOrientationView.center = CGPointMake(PLS_SCREEN_WIDTH/2, 22/2);
         deviceOrientationView.backgroundColor = [UIColor grayColor];
         deviceOrientationView.alpha = 0.7;
         [self.view addSubview:deviceOrientationView];
@@ -214,25 +223,25 @@ PLSRateButtonViewDelegate
             }
             
             if (deviceOrientation == PLSPreviewOrientationPortrait) {
-                deviceOrientationView.frame = CGRectMake(0, 0, PLS_SCREEN_WIDTH/2, 44);
-                deviceOrientationView.center = CGPointMake(PLS_SCREEN_WIDTH/2, 44/2);
+                deviceOrientationView.frame = CGRectMake(0, 0, PLS_SCREEN_WIDTH/2, 22);
+                deviceOrientationView.center = CGPointMake(PLS_SCREEN_WIDTH/2, 22/2);
                 
             } else if (deviceOrientation == PLSPreviewOrientationPortraitUpsideDown) {
-                deviceOrientationView.frame = CGRectMake(0, 0, PLS_SCREEN_WIDTH/2, 44);
-                deviceOrientationView.center = CGPointMake(PLS_SCREEN_WIDTH/2, PLS_SCREEN_HEIGHT - 44/2);
+                deviceOrientationView.frame = CGRectMake(0, 0, PLS_SCREEN_WIDTH/2, 22);
+                deviceOrientationView.center = CGPointMake(PLS_SCREEN_WIDTH/2, PLS_SCREEN_HEIGHT - 22/2);
                 
             } else if (deviceOrientation == PLSPreviewOrientationLandscapeRight) {
-                deviceOrientationView.frame = CGRectMake(0, 0, 44, PLS_SCREEN_HEIGHT/2);
-                deviceOrientationView.center = CGPointMake(PLS_SCREEN_WIDTH - 44/2, PLS_SCREEN_HEIGHT/2);
+                deviceOrientationView.frame = CGRectMake(0, 0, 22, PLS_SCREEN_HEIGHT/2);
+                deviceOrientationView.center = CGPointMake(PLS_SCREEN_WIDTH - 22/2, PLS_SCREEN_HEIGHT/2);
                 
             } else if (deviceOrientation == PLSPreviewOrientationLandscapeLeft) {
-                deviceOrientationView.frame = CGRectMake(0, 0, 44, PLS_SCREEN_HEIGHT/2);
-                deviceOrientationView.center = CGPointMake(44/2, PLS_SCREEN_HEIGHT/2);
+                deviceOrientationView.frame = CGRectMake(0, 0, 22, PLS_SCREEN_HEIGHT/2);
+                deviceOrientationView.center = CGPointMake(22/2, PLS_SCREEN_HEIGHT/2);
             }
         }];
     }
     
-    // 默认关闭内部滤镜
+    // 默认关闭SDK内部滤镜
     if (self.isUseFilterWhenRecording) {
         // 滤镜资源
         self.filtersArray = [[NSMutableArray alloc] init];
@@ -270,6 +279,14 @@ PLSRateButtonViewDelegate
     self.baseToolboxView.backgroundColor = [UIColor clearColor];
     [self.view addSubview:self.baseToolboxView];
     
+    // 展示拼接视频的动画
+    self.activityIndicatorView = [[UIActivityIndicatorView alloc] initWithFrame:self.view.bounds];
+    self.activityIndicatorView.center = self.view.center;
+    [self.activityIndicatorView setActivityIndicatorViewStyle:UIActivityIndicatorViewStyleWhiteLarge];
+    self.activityIndicatorView.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.5];
+    
+    // -------------------------------------------------------
+
     // 返回
     UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
     backButton.frame = CGRectMake(10, 10, 35, 35);
@@ -343,24 +360,7 @@ PLSRateButtonViewDelegate
     self.filePathButton.selected = NO;
     self.useSDKInternalPath = YES;
     
-    // 加载草稿视频
-    self.draftButton = [[UIButton alloc] initWithFrame:CGRectMake(PLS_SCREEN_WIDTH - 60, 300, 46, 46)];
-    self.draftButton.layer.cornerRadius = 23;
-    self.draftButton.backgroundColor = [UIColor colorWithRed:116/255 green:116/255 blue:116/255 alpha:0.55];
-    [self.draftButton setImage:[UIImage imageNamed:@"draft_video"] forState:UIControlStateNormal];
-    self.draftButton.imageEdgeInsets = UIEdgeInsetsMake(6, 6, 6, 6);
-    [self.draftButton addTarget:self action:@selector(draftVideoButtonOnClick:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:_draftButton];
-    
-    // 是否使用背景音乐
-    self.musicButton = [[UIButton alloc] initWithFrame:CGRectMake(PLS_SCREEN_WIDTH - 60, 360, 46, 46)];
-    self.musicButton.layer.cornerRadius = 23;
-    self.musicButton.backgroundColor = [UIColor colorWithRed:116/255 green:116/255 blue:116/255 alpha:0.55];
-    [self.musicButton setImage:[UIImage imageNamed:@"music_no_selected"] forState:UIControlStateNormal];
-    [self.musicButton setImage:[UIImage imageNamed:@"music_selected"] forState:UIControlStateSelected];
-    self.musicButton.imageEdgeInsets = UIEdgeInsetsMake(6, 6, 6, 6);
-    [self.musicButton addTarget:self action:@selector(musicButtonOnClick:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:_musicButton];
+    // -------------------------------------------------------
     
     // 拍照
     self.snapshotButton = [[UIButton alloc] initWithFrame:CGRectMake(PLS_SCREEN_WIDTH - 60, 10, 46, 46)];
@@ -371,11 +371,53 @@ PLSRateButtonViewDelegate
     [self.snapshotButton addTarget:self action:@selector(snapshotButtonOnClick:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:_snapshotButton];
     
-    // 展示拼接视频的动画
-    self.activityIndicatorView = [[UIActivityIndicatorView alloc] initWithFrame:self.view.bounds];
-    self.activityIndicatorView.center = self.view.center;
-    [self.activityIndicatorView setActivityIndicatorViewStyle:UIActivityIndicatorViewStyleWhiteLarge];
-    self.activityIndicatorView.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.5];
+    // AR
+    UIButton *ARButton = [[UIButton alloc] initWithFrame:CGRectMake(PLS_SCREEN_WIDTH - 60, 70, 46, 46)];
+    ARButton.layer.cornerRadius = 23;
+    ARButton.backgroundColor = [UIColor colorWithRed:116/255 green:116/255 blue:116/255 alpha:0.55];
+    [ARButton setImage:[UIImage imageNamed:@"easyar_AR"] forState:UIControlStateNormal];
+    ARButton.imageEdgeInsets = UIEdgeInsetsMake(6, 6, 6, 6);
+    [ARButton addTarget:self action:@selector(ARButtonOnClick:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:ARButton];
+    
+    // 加载草稿视频
+    self.draftButton = [[UIButton alloc] initWithFrame:CGRectMake(PLS_SCREEN_WIDTH - 60, 130, 46, 46)];
+    self.draftButton.layer.cornerRadius = 23;
+    self.draftButton.backgroundColor = [UIColor colorWithRed:116/255 green:116/255 blue:116/255 alpha:0.55];
+    [self.draftButton setImage:[UIImage imageNamed:@"draft_video"] forState:UIControlStateNormal];
+    self.draftButton.imageEdgeInsets = UIEdgeInsetsMake(6, 6, 6, 6);
+    [self.draftButton addTarget:self action:@selector(draftVideoButtonOnClick:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.draftButton];
+    
+    // 是否使用背景音乐
+    self.musicButton = [[UIButton alloc] initWithFrame:CGRectMake(PLS_SCREEN_WIDTH - 60, 190, 46, 46)];
+    self.musicButton.layer.cornerRadius = 23;
+    self.musicButton.backgroundColor = [UIColor colorWithRed:116/255 green:116/255 blue:116/255 alpha:0.55];
+    [self.musicButton setImage:[UIImage imageNamed:@"music_no_selected"] forState:UIControlStateNormal];
+    [self.musicButton setImage:[UIImage imageNamed:@"music_selected"] forState:UIControlStateSelected];
+    self.musicButton.imageEdgeInsets = UIEdgeInsetsMake(6, 6, 6, 6);
+    [self.musicButton addTarget:self action:@selector(musicButtonOnClick:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.musicButton];
+    
+    // 外部滤镜
+    UIButton *externalFilterButton = [[UIButton alloc] initWithFrame:CGRectMake(PLS_SCREEN_WIDTH - 60, 250, 46, 46)];
+    externalFilterButton.layer.cornerRadius = 23;
+    externalFilterButton.backgroundColor = [UIColor colorWithRed:116/255 green:116/255 blue:116/255 alpha:0.55];
+    [externalFilterButton setTitle:@"美化" forState:UIControlStateNormal];
+    [externalFilterButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    externalFilterButton.titleLabel.font = [UIFont systemFontOfSize:14];
+    [externalFilterButton addTarget:self action:@selector(externalFilterButtonOnClick:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:externalFilterButton];
+    
+    // 外部人脸识别加贴纸
+    UIButton *externalStickerButton = [[UIButton alloc] initWithFrame:CGRectMake(PLS_SCREEN_WIDTH - 60, 310, 46, 46)];
+    externalStickerButton.layer.cornerRadius = 23;
+    externalStickerButton.backgroundColor = [UIColor colorWithRed:116/255 green:116/255 blue:116/255 alpha:0.55];
+    [externalStickerButton setTitle:@"贴纸" forState:UIControlStateNormal];
+    externalStickerButton.titleLabel.font = [UIFont systemFontOfSize:14];
+    [externalStickerButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [externalStickerButton addTarget:self action:@selector(externalStickerButtonOnClick:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:externalStickerButton];
 }
 
 - (void)setupRecordToolboxView {
@@ -469,52 +511,7 @@ PLSRateButtonViewDelegate
     [self.importMovieView addSubview:importMovieLabel];
 }
 
-#pragma mark - 初始化KiwiFaceSDK
-- (void)setupRenderManager {
-    
-    // 1.创建 KWRenderManager对象,指定models文件路径 若不传则默认路径是KWResource.bundle/models
-    //    self.renderManager = [[KWRenderManager alloc] initWithModelPath:self.modelPath isCameraPositionBack:NO];
-    self.renderManager = [[KWRenderManager alloc] initWithModelPath:nil isCameraPositionBack:YES];
-    
-    // 2.KWSDK鉴权提示
-    if ([KWRenderManager renderInitCode] != 0) {
-        UIAlertView *alertView =
-        [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"KiwiFaceSDK初始化失败,错误码: %d", [KWRenderManager renderInitCode]] message:@"可在FaceTracker.h中查看错误码" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
-        
-        [alertView show];
-        
-        return;
-    }
-    
-    // 3.加载贴纸滤镜
-    [self.renderManager loadRender];
-    
-}
-
-#pragma mark -初始化KiwiFace的演示UI
-- (void)setupKiwiFaceUI{
-    // 1.初始化UIManager
-    self.UIManager = [[KWUIManager alloc] initWithRenderManager:self.renderManager delegate:self superView:self.view];
-    // 2.是否清除原UI
-    self.UIManager.isClearOldUI = NO;
-    
-    // 3.创建内置UI
-    [self.UIManager createUI];
-    /* 横竖屏时更新sdk内置UI 坐标 */
-    [_UIManager resetScreemMode];
-}
-
 #pragma mark - EasyarSDK AR 入口
-- (void)setUpEasyarSDKARButton {
-    UIButton *ARButton = [[UIButton alloc] initWithFrame:CGRectMake(PLS_SCREEN_WIDTH - 60, 240, 46, 46)];
-    ARButton.layer.cornerRadius = 23;
-    ARButton.backgroundColor = [UIColor colorWithRed:116/255 green:116/255 blue:116/255 alpha:0.55];
-    [ARButton setImage:[UIImage imageNamed:@"easyar_AR"] forState:UIControlStateNormal];
-    ARButton.imageEdgeInsets = UIEdgeInsetsMake(6, 6, 6, 6);
-    [ARButton addTarget:self action:@selector(ARButtonOnClick:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:ARButton];
-}
-
 - (void)ARButtonOnClick:(id)sender {
     EasyarARViewController *easyerARViewController = [[EasyarARViewController alloc]init];
     [easyerARViewController loadARID:@"287e6520eff14884be463d61efb40ba8"];
@@ -892,42 +889,17 @@ PLSRateButtonViewDelegate
 /// @abstract 获取到摄像头原数据时的回调, 便于开发者做滤镜等处理，需要注意的是这个回调在 camera 数据的输出线程，请不要做过于耗时的操作，否则可能会导致帧率下降
 - (CVPixelBufferRef)shortVideoRecorder:(PLShortVideoRecorder *)recorder cameraSourceDidGetPixelBuffer:(CVPixelBufferRef)pixelBuffer {
     //此处可以做美颜/滤镜等处理
-    // 是否在录制时使用滤镜，默认是关闭的，NO
+    // 是否在录制时使用SDK内部滤镜
     if (self.isUseFilterWhenRecording) {
         PLSFilter *filter = self.filterGroup.currentFilter;
         pixelBuffer = [filter process:pixelBuffer];
     }
     
-    UIDeviceOrientation iDeviceOrientation = [[UIDevice currentDevice] orientation];
-    //    BOOL mirrored = !self.kwSdkUI.kwSdk.cameraPositionBack;
-    BOOL mirrored = NO;
-    
-    cv_rotate_type cvMobileRotate;
-    
-    switch (iDeviceOrientation) {
-        case UIDeviceOrientationPortrait:
-            cvMobileRotate = CV_CLOCKWISE_ROTATE_0;
-            break;
-            
-        case UIDeviceOrientationLandscapeLeft:
-            cvMobileRotate = mirrored ?  CV_CLOCKWISE_ROTATE_90: CV_CLOCKWISE_ROTATE_270;
-            break;
-            
-        case UIDeviceOrientationLandscapeRight:
-            cvMobileRotate = mirrored ? CV_CLOCKWISE_ROTATE_270 : CV_CLOCKWISE_ROTATE_90;
-            break;
-            
-        case UIDeviceOrientationPortraitUpsideDown:
-            cvMobileRotate = CV_CLOCKWISE_ROTATE_180;
-            break;
-            
-        default:
-            cvMobileRotate = CV_CLOCKWISE_ROTATE_0;
-            break;
+    if (self.isUseExternalFilterWhenRecording) {
+        // TuSDK mark - TUSDK 美颜处理 暂时屏蔽其他滤镜处理，可根据需求使用
+        pixelBuffer =  [_filterProcessor syncProcessPixelBuffer:pixelBuffer];
+        [_filterProcessor destroyFrameData];
     }
-    
-    /*********** 视频帧渲染 ***********/
-    [KWRenderManager processPixelBuffer:pixelBuffer];
     
     return pixelBuffer;
 }
@@ -1111,14 +1083,9 @@ PLSRateButtonViewDelegate
     self.shortVideoRecorder.delegate = nil;
     self.shortVideoRecorder = nil;
     
-    self.alertView = nil;
-    
     self.filtersArray = nil;
     
-    /* 内存释放 */
-    [self.renderManager releaseManager];
-    [self.UIManager releaseManager];
-    
+    self.alertView = nil;
     if ([self.activityIndicatorView isAnimating]) {
         [self.activityIndicatorView stopAnimating];
         self.activityIndicatorView = nil;
@@ -1173,61 +1140,160 @@ PLSRateButtonViewDelegate
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-
     // 滤镜
     self.filterGroup.filterIndex = indexPath.row;
 }
 
-#pragma mark - 通过手势切换滤镜
-- (void)setupGestureRecognizer {
-    UISwipeGestureRecognizer *recognizer;
-    // 添加右滑手势
-    recognizer = [[UISwipeGestureRecognizer alloc]initWithTarget:self action:@selector(handleSwipeFrom:)];
-    [recognizer setDirection:(UISwipeGestureRecognizerDirectionRight)];
-    [self.view addGestureRecognizer:recognizer];
-    // 添加左滑手势
-    recognizer = [[UISwipeGestureRecognizer alloc]initWithTarget:self action:@selector(handleSwipeFrom:)];
-    [recognizer setDirection:(UISwipeGestureRecognizerDirectionLeft)];
-    [self.view addGestureRecognizer:recognizer];
-    // 添加上滑手势
-    recognizer = [[UISwipeGestureRecognizer alloc]initWithTarget:self action:@selector(handleSwipeFrom:)];
-    [recognizer setDirection:(UISwipeGestureRecognizerDirectionUp)];
-    [self.view addGestureRecognizer:recognizer];
-    // 添加下滑手势
-    recognizer = [[UISwipeGestureRecognizer alloc]initWithTarget:self action:@selector(handleSwipeFrom:)];
-    [recognizer setDirection:(UISwipeGestureRecognizerDirectionDown)];
-    [self.view addGestureRecognizer:recognizer];
+#pragma mark - TuSDK method
+
+- (void)checkBundleId {
+    // 需要提供包名，获取对应的资源才可以请用。
+    // 获取到对应包名的资源之后，设置 self.isUseExternalFilterWhenRecording = YES; 即可使用
+    AlertViewShow(@"使用高级滤镜和人脸贴纸特效，请联系七牛销售！");
 }
 
-// 添加手势的响应事件
-- (void)handleSwipeFrom:(UISwipeGestureRecognizer *)recognizer{
-    if(recognizer.direction == UISwipeGestureRecognizerDirectionDown) {
-        NSLog(@"swipe down");
-        self.filterIndex++;
-        self.filterIndex %= self.filterGroup.filtersInfo.count;
-    }
-    if(recognizer.direction == UISwipeGestureRecognizerDirectionUp) {
-        NSLog(@"swipe up");
-        self.filterIndex--;
-        if (self.filterIndex < 0) {
-            self.filterIndex = self.filterGroup.filtersInfo.count - 1;
-        }
-    }
-    if(recognizer.direction == UISwipeGestureRecognizerDirectionLeft) {
-        NSLog(@"swipe left");
-        self.filterIndex--;
-        if (self.filterIndex < 0) {
-            self.filterIndex = self.filterGroup.filtersInfo.count - 1;
-        }
-    }
-    if(recognizer.direction == UISwipeGestureRecognizerDirectionRight) {
-        NSLog(@"swipe right");
-        self.filterIndex++;
-        self.filterIndex %= self.filterGroup.filtersInfo.count;
+- (void)externalFilterButtonOnClick:(UIButton *)button {
+    [self checkBundleId];
+    
+    if (!_filterView) {
+        [self initFilterView];
     }
     
-    // 滤镜
-    self.filterGroup.filterIndex = self.filterIndex;
+    _filterView.hidden = !_filterView.hidden;
+    if (!_filterView.hidden) {
+        _stickerView.hidden = YES;
+    }
+}
+
+- (void)externalStickerButtonOnClick:(UIButton *)button {
+    [self checkBundleId];
+    
+    if (!_stickerView) {
+        [self initStickerView];
+    }
+    
+    _stickerView.hidden = !_stickerView.hidden;
+    if (!_stickerView.hidden) {
+        _filterView.hidden = YES;
+    }
+}
+
+// TuSDK mark - 初始化
+- (void)initTUSDK {
+    [self initFilterCodes];
+    [self initFilterProcessor];
+}
+
+- (void)initFilterCodes {
+    self.videoFilters = @[@"Normal",@"porcelain",@"nature",@"pink",@"jelly",@"ruddy",@"sugar",@"honey",@"clear",@"timber",@"whitening"];
+    self.videoFilterIndex = 0;
+}
+
+// 初始化 TuSDKFilterProcessor
+- (void)initFilterProcessor {
+    // 传入图像的方向是否为原始朝向(相机采集的原始朝向)，SDK 将依据该属性来调整人脸检测时图片的角度。如果没有对图片进行旋转，则为 YES
+    BOOL isOriginalOrientation = NO;
+    
+    self.filterProcessor = [[TuSDKFilterProcessor alloc] initWithFormatType:kCVPixelFormatType_32BGRA isOriginalOrientation:isOriginalOrientation];
+    self.filterProcessor.delegate = self;
+    
+    // 是否开启了镜像
+    self.filterProcessor.horizontallyMirrorFrontFacingCamera = NO;
+    // 前置还是后置
+    
+    self.filterProcessor.outputPixelFormatType = lsqFormatTypeBGRA;
+    
+    
+    self.filterProcessor.cameraPosition = AVCaptureDevicePositionFront;
+    self.filterProcessor.adjustOutputRotation = NO;
+    [self.filterProcessor setEnableLiveSticker:YES];
+    
+    // 切换滤镜
+    [self.filterProcessor switchFilterWithCode:self.videoFilters[1]];
+}
+
+- (void)initFilterView {
+    // 注：当前Demo中参数调节栏和左滑油滑手势冲突，在自己的项目中可自定义UI
+    CGFloat filterViewHeight = 246;
+    _filterView = [[FilterView alloc]initWithFrame:CGRectMake(0, self.view.lsqGetSizeHeight - filterViewHeight, self.view.lsqGetSizeWidth, filterViewHeight)];
+    _filterView.canAdjustParameter = true;
+    _filterView.filterEventDelegate = self;
+    _filterView.currentFilterTag = 1;
+    _filterView.backgroundColor = [UIColor colorWithRed:0.22 green:0.22 blue:0.22 alpha:0.7];
+    [_filterView createFilterWith:_videoFilters];
+    [_filterView refreshAdjustParameterViewWith:_currentFilter.code filterArgs:_currentFilter.filterParameter.args];
+    
+    [self.view addSubview:_filterView];
+    _filterView.hidden = YES;
+}
+
+- (void)initStickerView {
+    CGFloat stickerViewHeight = 246;
+    _stickerView = [[StickerScrollView alloc]initWithFrame:CGRectMake(0, self.view.lsqGetSizeHeight - stickerViewHeight, self.view.lsqGetSizeWidth, stickerViewHeight)];
+    _stickerView.stickerDelegate = self;
+    _stickerView.cameraStickerType = lsqCameraStickersTypeSquare;
+    _stickerView.backgroundColor = [UIColor colorWithRed:0.22 green:0.22 blue:0.22 alpha:0.7];
+    [self.view addSubview:_stickerView];
+    _stickerView.hidden = YES;
+}
+
+#pragma mark -- 滤镜栏点击代理方法 FilterEventDelegate
+
+// 调节滤镜效果
+- (void)filterViewParamChangedWith:(TuSDKICSeekBar *)seekbar changedProgress:(CGFloat)progress {
+    //根据tag获得当前滤镜的对应参数，修改precent;
+    NSInteger index = seekbar.tag;
+    TuSDKFilterArg *arg = _currentFilter.filterParameter.args[index];
+    
+    NSLog(@"当前调节的滤镜参数名为 : %@",arg.key);
+    
+    if ([arg.key isEqualToString:@"smoothing"]) {
+        
+        // value range 0-1
+        arg.precent = progress * 0.5;
+    }else if ([arg.key isEqualToString:@"chinSize"])
+    {
+        arg.precent = progress * 0.3;
+    }else{
+        arg.precent = progress;
+    }
+    
+    //    arg.precent = progress;
+    //设置滤镜参数；
+    [_currentFilter submitParameter];
+}
+
+- (void)filterViewSwitchFilterWithCode:(NSString *)filterCode{
+    //切换滤镜
+    [_filterProcessor switchFilterWithCode:filterCode];
+}
+
+#pragma mark -- 贴纸栏点击代理方法 StickerViewClickDelegate
+
+- (void)clickStickerViewWith:(TuSDKPFStickerGroup *)stickGroup {
+    if (!stickGroup) {
+        //为nil时 移除已有贴纸组；
+        [_filterProcessor removeAllLiveSticker];
+        _stickerView.hidden = YES;
+        
+        return;
+    }
+    //展示对应贴纸组；
+    [_filterProcessor showGroupSticker:stickGroup];
+}
+
+#pragma mark -- TuSDKFilterProcessorDelegate
+
+/**
+ *  滤镜改变 (如需操作UI线程， 请检查当前线程是否为主线程)
+ *
+ *  @param processor 视频处理对象
+ *  @param newFilter 新的滤镜对象
+ */
+- (void)onVideoProcessor:(TuSDKFilterProcessor *)processor filterChanged:(TuSDKFilterWrap *)newFilter {
+    //赋值新滤镜 同事刷新新滤镜的参数配置；
+    _currentFilter = newFilter;
+    [_filterView refreshAdjustParameterViewWith:newFilter.code filterArgs:newFilter.filterParameter.args];
 }
 
 @end

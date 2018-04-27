@@ -6,7 +6,7 @@
 //  Copyright © 2016 tusdk.com. All rights reserved.
 //
 
-#import "GPUImage.h"
+#import <GPUImage/GPUImage.h>
 #import "TuSDKVideoImport.h"
 #import "TuSDKVideoResult.h"
 
@@ -312,6 +312,8 @@ typedef NS_ENUM(NSInteger, lsqFrameFormatType)
  */
 - (void)removeAllLiveSticker;
 
+/** 设置检测框最小倍数 [取值范围: 0.1 < x < 0.5, 默认: 0.2] 值越大性能越高距离越近 */
+- (void) setDetectScale: (CGFloat) scale;
 #pragma mark - benchmark
 /**
  *  打印性能日志

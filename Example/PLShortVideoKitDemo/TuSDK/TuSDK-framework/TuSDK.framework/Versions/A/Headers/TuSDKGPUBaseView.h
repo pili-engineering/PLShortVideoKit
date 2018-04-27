@@ -46,4 +46,5 @@
 - (void)lsqInitView;
 
 - (void)recalculateViewGeometry;
+- (void)createDisplayFramebuffer;
 @end

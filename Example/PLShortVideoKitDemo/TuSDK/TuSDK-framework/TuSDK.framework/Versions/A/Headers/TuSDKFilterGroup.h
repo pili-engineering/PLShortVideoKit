@@ -12,7 +12,9 @@
 
 // 分组滤镜类型ID
 const static int lsqGroupFilterTypeGeneral = 0;  // 普通滤镜
-const static int lsqGroupFilterTypeMagic   = 1;  // 特效滤镜
+const static int lsqGroupFilterTypeSceneEffect   = 1;  // 场景特效滤镜
+const static int lsqGroupFilterTypeParticleEffect   = 2;  // 粒子特效滤镜
+
 
 
 /**
@@ -35,7 +37,7 @@ const static int lsqGroupFilterTypeMagic   = 1;  // 特效滤镜
 @property (nonatomic) NSUInteger categoryId;
 
 /**
- *  分组中滤镜类型 0: 普通滤镜 1: 特效滤镜
+ *  分组中滤镜类型 0: 普通滤镜 1: 特效滤镜 2: 魔法特效
  */
 @property (nonatomic) NSUInteger groupFilterType;
 

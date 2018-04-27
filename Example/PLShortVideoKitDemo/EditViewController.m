@@ -119,6 +119,9 @@ PLSVideoEditingControllerDelegate
 @property (assign, nonatomic) CGFloat videoTotalTime;
 
 #pragma mark - TuSDK
+// 录制时是否使用外部滤镜
+@property (assign, nonatomic) BOOL isUseExternalFilterWhenRecording;
+
 // TuSDK mark
 //滤镜处理类
 @property (nonatomic, strong) TuSDKFilterProcessor *filterProcessor;
@@ -262,6 +265,7 @@ PLSVideoEditingControllerDelegate
     self.filterGroup = [[PLSFilterGroup alloc] initWithImage:coverImage];
     
     // TuSDK mark 视频特效
+    self.isUseExternalFilterWhenRecording = NO;
     [self setupTuSDKFilter];
 
     // 视频预览
@@ -576,6 +580,13 @@ PLSVideoEditingControllerDelegate
 
 // TuSDK mark
 #pragma mark -- TuSDK method
+
+- (void)checkBundleId {
+    // 需要提供包名，获取对应的资源才可以请用
+    // 获取到对应包名的资源之后，设置 self.isUseExternalFilterWhenRecording = YES; 即可使用
+    AlertViewShow(@"使用抖音特效，请联系七牛销售！");
+}
+
 // 设置 TuSDK
 - (void)setupTuSDKFilter {
     // 视频总时长
@@ -623,6 +634,8 @@ PLSVideoEditingControllerDelegate
 
 // 特效按钮点击事件
 - (void)effectsButtonClick:(UIButton *)btn {
+    [self checkBundleId];
+    
     self.effectsView.hidden = !self.effectsView.hidden;
 }
 
@@ -1123,25 +1136,27 @@ PLSVideoEditingControllerDelegate
     //此处可以做美颜/滤镜等处理
 //    NSLog(@"%s, line:%d, timestamp:%f", __FUNCTION__, __LINE__, CMTimeGetSeconds(timestamp));
     
+    CVPixelBufferRef tempPixelBuffer = pixelBuffer;
+
     // 更新编辑时的预览进度条
     self.progressSlider.value = CMTimeGetSeconds(timestamp);
     
-    // TuSDK mark
-    self.videoProgress = CMTimeGetSeconds(timestamp) / self.videoTotalTime;
-    NSLog(@"isEditing:%d, timestamp: %f, videoProgress: %f", self.shortVideoEditor.isEditing, CMTimeGetSeconds(timestamp), self.videoProgress);
-    
-    CVPixelBufferRef tempPixelBuffer = pixelBuffer;
-    
-    tempPixelBuffer = [self.filterProcessor syncProcessPixelBuffer:pixelBuffer frameTime:timestamp];
-    [self.filterProcessor destroyFrameData];
-    [self.effectsView.displayView addSegmentViewMoveToLocation:self.videoProgress];
-    self.effectsView.displayView.currentLocation = self.videoProgress;
-    
-    // TuSDK mark - 添加特效时，与预览是两个不同的逻辑，添加过程中返回 NO 特效不会进行切换
-    if ([self.effectTools needSwitchEffectWithProgress:self.videoProgress]) {
-        [self.filterProcessor switchFilterWithCode:[self.effectTools currentEffectCode]];
+    if (self.isUseExternalFilterWhenRecording) {
+        // TuSDK mark
+        self.videoProgress = CMTimeGetSeconds(timestamp) / self.videoTotalTime;
+        NSLog(@"isEditing:%d, timestamp: %f, videoProgress: %f", self.shortVideoEditor.isEditing, CMTimeGetSeconds(timestamp), self.videoProgress);
+        
+        tempPixelBuffer = [self.filterProcessor syncProcessPixelBuffer:pixelBuffer frameTime:timestamp];
+        [self.filterProcessor destroyFrameData];
+        [self.effectsView.displayView addSegmentViewMoveToLocation:self.videoProgress];
+        self.effectsView.displayView.currentLocation = self.videoProgress;
+        
+        // TuSDK mark - 添加特效时，与预览是两个不同的逻辑，添加过程中返回 NO 特效不会进行切换
+        if ([self.effectTools needSwitchEffectWithProgress:self.videoProgress]) {
+            [self.filterProcessor switchFilterWithCode:[self.effectTools currentEffectCode]];
+        }
     }
-    
+
     return tempPixelBuffer;
 }
 
@@ -1156,36 +1171,38 @@ PLSVideoEditingControllerDelegate
 }
 
 - (void)shortVideoEditor:(PLShortVideoEditor *)editor didReachEndForAsset:(AVAsset *)asset timeRange:(CMTimeRange)timeRange {
-    // TuSDK mark
-    self.videoProgress = 1.0;
-    
-    [self printTimeRange:timeRange];
-    NSLog(@"%s, videoProgress: %f", __func__, self.videoProgress);
-
-    // TuSDK mark - progress 为 1 时，也需要进行 effectCode 判断，因为添加过程中，effectsEndWithCode: 执行之前来限制正在添加的过程中不进行特效切换
-    // TuSDK mark - 添加特效时，与预览是两个不同的逻辑，添加过程中返回 NO 特效不会进行切换
-    if ([self.effectTools needSwitchEffectWithProgress:self.videoProgress]) {
-        [self.filterProcessor switchFilterWithCode:[self.effectTools currentEffectCode]];
+    if (self.isUseExternalFilterWhenRecording) {
+        // TuSDK mark
+        self.videoProgress = 1.0;
+        
+        [self printTimeRange:timeRange];
+        NSLog(@"%s, videoProgress: %f", __func__, self.videoProgress);
+        
+        // TuSDK mark - progress 为 1 时，也需要进行 effectCode 判断，因为添加过程中，effectsEndWithCode: 执行之前来限制正在添加的过程中不进行特效切换
+        // TuSDK mark - 添加特效时，与预览是两个不同的逻辑，添加过程中返回 NO 特效不会进行切换
+        if ([self.effectTools needSwitchEffectWithProgress:self.videoProgress]) {
+            [self.filterProcessor switchFilterWithCode:[self.effectTools currentEffectCode]];
+        }
+        
+        NSString *effectCode = self.currentCode;
+        //    [self effectsEndWithCode:self.currentCode];
+        
+        // 结束视频特效处理
+        self.currentCode = nil;
+        [self.filterProcessor switchFilterWithCode:nil];
+        
+        // 修改结束时间
+        EffectsTimeLineModel *effectModel = self.effectsModels.lastObject;
+        if (effectModel) {
+            effectModel.endProgress = self.videoProgress;
+        }
+        
+        // 结束更新特效 UI
+        [self.effectsView.displayView addSegmentViewEnd];
+        
+        // begin 和 end 成对调用
+        [self.effectTools addEffectEnd:effectCode withProgress:self.videoProgress];
     }
-    
-    NSString *effectCode = self.currentCode;
-//    [self effectsEndWithCode:self.currentCode];
-
-    // 结束视频特效处理
-    self.currentCode = nil;
-    [self.filterProcessor switchFilterWithCode:nil];
-    
-    // 修改结束时间
-    EffectsTimeLineModel *effectModel = self.effectsModels.lastObject;
-    if (effectModel) {
-        effectModel.endProgress = self.videoProgress;
-    }
-    
-    // 结束更新特效 UI
-    [self.effectsView.displayView addSegmentViewEnd];
-    
-    // begin 和 end 成对调用
-    [self.effectTools addEffectEnd:effectCode withProgress:self.videoProgress];
 }
 
 #pragma mark --  PLSAVAssetExportSessionDelegate 合成视频文件给视频数据加滤镜效果的回调
@@ -1193,11 +1210,14 @@ PLSVideoEditingControllerDelegate
     // 视频数据可用来做滤镜处理，将滤镜效果写入视频文件中
 //    NSLog(@"%s, line:%d, timestamp:%f", __FUNCTION__, __LINE__, CMTimeGetSeconds(timestamp));
 
-    // TuSDK mark
-    [self managerEffectsWithTimestamp:timestamp];
-    CVPixelBufferRef newPixelBuffer = [self.filterProcessor syncProcessPixelBuffer:pixelBuffer frameTime:timestamp];
-    [self.filterProcessor destroyFrameData];
-    
+    CVPixelBufferRef newPixelBuffer = pixelBuffer;
+    if (self.isUseExternalFilterWhenRecording) {
+        // TuSDK mark
+        [self managerEffectsWithTimestamp:timestamp];
+        newPixelBuffer = [self.filterProcessor syncProcessPixelBuffer:pixelBuffer frameTime:timestamp];
+        [self.filterProcessor destroyFrameData];
+    }
+  
     return newPixelBuffer;
 }
 

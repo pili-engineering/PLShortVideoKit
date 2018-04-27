@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <UIKit/UIKit.h>
+#import <Photos/Photos.h>
 
 #pragma mark - TuSDKTSAssetInterface
 
@@ -21,11 +22,15 @@
  */
 typedef void (^TuSDKTSAssetProgressBlock)(UIImage *image, double progress, NSError *error);
 
-
 /**
  *  媒体资源对象接口
  */
 @protocol TuSDKTSAssetInterface <NSObject>
+
+/**
+ *  媒体资源PHAsset对象  注：相册中用来获取asset对象，判断是否为GIF类型
+ */
+@property (nonatomic, readonly) PHAsset *asset;
 
 /**
  *  本地标识
@@ -94,7 +99,6 @@ typedef void (^TuSDKTSAssetProgressBlock)(UIImage *image, double progress, NSErr
  *  @param size      希望输出地相片长宽
  */
 - (void)cancelLoadImageWithPixelSize:(CGSize)size;
-
 
 @end
 

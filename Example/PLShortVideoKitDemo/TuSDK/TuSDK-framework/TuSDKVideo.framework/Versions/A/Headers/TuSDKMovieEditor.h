@@ -12,6 +12,7 @@
 
 
 #pragma mark - TuSDKMovieEditorDelegate
+
 @class TuSDKMovieEditor;
 /**
  *  视频编辑器事件委托
@@ -62,6 +63,7 @@
 
 
 @end
+
 
 #pragma mark - TuSDKMovieEditor
 

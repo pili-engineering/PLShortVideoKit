@@ -94,7 +94,7 @@
 /**
  *  滤镜参数列表
  */
-@property (nonatomic, copy) NSString *argList;
+@property (nonatomic, strong) NSDictionary *argList;
 
 /**
  *  vertex

@@ -74,6 +74,11 @@
 @property (nonatomic, assign) BOOL adjustOutputRotation;
 
 /**
+ *  用户界面方向 默认为：UIDeviceOrientationPortrait
+ */
+@property(readwrite, nonatomic) UIInterfaceOrientation interfaceOrientation;
+
+/**
  *  初始化
  *
  *  支持： kCVPixelFormatType_420YpCbCr8BiPlanarFullRange | kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange kCVPixelFormatType_32BGRA
@@ -157,12 +162,12 @@
  */
 - (void)removeAllLiveSticker;
 
+/** 设置检测框最小倍数 [取值范围: 0.1 < x < 0.5, 默认: 0.2] 值越大性能越高距离越近 */
+- (void) setDetectScale: (CGFloat) scale;
 #pragma mark - destory
 
 /**
  *  销毁
  */
 - (void)destory;
-
-
 @end

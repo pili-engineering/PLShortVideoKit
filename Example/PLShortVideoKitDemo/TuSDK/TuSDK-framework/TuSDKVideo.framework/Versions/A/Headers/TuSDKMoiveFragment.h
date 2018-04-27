@@ -14,11 +14,16 @@
 #import "TuSDKTimeRange.h"
 
 @interface TuSDKMoiveFragment : NSObject
-
+// 通过文件路径初始化
 -(instancetype)initWithMoviePath:(NSString *)path atTimeRange:(TuSDKTimeRange *) timeRange;
+// 通过URL初始化
+-(instancetype)initWithMovieURL:(NSURL *)url atTimeRange:(TuSDKTimeRange *) timeRange;
 
-// 视频文件地址
+// 视频文件路径地址
 @property (nonatomic,copy) NSString *moviePath;
+// 视频URL地址
+@property (nonatomic,strong) NSURL *movieURL;
+
 // 视频Asset 优先使用Asset
 @property (nonatomic,strong) AVURLAsset *movieAsset;
 // 视频片段所在时间

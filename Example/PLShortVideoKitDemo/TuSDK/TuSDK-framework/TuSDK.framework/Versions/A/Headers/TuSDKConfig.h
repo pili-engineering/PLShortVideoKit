@@ -170,10 +170,14 @@
 @property (nonatomic) BOOL videoEditorResolutionSupport;
 
 /**
- video editor effects filter support
+ video editor scene effects filter support
  */
-@property (nonatomic) BOOL videoEditorEffectsfilterSupport;
+@property (nonatomic) BOOL videoEditorSceneEffectsFilterSupport;
 
+/**
+ video editor particle effects filter support
+ */
+@property (nonatomic) BOOL videoEditorParticleEffectsFilterSupport;
 
 /**
  *  Filter list which could be used by FilterAPI
