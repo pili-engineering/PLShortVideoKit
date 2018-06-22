@@ -30,6 +30,8 @@
     }
 #endif
 
+#ifndef ARRAY_SIZE
 #define ARRAY_SIZE(c_array) (sizeof((c_array))/sizeof((c_array)[0]))
+#endif
 
 #endif /* PrefixHeader_pch */

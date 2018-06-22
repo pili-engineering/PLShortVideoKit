@@ -26,7 +26,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+    self.view.backgroundColor = PLS_RGBCOLOR(25, 24, 36);
     [self setupBaseToolboxView];
     // Do any additional setup after loading the view.
 }

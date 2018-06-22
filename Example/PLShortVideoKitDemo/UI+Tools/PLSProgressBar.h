@@ -20,6 +20,7 @@ typedef enum {
 - (void)setLastProgressToWidth:(CGFloat)width;
 
 - (void)deleteLastProgress;
+- (void)deleteAllProgress;
 - (void)addProgressView;
 
 - (void)stopShining;

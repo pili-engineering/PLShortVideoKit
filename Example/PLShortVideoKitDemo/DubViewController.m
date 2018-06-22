@@ -209,8 +209,8 @@ PLSEditPlayerDelegate
 
 - (AVAsset *)mixAssetProcessing {
     AVAsset *asset = self.movieSettings[PLSAssetKey];
-    CMTime start = CMTimeMake([self.movieSettings[PLSStartTimeKey] floatValue] * 1e9, 1e9);
-    CMTime duration = CMTimeMake([self.movieSettings[PLSDurationKey] floatValue] * 1e9, 1e9);
+    CMTime start = CMTimeMake([self.movieSettings[PLSStartTimeKey] floatValue] * 1000, 1000);
+    CMTime duration = CMTimeMake([self.movieSettings[PLSDurationKey] floatValue] * 1000, 1000);
     CMTimeRange timeRange = CMTimeRangeMake(start, duration);
 
     // 先去掉 self.movieSettings[PLSAssetKey] 的音频轨，再跟录制的纯音频混合

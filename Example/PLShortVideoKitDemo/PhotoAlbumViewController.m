@@ -10,6 +10,8 @@
 #import "MovieTransCodeViewController.h"
 #import "PLShortVideoKit/PLShortVideoKit.h"
 #import "PLSRateButtonView.h"
+#import "ViewRecordViewController.h"
+#import "EditViewController.h"
 
 #define iPhoneX ([UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(1125, 2436), [[UIScreen mainScreen] currentMode].size) : NO)
 #define PLS_RGBCOLOR(r,g,b) [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:1]
@@ -622,7 +624,7 @@ static NSString * const reuseIdentifier = @"Cell";
     if (self.dynamicScrollView.selectedAssets.count > 0) {
         if (self.mediaType == PHAssetMediaTypeImage) {
             // 图片合成为视频
-            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:@"图片合成为视频" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:@"图片处理" delegate:self cancelButtonTitle:@"view录制" otherButtonTitles:@"合成视频", nil];
             alertView.tag = 10001;
             [alertView show];
             
@@ -666,12 +668,18 @@ static NSString * const reuseIdentifier = @"Cell";
         if (1 == buttonIndex) {
             // 图片合成为视频
             [self imageToMovieEvent];
+        } else if (0 == buttonIndex) {
+            // view录制
+            [self viewRecordEvent];
         }
         
     } else if (10002 == alertView.tag) {
         if (1 == buttonIndex) {
             // 视频转码
             [self movieTransCodeEvent];
+        } else if (0 == buttonIndex) {
+            // 直接进入编辑页面
+            [self joinEditViewController:self.urls[0]];
         }
         
     } else if (10003 == alertView.tag) {
@@ -680,6 +688,26 @@ static NSString * const reuseIdentifier = @"Cell";
             [self movieComposerEvent];
         }
     }
+}
+
+// 直接进入编辑页面
+- (void)joinEditViewController:(NSURL *)url {
+    // 设置音视频、水印等编辑信息
+    NSMutableDictionary *outputSettings = [[NSMutableDictionary alloc] init];
+    // 待编辑的原始视频素材
+    NSMutableDictionary *plsMovieSettings = [[NSMutableDictionary alloc] init];
+    AVAsset *asset = [AVAsset assetWithURL:url];
+    plsMovieSettings[PLSURLKey] = url;
+    plsMovieSettings[PLSAssetKey] = asset;
+    plsMovieSettings[PLSStartTimeKey] = [NSNumber numberWithFloat:0.f];
+    plsMovieSettings[PLSDurationKey] = [NSNumber numberWithFloat:CMTimeGetSeconds(asset.duration)];
+    plsMovieSettings[PLSVolumeKey] = [NSNumber numberWithFloat:1.0f];
+    outputSettings[PLSMovieSettingsKey] = plsMovieSettings;
+    
+    EditViewController *videoEditViewController = [[EditViewController alloc] init];
+    videoEditViewController.settings = outputSettings;
+    videoEditViewController.filesURLArray = @[url];
+    [self presentViewController:videoEditViewController animated:YES completion:nil];
 }
 
 // 图片合成为视频
@@ -729,6 +757,13 @@ static NSString * const reuseIdentifier = @"Cell";
     [imageToMovieComposer startComposing];
 }
 
+// view 录制
+- (void)viewRecordEvent {
+    ViewRecordViewController *viewRecordViewController = [[ViewRecordViewController alloc] init];
+    viewRecordViewController.selectedAssets = self.dynamicScrollView.selectedAssets;
+    [self presentViewController:viewRecordViewController animated:YES completion:nil];
+}
+
 // 视频转码
 - (void)movieTransCodeEvent {
     MovieTransCodeViewController *transCodeViewController = [[MovieTransCodeViewController alloc] init];
@@ -742,11 +777,16 @@ static NSString * const reuseIdentifier = @"Cell";
     
     __weak typeof(self)weakSelf = self;
     self.movieComposer = [[PLSMovieComposer alloc] initWithUrls:self.urls];
+#if 1
     if (self.isMovieLandscapeOrientation) {
         self.movieComposer.videoSize = CGSizeMake(960, 544);
     } else {
         self.movieComposer.videoSize = CGSizeMake(544, 960);
     }
+#else
+    // 不设置 videoSize 的情形下，以第1个视频的分辨率为参照进行拼接
+#endif
+    
     self.movieComposer.videoFrameRate = 25;
     self.movieComposer.outputFileType = PLSFileTypeMPEG4;
     

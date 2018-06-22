@@ -170,6 +170,18 @@
     [self refreshIndicatorPosition];
 }
 
+- (void)deleteAllProgress {
+
+    while (_progressViewArray.count) {
+        UIView *progressView = _progressViewArray.lastObject;
+        [progressView removeFromSuperview];
+        [_progressViewArray removeLastObject];
+    }
+    _progressIndicator.hidden = NO;
+    [self refreshIndicatorPosition];
+
+}
+
 - (void)setView:(UIView *)view toSizeWidth:(CGFloat)width {
     CGRect frame = view.frame;
     frame.size.width = width;

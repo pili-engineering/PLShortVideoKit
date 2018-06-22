@@ -11,6 +11,8 @@
 #import "PhotoAlbumViewController.h"
 #import "MulitPhotoAlbumViewController.h"
 #import "H265MovieViewController.h"
+#import "ImageRotateViewController.h"
+#import "MultiVideoViewController.h"
 
 #define PLS_RGBCOLOR(r,g,b) [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:1]
 
@@ -49,6 +51,20 @@
     importH265VideoButton.backgroundColor = [UIColor grayColor];
     [importH265VideoButton addTarget:self action:@selector(importH265VideoButtonEvent:) forControlEvents:UIControlEventTouchDown];
     [self.view addSubview:importH265VideoButton];
+    
+    
+    UIButton *imageRotateRecordButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 286 + 74, self.view.bounds.size.width, 64)];
+    [imageRotateRecordButton setTitle:@"图片旋转录制" forState:UIControlStateNormal];
+    imageRotateRecordButton.backgroundColor = [UIColor grayColor];
+    [imageRotateRecordButton addTarget:self action:@selector(imageRotateRecordButtonEvent:) forControlEvents:UIControlEventTouchDown];
+    [self.view addSubview:imageRotateRecordButton];
+    
+    UIButton *mulitRecordButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 286 + 74 + 74, self.view.bounds.size.width, 64)];
+    [mulitRecordButton setTitle:@"多屏视频" forState:UIControlStateNormal];
+    mulitRecordButton.backgroundColor = [UIColor grayColor];
+    [mulitRecordButton addTarget:self action:@selector(mulitVideoButtonEvent:) forControlEvents:UIControlEventTouchDown];
+    [self.view addSubview:mulitRecordButton];
+    
 };
 
 - (void)didReceiveMemoryWarning {
@@ -83,6 +99,18 @@
     H265MovieViewController *h265MovieViewController = [[H265MovieViewController alloc] init];
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:h265MovieViewController];
     [self presentViewController:navigationController animated:YES completion:nil];
+}
+
+// 图片动画录制
+- (void)imageRotateRecordButtonEvent:(id)sender {
+    ImageRotateViewController *imageRotateViewController = [[ImageRotateViewController alloc] init];
+    [self presentViewController:imageRotateViewController animated:YES completion:nil];
+}
+
+// 多屏视频
+- (void)mulitVideoButtonEvent:(id)sender {
+    MultiVideoViewController *multiVideoViewController = [[MultiVideoViewController alloc] init];
+    [self presentViewController:multiVideoViewController animated:YES completion:nil];
 }
 
 - (void)dealloc {
