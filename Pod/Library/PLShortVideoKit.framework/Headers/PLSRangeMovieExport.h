@@ -7,17 +7,24 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "PLSTypeDefines.h"
 
 @class PLSRangeMedia;
 @interface PLSRangeMovieExport : NSObject
 
 /**
- @brief 视频存放url
+ @brief 导出视频存放url
  
  @since      v1.10.0
  */
 @property (nonatomic, strong) NSURL *outURL;
 
+/**
+ @abstract 导出合并视频的质量，默认为 PLSFilePresetHighestQuality
+ 
+ @since      v1.11.0
+ */
+@property (assign, nonatomic) PLSFilePreset outputFilePreset;
 
 /**
  @abstract 视频合并完成的 block

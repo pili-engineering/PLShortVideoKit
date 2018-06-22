@@ -83,9 +83,18 @@
 /**
  @brief 视频导出的路径
  
+ @warning 生成 URL 需使用 [NSURL fileURLWithPath:fileName] 方式，让 URL 的 scheme 合法（file://，http://，https:// 等）。
+ 
  @since      v1.1.0
  */
 @property (strong, nonatomic) NSURL * _Nullable outputURL;
+
+/**
+ @brief 视频的码率，默认为原视频的码率
+ 
+ @since      v1.11.0
+ */
+@property (assign, nonatomic) float bitrate;
 
 /**
  @brief 视频旋转，默认为 PLSPreviewOrientationPortrait 视频的原始方向

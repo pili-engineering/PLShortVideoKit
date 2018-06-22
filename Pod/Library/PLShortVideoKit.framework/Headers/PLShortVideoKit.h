@@ -32,11 +32,6 @@ FOUNDATION_EXPORT const unsigned char PLShortVideoKitVersionString[];
 #import <PLShortVideoKit/PLSFilter.h>
 #import <PLShortVideoKit/PLSEditPlayer.h>
 
-#import <PLShortVideoKit/PLSEditingProtocol.h>
-#import <PLShortVideoKit/PLSVideoEditingView.h>
-#import <PLShortVideoKit/PLSVideoEdit.h>
-#import <PLShortVideoKit/PLSText.h>
-
 #import <PLShortVideoKit/PLSGifComposer.h>
 #import <PLShortVideoKit/PLSMovieComposer.h>
 #import <PLShortVideoKit/PLSImageToMovieComposer.h>
@@ -52,5 +47,16 @@ FOUNDATION_EXPORT const unsigned char PLShortVideoKitVersionString[];
 #import <PLShortVideoKit/PLSTransitionMaker.h>
 
 #import <PLShortVideoKit/PLSRangeMedia.h>
-#import <PLShortVideoKit/PLSRangeMovieExport.h>
 #import <PLShortVideoKit/PLSRangeMediaTools.h>
+#import <PLShortVideoKit/PLSRangeMovieExport.h>
+
+#import <PLShortVideoKit/PLSVideoMixRecorder.h>
+#import <PLShortVideoKit/PLSVideoMixConfiguration.h>
+#import <PLShortVideoKit/PLSAudioMixConfiguration.h>
+#import <PLShortVideoKit/PLSMixMediaItem.h>
+#import <PLShortVideoKit/PLSMultiVideoMixer.h>
+
+#import <PLShortVideoKit/PLSImageRotateRecorder.h>
+
+#import <PLShortVideoKit/AVAsset+PLSExtendProperty.h>
+
