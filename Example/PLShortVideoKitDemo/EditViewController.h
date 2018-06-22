@@ -17,4 +17,6 @@
 
 @property (strong, nonatomic) NSArray *filesURLArray;
 
+@property (strong, nonatomic) AVPlayerItem *playerItem;
+
 @end

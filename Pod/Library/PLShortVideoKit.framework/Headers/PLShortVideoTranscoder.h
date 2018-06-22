@@ -28,6 +28,8 @@
 /**
  @abstract 视频转码后的地址
  
+ @warning 生成 URL 需使用 [NSURL fileURLWithPath:fileName] 方式，让 URL 的 scheme 合法（file://，http://，https:// 等）。
+ 
  @since      v1.0.5
  */
 @property (strong, nonatomic) NSURL *outputURL;
@@ -45,6 +47,22 @@
  @since      v1.0.5
  */
 @property (assign, nonatomic) PLSFilePreset outputFilePreset;
+
+/**
+ @abstract 转码后视频的码率，默认为 6000 * 1000 bps，对应 PLSFilePresetHighestQuality
+ @warn 只设置 outputFilePreset，不设置 bitrate，内部 bitrate 默认值如下：
+ PLSFilePresetLowQuality,      默认对应 700 * 1000 bps
+ PLSFilePresetMediumQuality,   默认对应 3000 * 1000 bps
+ PLSFilePresetHighestQuality,  默认对应 6000 * 1000 bps
+ PLSFilePreset640x480,         默认对应 2000 * 1000 bps
+ PLSFilePreset960x540,         默认对应 3000 * 1000 bps
+ PLSFilePreset1280x720,        默认对应 4000 * 1000 bps
+ PLSFilePreset1920x1080,       默认对应 6000 * 1000  bps
+ 如果 bitrate 的值大于原始视频的视频码率，则重置 bitrate 的值为原始视频的视频码率。
+ 
+ @since      v1.11.0
+ */
+@property (assign, nonatomic) float bitrate;
 
 /**
  @abstract 转码的进度

@@ -10,14 +10,16 @@
 #import <AVFoundation/AVFoundation.h>
 #import "PLShortVideoKit/PLShortVideoKit.h"
 #import <PLPlayerKit/PLPlayerKit.h>
+#import "FLAnimatedImage.h"
 
 #define PLS_SCREEN_WIDTH CGRectGetWidth([UIScreen mainScreen].bounds)
 #define PLS_SCREEN_HEIGHT CGRectGetHeight([UIScreen mainScreen].bounds)
 #define PLS_BaseToolboxView_HEIGHT 64
+#define PLS_EditToolboxView_HEIGHT 50
 #define PLS_RGBCOLOR(r,g,b) [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:1]
 
-static NSString *const kUploadToken = @"MqF35-H32j1PH8igh-am7aEkduP511g-5-F7j47Z:clOQ5Y4gJ15PnfZciswh7mQbBJ4=:eyJkZWxldGVBZnRlckRheXMiOjMwLCJzY29wZSI6InNob3J0LXZpZGVvIiwiZGVhZGxpbmUiOjE2NTUyNjAzNTd9";
-static NSString *const kURLPrefix = @"http://shortvideo.pdex-service.com";
+static NSString *const kUploadToken = @"QxZugR8TAhI38AiJ_cptTl3RbzLyca3t-AAiH-Hh:3hK7jJJQKwmemseSwQ1duO5AXOw=:eyJzY29wZSI6InNhdmUtc2hvcnQtdmlkZW8tZnJvbS1kZW1vIiwiZGVhZGxpbmUiOjM1NTk2OTU4NzYsInVwaG9zdHMiOlsiaHR0cDovL3VwLXoyLnFpbml1LmNvbSIsImh0dHA6Ly91cGxvYWQtejIucWluaXUuY29tIiwiLUggdXAtejIucWluaXUuY29tIGh0dHA6Ly8xNC4xNTIuMzcuNCJdfQ==";
+static NSString *const kURLPrefix = @"http://panm32w98.bkt.clouddn.com";
 
 @interface PlayViewController ()
 <
@@ -34,13 +36,12 @@ UIGestureRecognizerDelegate
 @property (strong, nonatomic) UISlider *playSlider;
 @property (strong, nonatomic) UILabel * currentTime;
 @property (strong, nonatomic) UILabel * duration;
-@property (strong, nonatomic) UILabel * playerInfo;
-@property (strong, nonatomic) UILabel * statLabel;
-@property (strong, nonatomic) UILabel * videoInfo;
-
 
 // 视频播放
 @property (strong, nonatomic) PLPlayer *player;
+
+// gif 图预览
+@property (strong, nonatomic) FLAnimatedImageView *gifView;
 
 // 上传视频到云端
 @property (strong, nonatomic) UIButton *uploadButton;
@@ -48,7 +49,6 @@ UIGestureRecognizerDelegate
 @property (strong, nonatomic) PLShortVideoUploader *shortVideoUploader;
 
 // 定时器监听
-
 @property (strong, nonatomic) NSTimer * timer;
 
 @end
@@ -74,15 +74,11 @@ UIGestureRecognizerDelegate
         [self.view addGestureRecognizer:singleFingerOne];
     }
     if (self.actionType == PLSActionTypeGif) {
-        // 演示 gif 动图
-        UIWebView *webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, PLS_BaseToolboxView_HEIGHT, PLS_SCREEN_WIDTH, PLS_SCREEN_HEIGHT - PLS_BaseToolboxView_HEIGHT)];
-        webView.center = self.view.center;
-        webView.backgroundColor = [UIColor clearColor];
-        webView.opaque = NO;
-        webView.scalesPageToFit = YES;
-        webView.userInteractionEnabled = NO;
-        [webView loadRequest:[NSURLRequest requestWithURL:self.url]];
-        [self.view addSubview:webView];
+        // 显示 gif 动图        
+        self.gifView = [[FLAnimatedImageView alloc] init];
+        self.gifView.frame = CGRectMake(0, PLS_BaseToolboxView_HEIGHT, PLS_SCREEN_WIDTH, PLS_SCREEN_HEIGHT - PLS_BaseToolboxView_HEIGHT);
+        self.gifView.contentMode = UIViewContentModeScaleAspectFit;
+        [self.view addSubview:self.gifView];
     }
     
     // 配置工具视图
@@ -98,6 +94,10 @@ UIGestureRecognizerDelegate
     if (self.actionType == PLSActionTypePlayer) {
         [self.player play];
     }
+    if (self.actionType == PLSActionTypeGif) {
+        FLAnimatedImage *image = [FLAnimatedImage animatedImageWithGIFData:[NSData dataWithContentsOfURL:self.url]];
+        self.gifView.animatedImage = image;
+    }
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -105,6 +105,9 @@ UIGestureRecognizerDelegate
     
     if (self.actionType == PLSActionTypePlayer) {
         [self.player stop];
+    }
+    if (self.actionType == PLSActionTypeGif) {
+        self.gifView.animatedImage = nil;
     }
 }
 
@@ -150,21 +153,6 @@ UIGestureRecognizerDelegate
     self.duration.textColor = [UIColor blueColor];
     [self.view addSubview:self.duration];
     
-    self.playerInfo = [[UILabel alloc] initWithFrame:CGRectMake(20, 100, PLS_SCREEN_WIDTH-40, 30)];
-    self.playerInfo.text = @"player info";
-    self.playerInfo.textColor = [UIColor blueColor];
-    [self.view addSubview:self.playerInfo];
-    
-    self.videoInfo = [[UILabel alloc] initWithFrame:CGRectMake(20, 130, PLS_SCREEN_WIDTH-40, 80)];
-    self.videoInfo.text = @"video info";
-    self.videoInfo.textColor = [UIColor blueColor];
-    [self.view addSubview:self.videoInfo];
-    
-    self.statLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, 190, PLS_SCREEN_WIDTH-40, 30)];
-    self.statLabel.text = @"stat info";
-    self.statLabel.textColor = [UIColor blueColor];
-    [self.view addSubview:self.statLabel];
-    
     self.playSlider = [[UISlider alloc] initWithFrame:CGRectMake(20, PLS_SCREEN_HEIGHT - 100, PLS_SCREEN_WIDTH - 40, 30)];
     self.playSlider.minimumValue = 0;
     self.playSlider.maximumValue = 1;
@@ -190,12 +178,13 @@ UIGestureRecognizerDelegate
     
     // 初始化 PLPlayer
     self.player = [PLPlayer playerWithURL:self.url option:option];
+    self.player.loopPlay = YES;
     
     // 设定代理 (optional)
     self.player.delegate = self;
     
     //获取视频输出视图并添加为到当前 UIView 对象的 Subview
-    self.player.playerView.frame = CGRectMake(0, 0, PLS_SCREEN_WIDTH, PLS_SCREEN_HEIGHT);
+    self.player.playerView.frame = CGRectMake(0, PLS_BaseToolboxView_HEIGHT + PLS_SCREEN_WIDTH / 8, PLS_SCREEN_WIDTH, PLS_SCREEN_HEIGHT - PLS_BaseToolboxView_HEIGHT - PLS_SCREEN_WIDTH / 8 - PLS_EditToolboxView_HEIGHT);
     self.player.playerView.contentMode = UIViewContentModeScaleAspectFit;
     [self.view addSubview:self.player.playerView];
 }
@@ -207,7 +196,7 @@ UIGestureRecognizerDelegate
         self.timer = nil;
     }
     
-    self.timer = [NSTimer scheduledTimerWithTimeInterval:0.2
+    self.timer = [NSTimer scheduledTimerWithTimeInterval:0.5
                                                       target:self
                                                     selector:@selector(onDurationTimer)
                                                     userInfo:nil
@@ -245,13 +234,6 @@ UIGestureRecognizerDelegate
        self.currentTime.text = [NSString stringWithFormat:@"%.2fs", elapsed];
         self.duration.text = [NSString stringWithFormat:@"%.2fs", duration];
     }
-    
-    NSString *info = [NSString stringWithFormat:@"videoFPS:%d, bitrate: %.2fkbs", _player.videoFPS, _player.bitrate];
-    self.videoInfo.text = info;
-    
-    info = [NSString stringWithFormat:@"renderFPS:%d, %dX%d", _player.renderFPS, _player.width, _player.height];
-    self.playerInfo.text = info;
-    NSLog(@"onDurationTimer");
 }
 
 - (void)prepareUpload {
@@ -280,7 +262,11 @@ UIGestureRecognizerDelegate
 
 #pragma mark -- 播放
 - (void)handleSingleFingerToPlayVideoEvent:(id)sender {
-    [self.player play];
+    if ([self.player isPlaying]) {
+        [self.player pause];
+    } else {
+        [self.player resume];
+    }
 }
 
 #pragma mark -- 本地视频上传到云端
@@ -351,10 +337,10 @@ UIGestureRecognizerDelegate
         [self addDurationTimer];
     }
     if (state == PLPlayerStatusPlaying) {
-        NSString *stat = [NSString stringWithFormat:@"connect:%.2f/first:%.2f", _player.connectTime, _player.firstVideoTime];
-        self.statLabel.text = stat;
+        NSString *stateInfo = [NSString stringWithFormat:@"connect:%.2f/first:%.2f", _player.connectTime, _player.firstVideoTime];
+        NSLog(@"stateInfo: %@", stateInfo);
     }
-    if (state == PLPlayerStatusStopped || state == PLPlayerStatusPaused) {
+    if (state == PLPlayerStatusStopped/* || state == PLPlayerStatusPaused*/) {
         self.currentTime.text = self.duration.text;
         self.playSlider.value = 1;
         [self removeDurationTimer];
@@ -391,6 +377,8 @@ UIGestureRecognizerDelegate
 
     self.player.delegate = nil;
     self.player = nil;
+    
+    self.gifView = nil;
 
     self.shortVideoUploader = nil;
     

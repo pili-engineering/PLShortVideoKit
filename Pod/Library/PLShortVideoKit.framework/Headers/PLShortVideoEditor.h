@@ -59,9 +59,6 @@
 
 @interface PLShortVideoEditor : NSObject
 
-@property (strong, nonatomic) PLSEditPlayer *player __deprecated_msg("Method deprecated in v1.5.0. Use `PLSEditPlayer`");
-@property (strong, nonatomic) PLSEditPlayer *audioPlayer __deprecated_msg("Method deprecated in v1.5.0. Use `[PLSEditPlayer audioPlayer]`");
-
 /**
  @brief 编辑完成时的 block 回调
  
@@ -147,14 +144,14 @@
  
  @since      v1.1.0
  */
-- (instancetype)initWithURL:(NSURL *)url __deprecated_msg("Method deprecated in v1.5.0.");
+- (instancetype)initWithURL:(NSURL *)url;
 
 /**
  @brief 使用 AVAsset 初始化编辑实例
  
  @since      v1.1.0
  */
-- (instancetype)initWithAsset:(AVAsset *)asset __deprecated_msg("Method deprecated in v1.5.0.");
+- (instancetype)initWithAsset:(AVAsset *)asset;
 
 /**
  @brief 使用 AVAsset 初始化编辑实例
@@ -165,6 +162,16 @@
  @since      v1.5.0
  */
 - (instancetype)initWithAsset:(AVAsset *)asset videoSize:(CGSize)videoSize;
+
+/**
+ @brief 使用 AVPlayerItem 初始化编辑实例
+ *
+ *  @param playerItem 原视频，即被编辑的视频素材
+ *  @param videoSize 编辑时的预览分辨率，当取值为 CGSizeZero 时，预览分辨率为原视频的分辨率，当取值为(width, height)时，预览分辨率为(width, height)
+ 
+ @since      v1.11.0
+ */
+- (instancetype)initWithPlayerItem:(AVPlayerItem *)playerItem videoSize:(CGSize)videoSize;
 
 /**
  @brief 加载编辑信息，实时预览编辑效果
@@ -228,10 +235,23 @@
  *  @param musicURL 当前使用的背景音乐的地址
  *  @param timeRange 当前使用的背景音乐的有效时间区域(start, duration)，如果想使用整段音乐，可以将其设置为 kCMTimeRangeZero 或者 (kCMTimeZero, duration)
  *  @param volume 当前使用的背景音乐的音量
+ *  warning: 默认循环播放当前背景音乐
  
  @since      v1.5.0
  */
 - (void)addMusic:(NSURL *)musicURL timeRange:(CMTimeRange)timeRange volume:(NSNumber *)volume;
+
+/**
+ *  添加背景音乐
+ *
+ *  @param musicURL 当前使用的背景音乐的地址
+ *  @param timeRange 当前使用的背景音乐的有效时间区域(start, duration)，如果想使用整段音乐，可以将其设置为 kCMTimeRangeZero 或者 (kCMTimeZero, duration)
+ *  @param volume 当前使用的背景音乐的音量
+ *  @param loopEnable 当前使用的背景音乐是否循环播放
+ 
+ @since      v1.11.0
+ */
+- (void)addMusic:(NSURL *)musicURL timeRange:(CMTimeRange)timeRange volume:(NSNumber *)volume loopEnable:(BOOL)loopEnable;
 
 /**
  *  更新背景音乐
@@ -244,6 +264,15 @@
  @since      v1.5.0
  */
 - (void)updateMusic:(CMTimeRange)timeRange volume:(NSNumber *)volume;
+
+/**
+ *  更新多个背景音效
+ *
+ *  @param multiMusicsSettings 多个背景音效的设置信息。每个元素都为字典，信息由 PLSAudioSettingsKey 配置
+ 
+ @since      v1.11.0
+ */
+- (void)updateMultiMusics:(NSArray <NSDictionary *>*)multiMusicsSettings;
 
 /**
  *  开启水印

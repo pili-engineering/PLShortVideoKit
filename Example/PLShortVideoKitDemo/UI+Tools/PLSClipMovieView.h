@@ -36,9 +36,7 @@
 
 @optional
 - (void)didStartDragView;
-- (void)clipFrameView:(PLSClipMovieView *)clipFrameView didDragView:(CMTime)time;
-- (void)clipFrameView:(PLSClipMovieView *)clipFrameView didEndDragLeftView:(CMTime)time;
-- (void)clipFrameView:(PLSClipMovieView *)clipFrameView didEndDragRightView:(CMTime)time;
+- (void)clipFrameView:(PLSClipMovieView *)clipFrameView didEndDragLeftView:(CMTime)leftTime rightView:(CMTime)rightTime;
 
 /**
  *  判断clipFrameView中的scrollview是否正在滚动
@@ -53,6 +51,8 @@
 @interface PLSClipMovieView : UIView
 
 @property (nonatomic, weak) id<PLSClipMovieViewDelegate> delegate;
+
+- (instancetype)initWithMovieAsset:(AVAsset *)asset minDuration:(Float64)minDuration maxDuration:(Float64)maxDuration;
 
 - (instancetype)initWithMovieURL:(NSURL *)url minDuration:(Float64)minDuration maxDuration:(Float64)maxDuration;
 

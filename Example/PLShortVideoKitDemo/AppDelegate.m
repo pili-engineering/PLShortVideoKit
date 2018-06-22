@@ -9,15 +9,7 @@
 #import "AppDelegate.h"
 #import <Fabric/Fabric.h>
 #import <Crashlytics/Crashlytics.h>
-#import <easyar3d/EasyAR3D.h>
-#import "easyar3d/EasyARScene.h"
-#import "SPARManager.h"
 #import "PLShortVideoKit/PLShortVideoKit.h"
-
-// TuSDK mark
-#import <TuSDK/TuSDK.h>
-// AR 特效的 key
-NSString *easyAR3DKey = @"zYnUPaCAWtl4WDH3qLu290KRFA7gCCU2iyI9127chA6gvLQyr9CUlawIjMdC1OXxLwsUWvNN2zI2XIElU8AP2QitdZ4WFAfoA8DdJbos2FL4FnPKiSjX52Avh524oxXLF8iOuZXg4YFSQWgKrhkLsJs8K8NxsEdoWh2UCuRsONxjHAdDX0V871RQMydPAyFzx4L0fTUe";
 
 @interface AppDelegate ()
 
@@ -35,28 +27,6 @@ NSString *easyAR3DKey = @"zYnUPaCAWtl4WDH3qLu290KRFA7gCCU2iyI9127chA6gvLQyr9CUla
     
     // crash 收集
     [Fabric with:@[[Crashlytics class]]];
-    
-    // TuSDK mark - 初始化 TuSDK
-    [TuSDK setLogLevel:lsqLogLevelDEBUG]; // 可选: 设置日志输出级别 (默认不输出)
-    [TuSDK initSdkWithAppKey:@"3ad4ee3da6c0b41c-03-bshmr1"];
-
-    // AR 特效
-    [EasyAR3D initialize:easyAR3DKey];
-    NSString *path = [[NSBundle mainBundle] resourcePath];
-    [EasyARScene setUriTranslator:^ NSString * (NSString * uri) {
-        SPARManager * manager = [SPARManager sharedManager];
-        if ([uri isEqualToString:@"local://Recorder.json"]) {
-            return [NSString stringWithFormat:@"%@/Recorder.json",path];
-        }else if ([uri isEqualToString:@"local://Recorder.js"]){
-            return [NSString stringWithFormat:@"%@/Recorder.js",path];
-            
-        }else if ([uri isEqualToString:@"local://PostBasic.effect"]){
-            
-            return [NSString stringWithFormat:@"%@/PostBasic.effect",path];
-            
-        }
-        return [manager getLocalPathForURL:uri];
-    }];
     
     return YES;
 }

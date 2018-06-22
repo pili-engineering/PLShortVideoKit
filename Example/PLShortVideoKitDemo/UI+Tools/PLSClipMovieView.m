@@ -23,92 +23,6 @@
 
 #define PLS_RGBCOLOR(r,g,b) [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:1]
 
-
-@implementation UIView (PLSExtension)
-
-- (void)setX:(CGFloat)x {
-    CGRect frame = self.frame;
-    frame.origin.x = x;
-    self.frame = frame;
-}
-
-- (CGFloat)x {
-    return self.frame.origin.x;
-}
-
-- (void)setY:(CGFloat)y {
-    CGRect frame = self.frame;
-    frame.origin.y = y;
-    self.frame = frame;
-}
-
-- (CGFloat)y {
-    return self.frame.origin.y;
-}
-
-- (void)setWidth:(CGFloat)width {
-    CGRect frame = self.frame;
-    frame.size.width = width;
-    self.frame = frame;
-}
-
-- (CGFloat)width {
-    return self.frame.size.width;
-}
-
-- (void)setHeight:(CGFloat)height {
-    CGRect frame = self.frame;
-    frame.size.height = height;
-    self.frame = frame;
-}
-
-- (void)setCenterX:(CGFloat)centerX {
-    CGPoint center = self.center;
-    center.x = centerX;
-    self.center = center;
-}
-
-- (CGFloat)centerX {
-    return self.center.x;
-}
-
-- (void)setCenterY:(CGFloat)centerY {
-    CGPoint center = self.center;
-    center.y = centerY;
-    self.center = center;
-}
-
-- (CGFloat)centerY {
-    return self.center.y;
-}
-
-- (CGFloat)height {
-    return self.frame.size.height;
-}
-
-- (void)setSize:(CGSize)size {
-    CGRect frame = self.frame;
-    frame.size = size;
-    self.frame = frame;
-}
-
-- (CGSize)size {
-    return self.frame.size;
-}
-
-- (void)setOrigion:(CGPoint)origion {
-    CGRect frame = self.frame;
-    frame.origin = origion;
-    self.frame = frame;
-}
-
-- (CGPoint)origion {
-    return self.frame.origin;
-}
-
-@end
-
-
 @interface PLSClipMovieViewCell ()
 
 @property (strong, nonatomic) UIImageView *scaledIamgeView;
@@ -139,7 +53,7 @@ static NSString * const PLSClipMovieViewCellId = @"PLSClipMovieViewCellId";
 
 @interface PLSClipMovieView () <UICollectionViewDataSource, UICollectionViewDelegate>
 
-@property (strong, nonatomic) NSURL *url; // 视频的 url
+@property (strong, nonatomic) AVAsset *asset; // 视频对象
 @property (nonatomic, assign) Float64 frameRate; // 帧率
 @property (assign, nonatomic) Float64 minDuration; // 截取视频的最短时间
 @property (assign, nonatomic) Float64 maxDuration; // 截取视频的最长时间
@@ -168,14 +82,21 @@ static NSString * const PLSClipMovieViewCellId = @"PLSClipMovieViewCellId";
 @implementation PLSClipMovieView
 
 - (instancetype)initWithMovieURL:(NSURL *)url minDuration:(Float64)minDuration maxDuration:(Float64)maxDuration {
+    AVAsset *asset = [AVAsset assetWithURL:url];
+    return [self initWithMovieAsset:asset minDuration:minDuration maxDuration:maxDuration];
+}
+
+- (instancetype)initWithMovieAsset:(AVAsset *)asset minDuration:(Float64)minDuration maxDuration:(Float64)maxDuration {
     self = [super init];
     if (self) {
-        self.url = url;
+        self.asset = asset;
         self.minDuration = minDuration;
         self.maxDuration = maxDuration;
+        self.leftSecond = 0.f;
+        self.rightSecond = maxDuration;
         
         [self initView];
-        [self initData];
+        [self initDataFromAsset:asset];
     }
     return self;
 }
@@ -283,8 +204,7 @@ static NSString * const PLSClipMovieViewCellId = @"PLSClipMovieViewCellId";
     }];
 }
 
-- (void)initData {
-    AVAsset *asset = [AVAsset assetWithURL:self.url];
+- (void)initDataFromAsset:(AVAsset *)asset {
     CMTime cmtime = asset.duration;
     self.totalSeconds = CMTimeGetSeconds(cmtime);
     
@@ -402,9 +322,6 @@ static NSString * const PLSClipMovieViewCellId = @"PLSClipMovieViewCellId";
             
             // 2.计算leftDragView对应的时间
             Float64 leftTotalSecond = [self getSecondsUsingView:ges.view];
-            if ([self.delegate respondsToSelector:@selector(clipFrameView:didDragView:)]) {
-                [self.delegate clipFrameView:self didDragView:CMTimeMakeWithSeconds(leftTotalSecond, self.frameRate)];
-            }
             
             // 3.显示左边时间和截取时间
             self.leftSecond = leftTotalSecond;
@@ -414,8 +331,8 @@ static NSString * const PLSClipMovieViewCellId = @"PLSClipMovieViewCellId";
             self.clipSecondLabel.text = [NSString stringWithFormat:@"%.1f", clipSeconds];
         } break;
         case UIGestureRecognizerStateEnded:
-            if ([self.delegate respondsToSelector:@selector(clipFrameView:didEndDragLeftView:)]) {
-                [self.delegate clipFrameView:self didEndDragLeftView:CMTimeMakeWithSeconds(self.leftSecond, self.frameRate)];
+            if ([self.delegate respondsToSelector:@selector(clipFrameView:didEndDragLeftView:rightView:)]) {
+                [self.delegate clipFrameView:self didEndDragLeftView:CMTimeMakeWithSeconds(self.leftSecond, self.frameRate) rightView:CMTimeMakeWithSeconds(self.rightSecond, self.frameRate)];
             }
             break;
         default:
@@ -454,10 +371,6 @@ static NSString * const PLSClipMovieViewCellId = @"PLSClipMovieViewCellId";
             // 2.计算leftDragView对应的时间
             Float64 rightTotalSecond = [self getSecondsUsingView:ges.view];
             
-            if ([self.delegate respondsToSelector:@selector(clipFrameView:didDragView:)]) {
-                [self.delegate clipFrameView:self didDragView:CMTimeMakeWithSeconds(rightTotalSecond, self.frameRate)];
-            }
-            
             // 3.显示左边时间和截取时间
             self.rightSecond = rightTotalSecond;
             self.endTimeLabel.text = [self secondsToStr:rightTotalSecond];
@@ -466,9 +379,10 @@ static NSString * const PLSClipMovieViewCellId = @"PLSClipMovieViewCellId";
             self.clipSecondLabel.text = [NSString stringWithFormat:@"%.1f", clipSeconds];
         } break;
         case UIGestureRecognizerStateEnded: {
-            if ([self.delegate respondsToSelector:@selector(clipFrameView:didEndDragRightView:)]) {
-                [self.delegate clipFrameView:self didEndDragRightView:CMTimeMakeWithSeconds(self.rightSecond, self.frameRate)];
+            if ([self.delegate respondsToSelector:@selector(clipFrameView:didEndDragLeftView:rightView:)]) {
+                [self.delegate clipFrameView:self didEndDragLeftView:CMTimeMakeWithSeconds(self.leftSecond, self.frameRate) rightView:CMTimeMakeWithSeconds(self.rightSecond, self.frameRate)];
             }
+            
         } break;
         default:
             break;
@@ -565,10 +479,6 @@ static NSString * const PLSClipMovieViewCellId = @"PLSClipMovieViewCellId";
     self.startTimeLabel.text = [self secondsToStr:leftTime];
     self.endTimeLabel.text = [self secondsToStr:rightTime];
     
-    if ([self.delegate respondsToSelector:@selector(clipFrameView:didDragView:)]) {
-        [self.delegate clipFrameView:self didDragView:CMTimeMakeWithSeconds(leftTime, self.frameRate)];
-    }
-    
     if ([self.delegate respondsToSelector:@selector(clipFrameView:isScrolling:)]) {
         [self.delegate clipFrameView:self isScrolling:YES];
     }
@@ -577,14 +487,11 @@ static NSString * const PLSClipMovieViewCellId = @"PLSClipMovieViewCellId";
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-    Float64 leftTime = [self getSecondsUsingView:self.leftDragView];
-    Float64 rightTime = [self getSecondsUsingView:self.rightDragView];
+    self.leftSecond = [self getSecondsUsingView:self.leftDragView];
+    self.rightSecond = [self getSecondsUsingView:self.rightDragView];
     
-    if ([self.delegate respondsToSelector:@selector(clipFrameView:didEndDragLeftView:)]) {
-        [self.delegate clipFrameView:self didEndDragLeftView:CMTimeMakeWithSeconds(leftTime, self.frameRate)];
-    }
-    if ([self.delegate respondsToSelector:@selector(clipFrameView:didEndDragRightView:)]) {
-        [self.delegate clipFrameView:self didEndDragRightView:CMTimeMakeWithSeconds(rightTime, self.frameRate)];
+    if ([self.delegate respondsToSelector:@selector(clipFrameView:didEndDragLeftView:rightView:)]) {
+        [self.delegate clipFrameView:self didEndDragLeftView:CMTimeMakeWithSeconds(self.leftSecond, self.frameRate) rightView:CMTimeMakeWithSeconds(self.rightSecond, self.frameRate)];
     }
     
     if ([self.delegate respondsToSelector:@selector(clipFrameView:isScrolling:)]) {
@@ -594,14 +501,11 @@ static NSString * const PLSClipMovieViewCellId = @"PLSClipMovieViewCellId";
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
     if (!decelerate) {
-        Float64 leftTime = [self getSecondsUsingView:self.leftDragView];
-        Float64 rightTime = [self getSecondsUsingView:self.rightDragView];
+        self.leftSecond = [self getSecondsUsingView:self.leftDragView];
+        self.rightSecond = [self getSecondsUsingView:self.rightDragView];
         
-        if ([self.delegate respondsToSelector:@selector(clipFrameView:didEndDragLeftView:)]) {
-            [self.delegate clipFrameView:self didEndDragLeftView:CMTimeMakeWithSeconds(leftTime, self.frameRate)];
-        }
-        if ([self.delegate respondsToSelector:@selector(clipFrameView:didEndDragRightView:)]) {
-            [self.delegate clipFrameView:self didEndDragRightView:CMTimeMakeWithSeconds(rightTime, self.frameRate)];
+        if ([self.delegate respondsToSelector:@selector(clipFrameView:didEndDragLeftView:rightView:)]) {
+            [self.delegate clipFrameView:self didEndDragLeftView:CMTimeMakeWithSeconds(self.leftSecond, self.frameRate) rightView:CMTimeMakeWithSeconds(self.rightSecond, self.frameRate)];
         }
     }
     

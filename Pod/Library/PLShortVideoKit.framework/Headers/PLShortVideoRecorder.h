@@ -227,6 +227,24 @@
 @property (assign, nonatomic) PLSFileType outputFileType;
 
 /**
+ @brief 指定捕捉某个 View 的画面，将 View 画面录制为视频
+ 
+ @since      v1.11.0
+ */
+@property (strong, nonatomic) UIView *_Nullable catpuredView;
+
+/**
+ @brief 指定捕捉某个 View 的画面，将 View 画面录制为视频时的初始化方法
+ 
+ @since      v1.11.0
+ 
+ @discussion catpuredViewVideoConfiguration 必须要设置，用来配置视频信息。
+             audioConfiguration 设置为 nil 时，不采集音频。
+ */
+
+- (nonnull instancetype)initWithCatpuredViewVideoConfiguration:(PLSVideoConfiguration *_Nonnull)catpuredViewVideoConfiguration audioConfiguration:(PLSAudioConfiguration *_Nullable)audioConfiguration;
+
+/**
  @abstract   初始化方法
  
  @since      v1.0.0
@@ -351,6 +369,25 @@
 
 @end
 
+#pragma mark - PLShortVideoRecorder (backgroundMonitor)
+
+@interface PLShortVideoRecorder (backgroundMonitor)
+
+/**
+ @abstract  默认为 YES，即 SDK 内部根据监听到的 Application 前后台状态自动停止和开始录制视频
+ 
+ @warning   设置为 YES 时，即 Application 进入后台，若当前为拍摄视频状态，SDK 内部会自动停止视频的录制，恢复到前台，SDK 内部自动启动视频的录制；
+            设置为 NO 时，即 Application 进入后台，若当前为拍摄视频状态，SDK 内部会停止视频的录制，恢复到前台，SDK 内部不会自动启动视频的录制。
+            为什么设置为 NO，SDK 内部仍然要在 Application 进入后台时停止视频录制呢？原因是，开发者将该属性设置为 NO 后，可能在应用层忘记处理
+            Application 进入后台时要调用 stopRecording 来停止视频的录制，进而出现 crash。所以，不管该属性是 YES 还是 NO，当 Application
+            进入后台，SDK 内部都会调用 stopRecording 自动停止视频的录制。
+ 
+ @since      v1.11.0
+ */
+@property (assign, nonatomic) BOOL backgroundMonitorEnable;
+
+@end
+
 #pragma mark -- PLShortVideoRecorder (mixAudio)
 
 @interface PLShortVideoRecorder (mixAudio)
@@ -362,6 +399,32 @@
  @since      v1.7.0
  */
 - (void)mixAudio:(NSURL *_Nullable)audioURL;
+
+/**
+ @abstract   设置录制时的背景音乐
+ 
+ @warning   PLShortVideoRecorder 初始化后调用，audioURL 为音频 URL
+ *
+ *  @param audioURL   音频 URL
+ *  @param playEnable 音频添加后是否立即播放
+ *
+ @since      v1.11.0
+ */
+- (void)mixAudio:(NSURL *_Nullable)audioURL playEnable:(BOOL)playEnable;
+
+/**
+ @abstract   设置录制时的背景音乐
+ 
+ @warning   PLShortVideoRecorder 初始化后调用，audioURL 为音频 URL
+ *
+ *  @param audioURL   音频 URL
+ *  @param startTime  音频开始播放的位置
+ *  @param volume     音频的音量
+ *  @param playEnable 音频添加后是否立即播放
+ *
+ @since      v1.11.0
+ */
+- (void)mixAudio:(NSURL *_Nullable)audioURL startTime:(NSTimeInterval)startTime volume:(CGFloat)volume playEnable:(BOOL)playEnable;
 
 /**
  @brief   获取添加背景音乐录制完成后的 audioMix

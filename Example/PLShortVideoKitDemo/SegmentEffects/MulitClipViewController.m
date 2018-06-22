@@ -41,17 +41,13 @@ TransitionViewControllerDelegate
 @property (assign, nonatomic) CGFloat startTime;
 @property (assign, nonatomic) CGFloat endTime;
 
-@property (strong, nonatomic) PLShortVideoTranscoder *shortVideoTranscoder;
 @property (strong, nonatomic) NSMutableArray *avassetArray;
 
 @property (assign, nonatomic) BOOL isNeedResume;
 
-@property (strong, nonatomic) PLSRangeMovieExport *mergeExport;
-
-@property (strong, nonatomic) PLShortVideoTranscoder *singleExport;
-
 @property (strong, nonatomic) NSMutableArray <PLSRangeMedia *> *transcodingArray;
 
+@property (strong, nonatomic) PLSRangeMovieExport *movieExport;
 @end
 
 @implementation MulitClipViewController
@@ -59,6 +55,8 @@ TransitionViewControllerDelegate
 - (void)dealloc {
     [self removeTimeObserver];
     [self removeObserver];
+    
+    NSLog(@"dealloc %@", self.description);
 }
 
 - (void)viewDidLoad {
@@ -222,12 +220,14 @@ static int KVOcontext = 0;
 }
 
 - (void)addTimeObserver {
-    if (nil == _timeObserverToken) {
+    [self removeTimeObserver];
+    
+//    if (nil == _timeObserverToken) {
         __weak typeof(self) wself = self;
         _timeObserverToken = [self.player addPeriodicTimeObserverForInterval:CMTimeMake(1, 10) queue:dispatch_get_main_queue() usingBlock:^(CMTime time) {
             [wself.clipView setPlayPosition:time];
         }];
-    }
+//    }
 }
 
 - (void)removeTimeObserver {
@@ -279,46 +279,6 @@ static int KVOcontext = 0;
             self.clipView.assetArray = self.avassetArray;
         }
     });
-}
-
-- (void)transcoding {
-    
-    [self.singleExport cancelTranscoding];
-    
-    if (self.transcodingArray.count) {
-        [self showWating];
-        PLSRangeMedia *rangeMedia = [self.transcodingArray objectAtIndex:0];
-        [self.transcodingArray removeObject:rangeMedia];
-        
-        self.singleExport = [[PLShortVideoTranscoder alloc] initWithAsset:rangeMedia.asset];
-        self.singleExport.timeRange = CMTimeRangeMake(rangeMedia.startTime, rangeMedia.endTime);
-        self.singleExport.outputURL = [self editVideoURL];
-        __weak typeof(self) wself = self;
-        self.singleExport.processingBlock = ^(float progress) {
-            dispatch_main_async_safe(^{
-                [wself setProgress:progress];
-            })
-        };
-        self.singleExport.completionBlock = ^(NSURL *url) {
-            dispatch_main_async_safe(^{
-                UISaveVideoAtPathToSavedPhotosAlbum([url path], nil, nil, nil);
-                [wself transcoding];
-            })
-        };
-        self.singleExport.failureBlock = ^(NSError *error) {
-            dispatch_main_async_safe(^{
-                NSLog(@"error = %@", error.localizedDescription);
-                [wself transcoding];
-            })
-        };
-        
-        [self.singleExport startTranscoding];
-        
-    } else {
-        [self hideWating];
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:@"保存完成" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
-        [alert show];
-    }
 }
 
 // PLSClipMulitMediaViewDelegate
@@ -380,15 +340,15 @@ static int KVOcontext = 0;
         return;
     }
     
-    [self.mergeExport stopExport];
-    self.mergeExport = [[PLSRangeMovieExport alloc] initWithRangeMedia:mediaArray];
-    self.mergeExport.outURL = [self editVideoURL];
+    self.movieExport = [[PLSRangeMovieExport alloc] initWithRangeMedia:mediaArray];
+    self.movieExport.outURL = [self editVideoURL];
+    self.movieExport.outputFilePreset = PLSFilePreset960x540;
     
     [self showWating];
     
     __weak typeof(self) wself = self;
-    if (nil == self.mergeExport.completionBlock) {
-        self.mergeExport.completionBlock = ^(NSURL *url) {
+    if (nil == self.movieExport.completionBlock) {
+        self.movieExport.completionBlock = ^(NSURL *url) {
             [wself hideWating];
             // 设置音视频、水印等编辑信息
             NSMutableDictionary *outputSettings = [[NSMutableDictionary alloc] init];
@@ -407,17 +367,17 @@ static int KVOcontext = 0;
             videoEditViewController.filesURLArray = @[url];
             [wself presentViewController:videoEditViewController animated:YES completion:nil];
         };
-        self.mergeExport.failureBlock = ^(NSError *error) {
+        self.movieExport.failureBlock = ^(NSError *error) {
             [wself hideWating];
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:error.localizedDescription delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
             [alert show];
         };
-        self.mergeExport.processingBlock = ^(float progress) {
+        self.movieExport.processingBlock = ^(float progress) {
             [wself setProgress:progress];
         };
     }
     
-    [self.mergeExport startExport];
+    [self.movieExport startExport];
 }
 
 - (void)transitionViewController:(TransitionViewController *)transitionController transitionMedia:(NSURL *)transitionURL {

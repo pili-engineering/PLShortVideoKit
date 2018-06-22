@@ -21,7 +21,6 @@
     UILabel *musicTimeRangeLabel;
     UIImageView *musicImageView;
     UISlider *musicTimeRangeSlider;
-    UIButton *cancelBtn;
     UIButton *confirmBtn;
     CMTimeRange orgMusicTimeRange;
     
@@ -85,6 +84,7 @@
     musicTimeRangeSlider.maximumValue = CMTimeGetSeconds(self.currentMusicTimeRange.start) + CMTimeGetSeconds(self.currentMusicTimeRange.duration);
     musicTimeRangeSlider.value = CMTimeGetSeconds(self.currentMusicTimeRange.start);
     [musicTimeRangeSlider addTarget:self action:@selector(sliderValueDidChanged:) forControlEvents:UIControlEventValueChanged];
+    musicTimeRangeSlider.continuous = NO;
     [contentView addSubview:musicTimeRangeSlider];
     
     musicStartTimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(PLS_AUDIO_TIMERANG_VIEW_LEFT_PADDING, musicImageView.frame.origin.y + musicImageView.frame.size.height + PLS_AUDIO_TIMERANGE_VIEW_INTERVAL_PADDING, contentView.frame.size.width - PLS_AUDIO_TIMERANG_VIEW_LEFT_PADDING*2, 21)];
@@ -103,23 +103,12 @@
     seperateLineView.backgroundColor = [UIColor grayColor];
     [contentView addSubview:seperateLineView];
     
-    cancelBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    cancelBtn.frame = CGRectMake(0, contentView.frame.size.height - 40, contentView.frame.size.width/2, 40);
-    [cancelBtn setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
-    [cancelBtn setTitle:@"Cancel" forState:UIControlStateNormal];
-    [cancelBtn addTarget:self action:@selector(cancelButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-    [contentView addSubview:cancelBtn];
-    
     confirmBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    confirmBtn.frame = CGRectMake(contentView.frame.size.width/2+1, contentView.frame.size.height - 40, contentView.frame.size.width/2, 40);
+    confirmBtn.frame = CGRectMake(0, contentView.frame.size.height - 40, contentView.frame.size.width, 40);
     [confirmBtn setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
     [confirmBtn setTitle:@"OK" forState:UIControlStateNormal];
     [confirmBtn addTarget:self action:@selector(confirmButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
     [contentView addSubview:confirmBtn];
-    
-    UIView *seperateLineView1 = [[UIView alloc] initWithFrame:CGRectMake(contentView.frame.size.width/2, contentView.frame.size.height - 40, 1, 40)];
-    seperateLineView1.backgroundColor = [UIColor grayColor];
-    [contentView addSubview:seperateLineView1];
 }
 
 - (void)sliderValueDidChanged:(id)sender {
@@ -164,17 +153,7 @@
     [self hide];
 }
 
-- (void)cancelButtonPressed:(id)sender {
-    if (_delegate && [_delegate respondsToSelector:@selector(clipAudioView:musicTimeRangeChangedTo:)]) {
-        [_delegate clipAudioView:self musicTimeRangeChangedTo:orgMusicTimeRange];
-    }
-    [self hide];
-}
-
 - (void)confirmButtonPressed:(id)sender {
-    if (_delegate && [_delegate respondsToSelector:@selector(clipAudioView:musicTimeRangeChangedTo:)]) {
-        [_delegate clipAudioView:self musicTimeRangeChangedTo:self.currentMusicTimeRange];
-    }
     [self hide];
 }
 

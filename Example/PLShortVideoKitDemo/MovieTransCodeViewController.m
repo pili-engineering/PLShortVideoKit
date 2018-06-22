@@ -8,10 +8,10 @@
 
 #import "MovieTransCodeViewController.h"
 #import "PLShortVideoKit/PLShortVideoKit.h"
-#import "ClipMovieViewController.h"
 #import "PLSClipMovieView.h"
 #import <Masonry/Masonry.h>
 #import "PLSSelectionView.h"
+#import "EditViewController.h"
 
 #define AlertViewShow(msg) [[[UIAlertView alloc] initWithTitle:@"warning" message:[NSString stringWithFormat:@"%@", msg] delegate:nil cancelButtonTitle:@"ok" otherButtonTitles:nil] show]
 #define iPhoneX ([UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(1125, 2436), [[UIScreen mainScreen] currentMode].size) : NO)
@@ -24,7 +24,8 @@
 @interface MovieTransCodeViewController ()
 <
 PLSClipMovieViewDelegate,
-PLSSelectionViewDelegate
+PLSSelectionViewDelegate,
+PLShortVideoEditorDelegate
 >
 
 // 视图
@@ -34,24 +35,22 @@ PLSSelectionViewDelegate
 
 // 选取需要的视频段
 @property (strong, nonatomic) PLSClipMovieView *clipMovieView;
-@property (assign, nonatomic) CGFloat startTime;
-@property (assign, nonatomic) CGFloat endTime;
 
 // 选取转码质量
 @property (strong, nonatomic) PLSSelectionView *selectionView;
 
-// 选取视频需要旋转的方向
-@property (strong, nonatomic) PLSSelectionView *rotateVideoSelectionView;
+// 视频旋转
+@property (assign, nonatomic) PLSPreviewOrientation rotateOrientation;
 
-// 播放器
-@property (strong, nonatomic) AVPlayer *player;
-@property (strong, nonatomic) AVPlayerLayer *playerLayer;
-@property (strong, nonatomic) AVPlayerItem *playerItem;
+// 编辑
+@property (strong, nonatomic) PLShortVideoEditor *shortVideoEditor;
+// 要编辑的视频的信息
+@property (strong, nonatomic) NSMutableDictionary *movieSettings;
 
 // 客户端转码，能压缩视频的大小 + 剪辑视频
 @property (assign, nonatomic) PLSFilePreset transcoderPreset;
+@property (assign, nonatomic) float bitrate;
 @property (strong, nonatomic) PLShortVideoTranscoder *shortVideoTranscoder;
-@property (assign, nonatomic) PLSPreviewOrientation rotateOrientation;
 
 @end
 
@@ -66,20 +65,57 @@ PLSSelectionViewDelegate
     self.view.backgroundColor = PLS_RGBCOLOR(25, 24, 36);
     
     // --------------------------
+    // 编辑类
+    [self setupShortVideoEditor];
     
     // 配置工具视图
     [self setupBaseToolboxView];
     
     [self setupSelectionView];
     
-    [self setupRotateVideoSelectionView];
-    
     [self setupClipMovieView];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
     
-    // --------------------------
+    [self observerUIApplicationStatusForShortVideoEditor];
     
-    // 播放器初始化
-    [self initPlayer];
+    [self.shortVideoEditor startEditing];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    
+    [self removeObserverUIApplicationStatusForShortVideoEditor];
+    
+    [self.shortVideoEditor stopEditing];
+}
+
+#pragma mark - 编辑类
+- (void)setupShortVideoEditor {
+    // 待编辑的原始视频素材
+    self.movieSettings = [[NSMutableDictionary alloc] init];
+    AVAsset *asset = [AVAsset assetWithURL:self.url];
+    self.movieSettings[PLSURLKey] = self.url;
+    self.movieSettings[PLSAssetKey] = asset;
+    self.movieSettings[PLSStartTimeKey] = [NSNumber numberWithFloat:0.f];
+    self.movieSettings[PLSDurationKey] = [NSNumber numberWithFloat:CMTimeGetSeconds(asset.duration)];
+    self.movieSettings[PLSVolumeKey] = [NSNumber numberWithFloat:1.0f];
+    
+    // 视频编辑类
+    self.shortVideoEditor = [[PLShortVideoEditor alloc] initWithAsset:asset videoSize:CGSizeZero];
+    self.shortVideoEditor.delegate = self;
+    self.shortVideoEditor.loopEnabled = YES;
+    
+    // 要处理的视频的时间区域
+    CMTime start = CMTimeMake([self.movieSettings[PLSStartTimeKey] floatValue] * 1000, 1000);
+    CMTime duration = CMTimeMake([self.movieSettings[PLSDurationKey] floatValue] * 1000, 1000);
+    self.shortVideoEditor.timeRange = CMTimeRangeMake(start, duration);
+    
+    // 视频的预览视图
+    self.shortVideoEditor.previewView.frame = CGRectMake(0, PLS_BaseToolboxView_HEIGHT, PLS_SCREEN_WIDTH, PLS_SCREEN_WIDTH);
+    [self.view addSubview:self.shortVideoEditor.previewView];
 }
 
 #pragma mark -- 配置视图
@@ -145,29 +181,34 @@ PLSSelectionViewDelegate
 }
 
 - (void)setupSelectionView {
-    self.selectionView = [[PLSSelectionView alloc] initWithFrame:CGRectMake(0, PLS_BaseToolboxView_HEIGHT + 10, PLS_SCREEN_WIDTH, 35) lineWidth:1 lineColor:[UIColor blackColor]];
-    [self.selectionView setItemsWithTitle:[NSArray arrayWithObjects:@"Medium", @"Highest", @"480P", @"540P", @"720P", @"1080P", nil] normalItemColor:[UIColor whiteColor] selectItemColor:[UIColor blackColor] normalTitleColor:[UIColor blackColor] selectTitleColor:[UIColor whiteColor] titleTextSize:15 selectItemNumber:3];
-    self.selectionView.delegate = self;
-    self.selectionView.layer.cornerRadius = 5.0;
-    [self.view addSubview:self.selectionView];
-    
-    self.transcoderPreset = PLSFilePreset960x540; // 默认, 对应 selectItemNumber:3
-}
-
-- (void)setupRotateVideoSelectionView {
     CGFloat rotateViewTopSpace;
     if (PLS_SCREEN_HEIGHT > 568) {
         rotateViewTopSpace = PLS_BaseToolboxView_HEIGHT + PLS_SCREEN_WIDTH + 32;
     } else{
         rotateViewTopSpace = PLS_BaseToolboxView_HEIGHT + PLS_SCREEN_WIDTH;
     }
-    self.rotateVideoSelectionView = [[PLSSelectionView alloc] initWithFrame:CGRectMake(0, rotateViewTopSpace, PLS_SCREEN_WIDTH, 35) lineWidth:1 lineColor:[UIColor blackColor]];
-    [self.rotateVideoSelectionView setItemsWithTitle:[NSArray arrayWithObjects:@"正立", @"左横", @"倒立", @"右横", nil] normalItemColor:[UIColor whiteColor] selectItemColor:[UIColor blackColor] normalTitleColor:[UIColor blackColor] selectTitleColor:[UIColor whiteColor] titleTextSize:15 selectItemNumber:0];
-    self.rotateVideoSelectionView.delegate = self;
-    self.rotateVideoSelectionView.layer.cornerRadius = 5.0;
-    [self.view addSubview:self.rotateVideoSelectionView];
     
-    self.rotateOrientation = PLSPreviewOrientationPortrait; // 默认正立
+    self.selectionView = [[PLSSelectionView alloc] initWithFrame:CGRectMake(0, rotateViewTopSpace, PLS_SCREEN_WIDTH, 35) lineWidth:1 lineColor:[UIColor blackColor]];
+    [self.selectionView setItemsWithTitle:[NSArray arrayWithObjects:@"Medium", @"Highest", @"480P", @"540P", @"720P", @"1080P", nil] normalItemColor:[UIColor whiteColor] selectItemColor:[UIColor blackColor] normalTitleColor:[UIColor blackColor] selectTitleColor:[UIColor whiteColor] titleTextSize:15 selectItemNumber:3];
+    self.selectionView.delegate = self;
+    self.selectionView.layer.cornerRadius = 5.0;
+    [self.view addSubview:self.selectionView];
+    
+    self.transcoderPreset = PLSFilePreset960x540; // 默认, 对应 selectItemNumber:3
+    self.bitrate = 3000 * 1000; // 设置码率
+    
+    // 视频旋转
+    UIButton *rotateVideoButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    rotateVideoButton.frame = CGRectMake(PLS_SCREEN_WIDTH - 120, self.selectionView.frame.origin.y + 38, 100, 36);
+    [rotateVideoButton setTitle:@"旋转视频" forState:UIControlStateNormal];
+    [rotateVideoButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    rotateVideoButton.titleLabel.font = [UIFont systemFontOfSize:16];
+    rotateVideoButton.layer.cornerRadius = 5;
+    rotateVideoButton.layer.borderWidth = 1;
+    rotateVideoButton.layer.borderColor = [UIColor whiteColor].CGColor;
+
+    [rotateVideoButton addTarget:self action:@selector(rotateVideoButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:rotateVideoButton];
 }
 
 - (void)setupClipMovieView {
@@ -198,48 +239,21 @@ PLSSelectionViewDelegate
     [self.activityIndicatorView stopAnimating];
 }
 
-#pragma mark -- 播放器初始化
-- (void)initPlayer {
-    if (!_url) {
-        return;
-    }
-    
-    AVAsset *movieAsset = [AVURLAsset URLAssetWithURL:self.url options:nil];
-    self.startTime = 0.f;
-    self.endTime = CMTimeGetSeconds(movieAsset.duration);
-    self.playerItem = [AVPlayerItem playerItemWithAsset:movieAsset];
-    self.player = [AVPlayer playerWithPlayerItem:self.playerItem];
-    self.playerLayer = [AVPlayerLayer playerLayerWithPlayer:_player];
-    
-    self.playerLayer.frame = CGRectMake(0, PLS_BaseToolboxView_HEIGHT, PLS_SCREEN_WIDTH, PLS_SCREEN_WIDTH);
-    self.playerLayer.videoGravity = AVLayerVideoGravityResizeAspect;
-    
-    UIView *playerView = [[UIView alloc] initWithFrame:self.playerLayer.frame];
-    [playerView.layer addSublayer:self.playerLayer];
-    [self.view insertSubview:playerView belowSubview:self.baseToolboxView];
-}
-
 #pragma mark - PLSClipMovieView delegate
 - (void)didStartDragView {
-    //    if (self.player.rate > 0) { // 正在播放的时候
-    //        [self.player pause];
-    //    }
+ 
 }
 
-- (void)clipFrameView:(PLSClipMovieView *)clipFrameView didDragView:(CMTime)time {
+- (void)clipFrameView:(PLSClipMovieView *)clipFrameView didEndDragLeftView:(CMTime)leftTime rightView:(CMTime)rightTime {
+    CGFloat start = CMTimeGetSeconds(leftTime);
+    CGFloat end = CMTimeGetSeconds(rightTime);
+    CGFloat duration = end - start;
     
-}
-
-- (void)clipFrameView:(PLSClipMovieView *)clipFrameView didEndDragLeftView:(CMTime)time; {
-    self.startTime = CMTimeGetSeconds(time);
+    self.movieSettings[PLSStartTimeKey] = [NSNumber numberWithFloat:start];
+    self.movieSettings[PLSDurationKey] = [NSNumber numberWithFloat:duration];
     
-    [self.player seekToTime:time toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
-}
-
-- (void)clipFrameView:(PLSClipMovieView *)clipFrameView didEndDragRightView:(CMTime)time; {
-    self.endTime = CMTimeGetSeconds(time);
-    
-    [self.player seekToTime:time toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
+    self.shortVideoEditor.timeRange = CMTimeRangeMake(leftTime, CMTimeSubtract(rightTime, leftTime));
+    [self.shortVideoEditor startEditing];
 }
 
 - (void)clipFrameView:(PLSClipMovieView *)clipFrameView isScrolling:(BOOL)scrolling {
@@ -249,50 +263,84 @@ PLSSelectionViewDelegate
 #pragma mark -- PLSSelectionViewDelegate
 - (void)selectionView:(PLSSelectionView *)selectionView didSelectedItemNumber:(NSInteger)number {
     if (selectionView == self.selectionView) {
+        // bitrate 可以根据业务的实际需求设置为相应的值，以下 bitrate 的取值仅供参考
+        // 如果 bitrate 的值大于原始视频的视频码率，SDK 在内部会重置 bitrate 的值为原始视频的视频码率。
         switch (number) {
             case 0:
+            {
                 self.transcoderPreset = PLSFilePresetMediumQuality;
+                self.bitrate = 3000 * 1000;
+            }
                 break;
             case 1:
+            {
                 self.transcoderPreset = PLSFilePresetHighestQuality;
+                self.bitrate = 6000 * 1000;
+
+            }
                 break;
             case 2:
+            {
                 self.transcoderPreset = PLSFilePreset640x480;
+                self.bitrate = 2000 * 1000;
+            }
                 break;
             case 3:
+            {
                 self.transcoderPreset = PLSFilePreset960x540;
+                self.bitrate = 3000 * 1000;
+            }
                 break;
             case 4:
+            {
                 self.transcoderPreset = PLSFilePreset1280x720;
+                self.bitrate = 4000 * 1000;
+            }
                 break;
             case 5:
+            {
                 self.transcoderPreset = PLSFilePreset1920x1080;
+                self.bitrate = 6000 * 1000;
+            }
                 break;
                 
             default:
+            {
                 self.transcoderPreset = PLSFilePreset960x540;
-                break;
-        }
-    } else if (selectionView == self.rotateVideoSelectionView) {
-        switch (number) {
-            case 0:
-                self.rotateOrientation = PLSPreviewOrientationPortrait;
-                break;
-            case 1:
-                self.rotateOrientation = PLSPreviewOrientationLandscapeLeft;
-                break;
-            case 2:
-                self.rotateOrientation = PLSPreviewOrientationPortraitUpsideDown;
-                break;
-            case 3:
-                self.rotateOrientation = PLSPreviewOrientationLandscapeRight;
-                break;
-        
-            default:
-                self.rotateOrientation = PLSPreviewOrientationPortrait;
+                self.bitrate = 3000 * 1000;
+            }
                 break;
         }
     }
+}
+
+#pragma mark - 旋转视频
+- (void)rotateVideoButtonEvent:(UIButton *)button {    
+    AVAsset *asset = self.movieSettings[PLSAssetKey];
+    if (![self checkMovieHasVideoTrack:asset]) {
+        NSString *errorInfo = @"Error: movie has no videoTrack";
+        NSLog(@"%s, %@", __func__, errorInfo);
+        AlertViewShow(errorInfo);
+        return;
+    }
+    
+    self.rotateOrientation = [self.shortVideoEditor rotateVideoLayer];
+    NSLog(@"videoLayerOrientation: %ld", (long)self.rotateOrientation);
+}
+
+// 检查视频文件中是否含有视频轨道
+- (BOOL)checkMovieHasVideoTrack:(AVAsset *)asset {
+    BOOL hasVideoTrack = YES;
+    
+    NSArray *videoAssetTracks = [asset tracksWithMediaType:AVMediaTypeVideo];
+    
+    if (videoAssetTracks.count > 0) {
+        hasVideoTrack = YES;
+    } else {
+        hasVideoTrack = NO;
+    }
+    
+    return hasVideoTrack;
 }
 
 #pragma mark -- UIButton 按钮响应事件
@@ -310,17 +358,23 @@ PLSSelectionViewDelegate
 
 #pragma mark -- 开始视频转码动作
 - (void)movieTransCodeAction {
-    __weak typeof(self) weakSelf = self;
+    [self.shortVideoEditor stopEditing];
     
-    // 比如选取 [startTime, endTime] 这段视频来转码输出
-    CMTimeRange timeRange = CMTimeRangeFromTimeToTime(CMTimeMake(self.startTime, 1), CMTimeMake(self.endTime, 1));
+    // 比如选取起始时间为 start, 时长为 duration 的视频区域来转码输出
+    CGFloat start = [self.movieSettings[PLSStartTimeKey] floatValue];
+    CGFloat duration = [self.movieSettings[PLSDurationKey] floatValue];
+    
+    CMTimeRange timeRange = CMTimeRangeMake(CMTimeMake(start * 1000, 1000), CMTimeMake(duration * 1000, 1000));
 
     self.shortVideoTranscoder = [[PLShortVideoTranscoder alloc] initWithURL:self.url];
     self.shortVideoTranscoder.outputFileType = PLSFileTypeMPEG4;
     self.shortVideoTranscoder.outputFilePreset = self.transcoderPreset;
+    self.shortVideoTranscoder.bitrate = self.bitrate;
     self.shortVideoTranscoder.timeRange = timeRange;
     self.shortVideoTranscoder.rotateOrientation = self.rotateOrientation;
+//    self.shortVideoTranscoder.outputURL = [self getFileURL:@"videoTranscoder-outputURL"]; // 自定义视频的存放地址
     
+    __weak typeof(self) weakSelf = self;
     [self.shortVideoTranscoder setCompletionBlock:^(NSURL *url){
 
         NSLog(@"transCoding successd, url: %@", url);
@@ -334,9 +388,22 @@ PLSSelectionViewDelegate
             
             NSLog(@"%@-->%@", beforeTranscodingSize, afterTranscodingSize);
             
-            ClipMovieViewController *clipMovieViewController = [[ClipMovieViewController alloc] init];
-            clipMovieViewController.url = url;
-            [weakSelf presentViewController:clipMovieViewController animated:YES completion:nil];
+            // 设置音视频、水印等编辑信息
+            NSMutableDictionary *outputSettings = [[NSMutableDictionary alloc] init];
+            // 待编辑的原始视频素材
+            NSMutableDictionary *plsMovieSettings = [[NSMutableDictionary alloc] init];
+            AVAsset *asset = [AVAsset assetWithURL:url];
+            plsMovieSettings[PLSURLKey] = url;
+            plsMovieSettings[PLSAssetKey] = asset;
+            plsMovieSettings[PLSStartTimeKey] = [NSNumber numberWithFloat:0.f];
+            plsMovieSettings[PLSDurationKey] = [NSNumber numberWithFloat:CMTimeGetSeconds(asset.duration)];
+            plsMovieSettings[PLSVolumeKey] = [NSNumber numberWithFloat:1.0f];
+            outputSettings[PLSMovieSettingsKey] = plsMovieSettings;
+            
+            EditViewController *videoEditViewController = [[EditViewController alloc] init];
+            videoEditViewController.settings = outputSettings;
+            videoEditViewController.filesURLArray = @[url];
+            [weakSelf presentViewController:videoEditViewController animated:YES completion:nil];
         });
     }];
     
@@ -344,9 +411,9 @@ PLSSelectionViewDelegate
         
         NSLog(@"transCoding failed: %@", error);
         
-        AlertViewShow(error);
-        
         dispatch_async(dispatch_get_main_queue(), ^{
+            AlertViewShow(error);
+
             [weakSelf removeActivityIndicatorView];
             weakSelf.progressLabel.text = @"";
         });
@@ -363,6 +430,34 @@ PLSSelectionViewDelegate
     [self.shortVideoTranscoder startTranscoding];
 }
 
+#pragma mark - 自定义文件的名称和存储路径
+- (NSURL *)getFileURL:(NSString *)name {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *path = [paths objectAtIndex:0];
+    
+    path = [path stringByAppendingPathComponent:@"TestPath"];
+    
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    if(![fileManager fileExistsAtPath:path]) {
+        // 如果不存在,则说明是第一次运行这个程序，那么建立这个文件夹
+        [fileManager createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
+    }
+    
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    formatter.dateFormat = @"yyyyMMddHHmmss";
+    NSString *nowTimeStr = [formatter stringFromDate:[NSDate dateWithTimeIntervalSinceNow:0]];
+    
+    if (name != nil && ![name isEqualToString:@""]) {
+        nowTimeStr = name;
+    }
+    
+    NSString *fileName = [[path stringByAppendingPathComponent:nowTimeStr] stringByAppendingString:@".mp4"];
+    
+    NSURL *fileURL = [NSURL fileURLWithPath:fileName];
+    
+    return fileURL;
+}
+
 #pragma mark -- 计算文件的大小，单位为 M
 - (CGFloat)fileSize:(NSURL *)url {
     return [[NSData dataWithContentsOfURL:url] length] / 1024.00 / 1024.00;
@@ -377,6 +472,27 @@ PLSSelectionViewDelegate
     float durationSeconds = CMTimeGetSeconds(duration);
     
     return durationSeconds;
+}
+
+#pragma mark - 程序的状态监听
+- (void)observerUIApplicationStatusForShortVideoEditor {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(shortVideoEditorWillResignActiveEvent:) name:UIApplicationWillResignActiveNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(shortVideoEditorDidBecomeActiveEvent:) name:UIApplicationDidBecomeActiveNotification object:nil];
+}
+
+- (void)removeObserverUIApplicationStatusForShortVideoEditor {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillResignActiveNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
+}
+
+- (void)shortVideoEditorWillResignActiveEvent:(id)sender {
+    NSLog(@"[self.shortVideoEditor UIApplicationWillResignActiveNotification]");
+    [self.shortVideoEditor stopEditing];
+}
+
+- (void)shortVideoEditorDidBecomeActiveEvent:(id)sender {
+    NSLog(@"[self.shortVideoEditor UIApplicationDidBecomeActiveNotification]");
+    [self.shortVideoEditor startEditing];
 }
 
 #pragma mark -- 隐藏状态栏
@@ -397,10 +513,6 @@ PLSSelectionViewDelegate
     }
     
     self.selectionView = nil;
-    
-    self.player = nil;
-    self.playerLayer = nil;
-    self.playerItem = nil;
     
     self.shortVideoTranscoder = nil;
     
