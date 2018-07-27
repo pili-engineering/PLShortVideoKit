@@ -76,6 +76,9 @@ UICollectionViewDelegateFlowLayout
 @property (strong, nonatomic) UISwitch *sampleSwitch;//素材音频是否加入混音使用开关
 @property (strong, nonatomic) UISlider *microphoneSlider;//如果做混音处理，混音的时候麦克风采集音频音量
 @property (strong, nonatomic) UISlider *sampleSlider;//如果做混音处理，混音的时候素材音频音量
+@property (assign, nonatomic) CGFloat maxDuration;
+@property (assign, nonatomic) CGFloat minDuration;
+@property (assign, nonatomic) CGFloat fileEndDecoding;
 
 @end
 
@@ -99,6 +102,8 @@ UICollectionViewDelegateFlowLayout
 - (void)loadView{
     [super loadView];
     self.view.backgroundColor = PLS_RGBCOLOR(25, 24, 36);
+    
+    self.minDuration = 2.0;
     
     // --------------------------
     // 短视频录制核心类设置
@@ -155,7 +160,6 @@ UICollectionViewDelegateFlowLayout
     
     self.videoMixRecorder = [[PLSVideoMixRecorder alloc] initWithVideoConfiguration:self.videoConfiguration audioConfiguration:self.audioConfiguration];
     self.videoMixRecorder.delegate = self;
-    self.videoMixRecorder.maxDuration = 10; // 设置最长录制时长
     self.videoMixRecorder.outputFileType = PLSFileTypeMPEG4;
     self.videoMixRecorder.innerFocusViewShowEnable = YES; // 显示 SDK 内部自带的对焦动画
     self.videoMixRecorder.mergeVideoURL = self.mixURL;
@@ -473,6 +477,7 @@ UICollectionViewDelegateFlowLayout
 - (void)resetButtonEvent:(id)sender {
     [self.videoMixRecorder resetRecording];
     self.endButton.hidden = YES;
+    self.fileEndDecoding = NO;
     [_progressBar deleteAllProgress];
 }
 
@@ -519,7 +524,6 @@ UICollectionViewDelegateFlowLayout
 // 结束录制
 - (void)endButtonEvent:(id)sender {
     AVAsset *asset = self.videoMixRecorder.assetRepresentingAllFiles;
-    [self.videoMixRecorder finishRecording];
     [self playEvent:asset];
 }
 
@@ -598,7 +602,7 @@ UICollectionViewDelegateFlowLayout
 #pragma mark -- PLSVideoMixRecorderDelegate 视频录制回调
 // 素材视频的部分信息回调
 - (void)videoMixRecorder:(PLSVideoMixRecorder *__nonnull)recorder didGetSampleVideoInfo:(int)videoWith videoHeight:(int)videoheight frameRate:(float)frameRate duration:(CMTime)duration {
-    self.videoMixRecorder.maxDuration = CMTimeGetSeconds(duration);
+    self.maxDuration = CMTimeGetSeconds(duration);
 }
 
 
@@ -616,9 +620,9 @@ UICollectionViewDelegateFlowLayout
 
 // 正在录制的过程中
 - (void)videoMixRecorder:(PLSVideoMixRecorder *)recorder didRecordingToOutputFileAtURL:(NSURL *)fileURL fileDuration:(CGFloat)fileDuration totalDuration:(CGFloat)totalDuration {
-    [_progressBar setLastProgressToWidth:fileDuration / self.videoMixRecorder.maxDuration * _progressBar.frame.size.width];
+    [_progressBar setLastProgressToWidth:fileDuration / self.maxDuration * _progressBar.frame.size.width];
     
-    self.endButton.enabled = (totalDuration >= self.videoMixRecorder.minDuration);
+    self.endButton.enabled = NO;
     
     self.endButton.hidden = YES;
     self.filePathButton.hidden = YES;
@@ -634,6 +638,7 @@ UICollectionViewDelegateFlowLayout
     
     [_progressBar stopShining];
     
+    self.endButton.enabled = totalDuration > self.minDuration;
     self.endButton.hidden = NO;
     self.resetButton.hidden = NO;
     self.selectVideoButton.hidden = NO;
@@ -641,11 +646,7 @@ UICollectionViewDelegateFlowLayout
     self.sampleSwitch.enabled = YES;
     self.acousticEchoCancellationSwitch.enabled = YES;
     
-    AVAsset *asset = [AVAsset assetWithURL:_URL];
-    CGFloat duration = CMTimeGetSeconds(asset.duration);
-    self.draftButton.hidden = (totalDuration +  duration) >= self.videoMixRecorder.maxDuration;
-    
-    if (totalDuration >= self.videoMixRecorder.maxDuration) {
+    if (self.fileEndDecoding) {
         [self endButtonEvent:nil];
     }
 }
@@ -653,15 +654,7 @@ UICollectionViewDelegateFlowLayout
 // 素材视频已经到达尾部
 - (void)videoMixRecorder:(PLSVideoMixRecorder *)recorder didFinishSampleMediaDecoding:(CMTime)sampleMediaDuration {
     NSLog(@"sample file end");
-}
-
-// 在达到指定的视频录制时间 maxDuration 后，如果再调用 [PLSVideoMixRecorder startRecording]，直接执行该回调
-- (void)videoMixRecorder:(PLSVideoMixRecorder *)recorder didFinishRecordingMaxDuration:(CGFloat)maxDuration {
-    NSLog(@"finish recording maxDuration: %f", maxDuration);
-    
-    AVAsset *asset = self.videoMixRecorder.assetRepresentingAllFiles;
-    [self playEvent:asset];
-    
+    self.fileEndDecoding = YES;
 }
 
 // Microphone 采集数据回调

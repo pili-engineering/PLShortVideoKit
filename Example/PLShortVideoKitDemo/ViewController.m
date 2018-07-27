@@ -13,6 +13,7 @@
 #import "H265MovieViewController.h"
 #import "ImageRotateViewController.h"
 #import "MultiVideoViewController.h"
+#import "VersionViewController.h"
 
 #define PLS_RGBCOLOR(r,g,b) [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:1]
 
@@ -65,6 +66,14 @@
     [mulitRecordButton addTarget:self action:@selector(mulitVideoButtonEvent:) forControlEvents:UIControlEventTouchDown];
     [self.view addSubview:mulitRecordButton];
     
+    
+    UIButton *versionButton = [UIButton buttonWithType:(UIButtonTypeSystem)];
+    [versionButton setTitle:@"查看版本信息" forState:(UIControlStateNormal)];
+    [versionButton setTintColor:[UIColor whiteColor]];
+    [versionButton addTarget:self action:@selector(versionButtonEvent:) forControlEvents:(UIControlEventTouchUpInside)];
+    [versionButton sizeToFit];
+    versionButton.center =  CGPointMake(self.view.center.x, self.view.bounds.size.height - 30);
+    [self.view addSubview:versionButton];
 };
 
 - (void)didReceiveMemoryWarning {
@@ -111,6 +120,12 @@
 - (void)mulitVideoButtonEvent:(id)sender {
     MultiVideoViewController *multiVideoViewController = [[MultiVideoViewController alloc] init];
     [self presentViewController:multiVideoViewController animated:YES completion:nil];
+}
+
+// 查看版本信息
+- (void)versionButtonEvent:(id)sender {
+    VersionViewController *versionViewController = [[VersionViewController alloc] init];
+    [self presentViewController:versionViewController animated:YES completion:nil];
 }
 
 - (void)dealloc {

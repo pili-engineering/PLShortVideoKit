@@ -83,6 +83,7 @@ PLSRateButtonViewDelegate
 @property (strong, nonatomic) UIButton *musicButton;
 @property (strong, nonatomic) UIActivityIndicatorView *activityIndicatorView;
 
+@property (strong, nonatomic) UIButton *monitorButton;
 // 实时截图按钮
 @property (strong, nonatomic) UIButton *snapshotButton;
 
@@ -170,12 +171,7 @@ PLSRateButtonViewDelegate
     self.shortVideoRecorder.innerFocusViewShowEnable = YES; // 显示 SDK 内部自带的对焦动画
     self.shortVideoRecorder.previewView.frame = CGRectMake(0, 0, PLS_SCREEN_WIDTH, PLS_SCREEN_HEIGHT);
     [self.view addSubview:self.shortVideoRecorder.previewView];
-    
     self.shortVideoRecorder.backgroundMonitorEnable = NO;
-    if (!self.shortVideoRecorder.backgroundMonitorEnable) {
-        // backgroundMonitorEnable 为 NO 时，应用层添加监听前后台状态的通知，应用层自行在通知事件中处理视频录制的暂停、开始
-        [self addObserverEvent];
-    }
 
     // 录制前是否开启自动检测设备方向调整视频拍摄的角度（竖屏、横屏）
     if (self.isUseAutoCheckDeviceOrientationBeforeRecording) {
@@ -362,6 +358,20 @@ PLSRateButtonViewDelegate
     self.musicButton.imageEdgeInsets = UIEdgeInsetsMake(6, 6, 6, 6);
     [self.musicButton addTarget:self action:@selector(musicButtonOnClick:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:_musicButton];
+    
+    //是否开启 SDK 退到后台监听
+    self.monitorButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [self.monitorButton setTitle:@"监听已关闭" forState:UIControlStateNormal];
+    [self.monitorButton setTitle:@"监听已打开" forState:UIControlStateSelected];
+    self.monitorButton.selected = NO;
+    [self.monitorButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    self.monitorButton.titleLabel.font = [UIFont systemFontOfSize:14];
+    [self.monitorButton sizeToFit];
+    self.monitorButton.frame = CGRectMake(PLS_SCREEN_WIDTH - self.monitorButton.bounds.size.width, 190, self.monitorButton.bounds.size.width, self.monitorButton.bounds.size.height);
+    [self.monitorButton addTarget:self action:@selector(monitorButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.monitorButton];
+
+    
     
     // 展示拼接视频的动画
     self.activityIndicatorView = [[UIActivityIndicatorView alloc] initWithFrame:self.view.bounds];
@@ -597,7 +607,7 @@ PLSRateButtonViewDelegate
 - (void)draftVideoButtonOnClick:(id)sender{
     AVAsset *asset = [AVAsset assetWithURL:_URL];
     CGFloat duration = CMTimeGetSeconds(asset.duration);
-    if ((self.shortVideoRecorder.getTotalDuration + duration) < self.shortVideoRecorder.maxDuration) {
+    if ((self.shortVideoRecorder.getTotalDuration + duration) <= self.shortVideoRecorder.maxDuration) {
         [self.shortVideoRecorder insertVideo:_URL];
         if (self.shortVideoRecorder.getTotalDuration != 0) {
             _deleteButton.style = PLSDeleteButtonStyleNormal;
@@ -640,6 +650,16 @@ PLSRateButtonViewDelegate
             });
         }
     }];
+}
+
+- (void)monitorButtonEvent:(UIButton *)button {
+    button.selected = !button.isSelected;
+    self.shortVideoRecorder.backgroundMonitorEnable = button.selected;
+    if (button.selected) {
+        [self removeObserverEvent];
+    } else {
+        [self addObserverEvent];
+    }
 }
 
 //

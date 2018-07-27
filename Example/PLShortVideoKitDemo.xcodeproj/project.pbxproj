@@ -187,6 +187,7 @@
 		7635E40A20CE8F5900E36027 /* select_meterial@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7635E40420CE8F5900E36027 /* select_meterial@3x.png */; };
 		7635E40B20CE8F5900E36027 /* select_shoot@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7635E40520CE8F5900E36027 /* select_shoot@2x.png */; };
 		7636991A20871AC800626680 /* MixRecordViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7636991920871AC800626680 /* MixRecordViewController.m */; };
+		76564FCC210B2871004B62E9 /* VersionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 76564FCB210B2871004B62E9 /* VersionViewController.m */; };
 		7678EE6E20C96E8300231AA8 /* VideoMixViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7678EE6D20C96E8300231AA8 /* VideoMixViewController.m */; };
 		7697482C202835D2001AC847 /* TransitionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 76974824202835D1001AC847 /* TransitionViewController.m */; };
 		7697482D202835D2001AC847 /* TransitionModelSelectView.m in Sources */ = {isa = PBXBuildFile; fileRef = 76974826202835D1001AC847 /* TransitionModelSelectView.m */; };
@@ -457,6 +458,8 @@
 		7635E40520CE8F5900E36027 /* select_shoot@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "select_shoot@2x.png"; path = "images/select_shoot@2x.png"; sourceTree = "<group>"; };
 		7636991820871AC800626680 /* MixRecordViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MixRecordViewController.h; sourceTree = "<group>"; };
 		7636991920871AC800626680 /* MixRecordViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MixRecordViewController.m; sourceTree = "<group>"; };
+		76564FCA210B2871004B62E9 /* VersionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VersionViewController.h; sourceTree = "<group>"; };
+		76564FCB210B2871004B62E9 /* VersionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VersionViewController.m; sourceTree = "<group>"; };
 		7678EE6C20C96E8300231AA8 /* VideoMixViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoMixViewController.h; sourceTree = "<group>"; };
 		7678EE6D20C96E8300231AA8 /* VideoMixViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VideoMixViewController.m; sourceTree = "<group>"; };
 		76974824202835D1001AC847 /* TransitionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TransitionViewController.m; sourceTree = "<group>"; };
@@ -600,6 +603,8 @@
 				0A26041A1FA80BC900609411 /* DubViewController.m */,
 				0AECA4F01E88466300AF2931 /* PlayViewController.h */,
 				0AECA4F11E88466300AF2931 /* PlayViewController.m */,
+				76564FCA210B2871004B62E9 /* VersionViewController.h */,
+				76564FCB210B2871004B62E9 /* VersionViewController.m */,
 				0A9435881E6CA2E2008845A3 /* Main.storyboard */,
 				0A94358B1E6CA2E2008845A3 /* Assets.xcassets */,
 				0A94358D1E6CA2E2008845A3 /* LaunchScreen.storyboard */,
@@ -1266,6 +1271,7 @@
 				C3FCBFCF1F305B37007EBB10 /* PLSFormatGifView.m in Sources */,
 				0ACE7C391ED8B072002FF4C9 /* PLSProgressBar.m in Sources */,
 				0AECA5001E88A60C00AF2931 /* RecordViewController.m in Sources */,
+				76564FCC210B2871004B62E9 /* VersionViewController.m in Sources */,
 				0AECA4F21E88466300AF2931 /* PlayViewController.m in Sources */,
 				C3A791371FA06F3A00C3F2D6 /* PLSLoadAnimationView.m in Sources */,
 				0A06B0BD1F123299003CA0F6 /* PLSFilterGroup.m in Sources */,

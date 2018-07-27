@@ -261,6 +261,7 @@ static NSString * const PLSClipMovieViewCellId = @"PLSClipMovieViewCellId";
     self.imageGenerator.requestedTimeToleranceBefore = kCMTimeZero;
     self.imageGenerator.requestedTimeToleranceAfter = kCMTimeZero;
     self.imageGenerator.appliesPreferredTrackTransform = YES;  // 截图的时候调整到正确的方向
+    self.imageGenerator.maximumSize = CGSizeMake(100, 100);
     
     [self.imageGenerator generateCGImagesAsynchronouslyForTimes:times completionHandler:^(CMTime requestedTime, CGImageRef  _Nullable image, CMTime actualTime, AVAssetImageGeneratorResult result, NSError * _Nullable error) {
         switch (result) {
