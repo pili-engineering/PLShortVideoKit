@@ -128,13 +128,6 @@
 - (void)videoMixRecorder:(PLSVideoMixRecorder *__nonnull)recorder didFinishSampleMediaDecoding:(CMTime)sampleMediaDuration;
 
 /**
- @abstract 在达到指定的视频录制时间 maxDuration 后，如果再调用 [PLSVideoMixRecorder startRecording]，那么会立即执行该回调。该回调功能是用于页面跳转
- 
- @since      v1.11.0
- */
-- (void)videoMixRecorder:(PLSVideoMixRecorder *__nonnull)recorder didFinishRecordingMaxDuration:(CGFloat)maxDuration;
-
-/**
  @abstract 发生错误回调
  
  @since      v1.11.0
@@ -158,20 +151,6 @@
  @since      v1.11.0
  */
 - (AVAsset *__nonnull)assetRepresentingAllFiles;
-
-/**
- @brief 视频录制的最大时长，单位为秒。默认为10秒
- 
- @since      v1.11.0
- */
-@property (assign, nonatomic) CGFloat maxDuration;
-
-/**
- @brief 视频录制的最短时间，单位为秒。默认为2秒
- 
- @since      v1.11.0
- */
-@property (assign, nonatomic) CGFloat minDuration;
 
 /**
  @brief 视频配置，只读
@@ -254,6 +233,19 @@
 @property (strong, nonatomic) NSURL   *__nonnull mergeVideoURL;
 
 /**
+ @abstract  默认为 YES，即 SDK 内部根据监听到的 Application 前后台状态自动停止和开始录制视频
+ 
+ @warning   设置为 YES 时，即 Application 进入后台，若当前为拍摄视频状态，SDK 内部会自动停止视频的录制，恢复到前台，SDK 内部自动启动视频的录制；
+            设置为 NO 时，即 Application 进入后台，若当前为拍摄视频状态，SDK 内部会停止视频的录制，恢复到前台，SDK 内部不会自动启动视频的录制。
+            为什么设置为 NO，SDK 内部仍然要在 Application 进入后台时停止视频录制呢？原因是，开发者将该属性设置为 NO 后，可能在应用层忘记处理
+            Application 进入后台时要调用 stopRecording 来停止视频的录制，进而出现 crash。所以，不管该属性是 YES 还是 NO，当 Application
+            进入后台，SDK 内部都会调用 stopRecording 自动停止视频的录制。
+ 
+ @since      v1.12.0
+ */
+@property (assign, nonatomic) BOOL backgroundMonitorEnable;
+
+/**
  @brief 开始录制视频，录制的视频的存放地址由 SDK 内部自动生成
  
  @warning 获取所有录制的视频段的地址，可以使用 - (NSArray<NSURL *> *__nullable)getAllFilesURL
@@ -294,13 +286,6 @@
  @since      v1.11.0
  */
 - (void)resetRecording;
-
-/**
- @brief 完成录制，这个方法主要是将声音采集和播放release掉，不然播放其他音频文件，会有问题出现
- 
- @since      v1.11.0
- */
-- (void)finishRecording;
 
 /**
  @brief 获取所有录制的视频段的地址
