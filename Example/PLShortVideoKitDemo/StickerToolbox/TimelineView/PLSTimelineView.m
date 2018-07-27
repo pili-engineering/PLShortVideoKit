@@ -411,14 +411,14 @@ static NSString *PLSTimelineItemCellId = @"PLSTimelineItemCell";
     
     self.imageGenerator = [[AVAssetImageGenerator alloc] initWithAsset:asset];
     self.imageGenerator.appliesPreferredTrackTransform = YES;
-    
+    self.imageGenerator.maximumSize = CGSizeMake(100, 100);
+
     AVAssetImageGeneratorCompletionHandler completionHandler = ^(CMTime requestedTime, CGImageRef imageRef, CMTime actualTime, AVAssetImageGeneratorResult result, NSError *err) {
         if (result == AVAssetImageGeneratorSucceeded) {
             UIImage *image = [UIImage imageWithCGImage:imageRef];
             [self addGenateImage:image];
         }
     };
-    self.imageGenerator.maximumSize = CGSizeMake(100, 100);
     [self.imageGenerator generateCGImagesAsynchronouslyForTimes:timeValues completionHandler:completionHandler];
     
     [self.collectionView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];

@@ -202,6 +202,7 @@ PLSClipMovieViewDelegate
 - (UIImage *) getVideoPreViewImage:(AVAsset *)asset {
     AVAssetImageGenerator *assetGen = [[AVAssetImageGenerator alloc] initWithAsset:asset];
     
+    assetGen.maximumSize = CGSizeMake(150, 150);
     assetGen.appliesPreferredTrackTransform = YES;
     CMTime time = CMTimeMakeWithSeconds(0.0, 600);
     NSError *error = nil;
@@ -216,6 +217,15 @@ PLSClipMovieViewDelegate
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    // 用来演示如何获取视频的分辨率 videoSize
+    NSDictionary *movieSettings = self.settings[PLSMovieSettingsKey];
+    AVAsset *movieAsset = movieSettings[PLSAssetKey];
+    if (!movieAsset) {
+        NSURL *movieURL = movieSettings[PLSURLKey];
+        movieAsset = [AVAsset assetWithURL:movieURL];
+    }
+    self.videoSize = movieAsset.pls_videoSize;
     
     [self setupShortVideoEditor];
     
@@ -309,8 +319,8 @@ PLSClipMovieViewDelegate
     self.shortVideoEditor.timeRange = CMTimeRangeMake(start, duration);
     // 视频编辑时，添加水印
     [self.shortVideoEditor setWaterMarkWithImage:self.watermarkImage position:self.watermarkPosition];
-//    // 视频编辑时，改变预览分辨率
-//    self.shortVideoEditor.videoSize = self.videoSize;
+    // 视频编辑时，改变预览分辨率
+    self.shortVideoEditor.videoSize = self.videoSize;
     
     // 滤镜
     UIImage *coverImage = [self getVideoPreViewImage:self.movieSettings[PLSAssetKey]];
@@ -1237,40 +1247,42 @@ PLSClipMovieViewDelegate
     
     // 多音效
     if (self.selectionViewIndex == 4 && self.currentSelectedIndexPath.row != 0) {
-        do {
-            if ([self.currentSelectedIndexPath compare:self.lastSelectedIndexPath] == NSOrderedSame) {
-                if (self.processAudioItem) {
-                    self.processAudioItem.endTime = CMTimeGetSeconds(timestamp);
-                    [self.timelineView updateTimelineAudioItem:self.processAudioItem];
-                    
-                    self.processAudioItem = nil;
-                    self.currentSelectedIndexPath = nil;
-                    self.lastSelectedIndexPath = nil;
-                    
-                    // 更新音效信息，并显示
-                    [self updateMultiMusics:[self.timelineView getAllAddedAudioItems]];
-                    
-                    break;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            do {
+                if ([self.currentSelectedIndexPath compare:self.lastSelectedIndexPath] == NSOrderedSame) {
+                    if (self.processAudioItem) {
+                        self.processAudioItem.endTime = CMTimeGetSeconds(timestamp);
+                        [self.timelineView updateTimelineAudioItem:self.processAudioItem];
+                        
+                        self.processAudioItem = nil;
+                        self.currentSelectedIndexPath = nil;
+                        self.lastSelectedIndexPath = nil;
+                        
+                        // 更新音效信息，并显示
+                        [self updateMultiMusics:[self.timelineView getAllAddedAudioItems]];
+                        
+                        break;
+                    }
                 }
-            }
-            
-            if (!self.processAudioItem) {
-                PLSEditVideoCell *editVideoCell = (PLSEditVideoCell *)[self.editCollectionView cellForItemAtIndexPath:self.currentSelectedIndexPath];
                 
-                CGFloat startTime = CMTimeGetSeconds(timestamp);
-                CGFloat endTime = 1.0f;
-                NSString *audioName = editVideoCell.iconPromptLabel.text;
-                
-                self.processAudioItem = [[PLSTimeLineAudioItem alloc] init];
-                self.processAudioItem.url = [[NSBundle mainBundle] URLForResource:audioName withExtension:nil];
-                self.processAudioItem.startTime = startTime;
-                self.processAudioItem.endTime = endTime;
-                self.processAudioItem.volume = 1.0f;
-                self.processAudioItem.displayColor = [self colorWithName:audioName];
-            }
-            self.processAudioItem.endTime = CMTimeGetSeconds(timestamp);
-            [self.timelineView updateTimelineAudioItem:self.processAudioItem];
-        } while (0);
+                if (!self.processAudioItem) {
+                    PLSEditVideoCell *editVideoCell = (PLSEditVideoCell *)[self.editCollectionView cellForItemAtIndexPath:self.currentSelectedIndexPath];
+                    
+                    CGFloat startTime = CMTimeGetSeconds(timestamp);
+                    CGFloat endTime = 1.0f;
+                    NSString *audioName = editVideoCell.iconPromptLabel.text;
+                    
+                    self.processAudioItem = [[PLSTimeLineAudioItem alloc] init];
+                    self.processAudioItem.url = [[NSBundle mainBundle] URLForResource:audioName withExtension:nil];
+                    self.processAudioItem.startTime = startTime;
+                    self.processAudioItem.endTime = endTime;
+                    self.processAudioItem.volume = 1.0f;
+                    self.processAudioItem.displayColor = [self colorWithName:audioName];
+                }
+                self.processAudioItem.endTime = CMTimeGetSeconds(timestamp);
+                [self.timelineView updateTimelineAudioItem:self.processAudioItem];
+            } while (0);
+        });
     }
     
     return tempPixelBuffer;
