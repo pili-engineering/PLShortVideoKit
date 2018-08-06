@@ -60,10 +60,18 @@
 
 /**
  @abstract 获取到麦克风原数据时的回调，需要注意的是这个回调在 microphone 数据的输出线程，请不要做过于耗时的操作，否则可能阻塞该线程影响音频输出或其他未知问题
+           如果需要修改音频数据，可以直接对 audioBufferList 进行修改
+ 
+ @since      v1.13.0
+ */
+- (void)videoMixRecorder:(PLSVideoMixRecorder *__nonnull)recorder microphoneSourceDidGetAudioBufferList:(AudioBufferList *__nonnull)audioBufferList;
+
+/**
+ @abstract 获取到麦克风原数据时的回调，需要注意的是这个回调在 microphone 数据的输出线程，请不要做过于耗时的操作，否则可能阻塞该线程影响音频输出或其他未知问题
  
  @since      v1.11.0
  */
-- (CMSampleBufferRef __nonnull)videoMixRecorder:(PLSVideoMixRecorder *__nonnull)recorder microphoneSourceDidGetSampleBuffer:(CMSampleBufferRef __nonnull)sampleBuffer;
+- (CMSampleBufferRef __nonnull)videoMixRecorder:(PLSVideoMixRecorder *__nonnull)recorder microphoneSourceDidGetSampleBuffer:(CMSampleBufferRef __nonnull)sampleBuffer __deprecated_msg("Method deprecated in v1.13.0. Use `videoMixRecorder: microphoneSourceDidGetAudioBufferList:`");
 
 #pragma mark -- 素材视频／音频数据的回调
 /**
@@ -74,12 +82,19 @@
 - (CVPixelBufferRef __nonnull)videoMixRecorder:(PLSVideoMixRecorder *__nonnull)recorder sampleSourceDidGetPixelBuffer:(CVPixelBufferRef __nonnull)pixelBuffer;
 
 /**
- @abstract 获取到素材数据时的回调，需要注意的是这个回调在 素材解码 数据的输出线程，请不要做过于耗时的操作，否则可能阻塞该线程影响音频输出或其他未知问题
+ @abstract 获取到素材音频数据时的回调，需要注意的是这个回调在 素材解码 数据的输出线程，请不要做过于耗时的操作，否则可能阻塞该线程影响音频输出或其他未知问题
+           如果需要修改音频数据，可以直接对 audioBufferList 进行修改
  
- @since      v1.11.1
+ @since      v1.13.0
  */
-- (CMSampleBufferRef __nonnull)videoMixRecorder:(PLSVideoMixRecorder *__nonnull)recorder sampleSourceDidGetSampleBuffer:(CMSampleBufferRef __nonnull)sampleBuffer;
+- (void)videoMixRecorder:(PLSVideoMixRecorder *__nonnull)recorder sampleSourceDidGetAudioBufferList:(AudioBufferList *__nonnull)audioBufferList;
 
+/**
+ @abstract 获取到素材音频数据时的回调，需要注意的是这个回调在 素材解码 数据的输出线程，请不要做过于耗时的操作，否则可能阻塞该线程影响音频输出或其他未知问题
+ 
+ @since      v1.11.0
+ */
+- (CMSampleBufferRef __nonnull)videoMixRecorder:(PLSVideoMixRecorder *__nonnull)recorder sampleSourceDidGetSampleBuffer:(CMSampleBufferRef __nonnull)sampleBuffer __deprecated_msg("Method deprecated in v1.13.0. Use `videoMixRecorder: sampleSourceDidGetAudioBufferList:`");
 
 #pragma mark -- 合并之后的视频／音频数据的回调
 /**
@@ -91,10 +106,18 @@
 
 /**
  @abstract 合并之后数据的回调, 便于开发者对音频数据做处理，需要注意的是这个回调在 合并 的输出线程，请不要做过于耗时的操作，否则可能会导致帧率下降
+           如果需要修改音频数据，可以直接对 audioBufferList 进行修改
+ 
+ @since      v1.13.0
+ */
+- (void)videoMixRecorder:(PLSVideoMixRecorder *__nonnull)recorder didGetMergeAudioBufferList:(AudioBufferList * __nonnull)audioBufferList;
+
+/**
+ @abstract 合并之后数据的回调, 便于开发者对音频数据做处理，需要注意的是这个回调在 合并 的输出线程，请不要做过于耗时的操作，否则可能会导致帧率下降
  
  @since      v1.11.1
  */
-- (CMSampleBufferRef __nonnull)videoMixRecorder:(PLSVideoMixRecorder *__nonnull)recorder didGetMergeAudioSampleBuffer:(CMSampleBufferRef __nonnull)sampleBuffer;
+- (CMSampleBufferRef __nonnull)videoMixRecorder:(PLSVideoMixRecorder *__nonnull)recorder didGetMergeAudioSampleBuffer:(CMSampleBufferRef __nonnull)sampleBuffer __deprecated_msg("Method deprecated in v1.13.0. Use `videoMixRecorder: didGetMergeAudioBufferList:`");
 
 
 #pragma mark -- 视频录制动作的回调

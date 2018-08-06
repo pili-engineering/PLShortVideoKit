@@ -144,7 +144,7 @@ UICollectionViewDelegateFlowLayout
     self.videoConfiguration.position = AVCaptureDevicePositionFront;
     self.videoConfiguration.sessionPreset = AVCaptureSessionPresetiFrame1280x720;
     self.videoConfiguration.videoFrameRate = 25;
-    self.videoConfiguration.averageVideoBitRate = 1024*1500;//1.5M
+    self.videoConfiguration.averageVideoBitRate = 1024*2000;//2.0M
     self.videoConfiguration.videoSize = CGSizeMake(720, 640);
     self.videoConfiguration.cameraVideoFrame = CGRectMake(0, 0, 360, 640);
     self.videoConfiguration.sampleVideoFrame = CGRectMake(360, 0, 360, 640);
@@ -657,25 +657,24 @@ UICollectionViewDelegateFlowLayout
     self.fileEndDecoding = YES;
 }
 
-// Microphone 采集数据回调
-- (CMSampleBufferRef __nonnull)videoMixRecorder:(PLSVideoMixRecorder *__nonnull)recorder microphoneSourceDidGetSampleBuffer:(CMSampleBufferRef __nonnull)sampleBuffer{
-    return sampleBuffer;
+// Microphone 采集数据回调, 如果想替换 Microphone 采集的音频数据，可以直接将用于替换的音频数据放在 audioBufferList 中
+- (void)videoMixRecorder:(PLSVideoMixRecorder *__nonnull)recorder microphoneSourceDidGetAudioBufferList:(AudioBufferList *__nonnull)audioBufferList {
 }
 
-// 素材视频音频数据回调
-- (CMSampleBufferRef __nonnull)videoMixRecorder:(PLSVideoMixRecorder *__nonnull)recorder sampleSourceDidGetSampleBuffer:(CMSampleBufferRef __nonnull)sampleBuffer{
-    return sampleBuffer;
+// 素材视频音频数据回调，如果想替换素材的音频数据，可以直接将用于替换的音频数据放在 audioBufferList 中
+- (void)videoMixRecorder:(PLSVideoMixRecorder *__nonnull)recorder sampleSourceDidGetAudioBufferList:(AudioBufferList *__nonnull)audioBufferList {
 }
+
 
 // 素材视频数据回调
 - (CVPixelBufferRef __nonnull)videoMixRecorder:(PLSVideoMixRecorder *__nonnull)recorder sampleSourceDidGetPixelBuffer:(CVPixelBufferRef __nonnull)pixelBuffer{
     return pixelBuffer;
 }
 
-// 混音数据回调
-- (CMSampleBufferRef __nonnull)videoMixRecorder:(PLSVideoMixRecorder *__nonnull)recorder didGetMergeAudioSampleBuffer:(CMSampleBufferRef __nonnull)sampleBuffer{
-    return sampleBuffer;
+// 混音数据回调， 如果想替换混合后的音频数据，可以直接将用于替换的音频数据放在 audioBufferList 中
+- (void)videoMixRecorder:(PLSVideoMixRecorder *__nonnull)recorder didGetMergeAudioBufferList:(AudioBufferList * __nonnull)audioBufferList {
 }
+
 
 // 合并之后的视频数据回调
 - (CVPixelBufferRef __nonnull)videoMixRecorder:(PLSVideoMixRecorder *__nonnull)recorder didGetMergePixelBuffer:(CVPixelBufferRef __nonnull)pixelBuffer{

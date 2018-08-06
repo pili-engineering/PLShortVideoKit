@@ -1,6 +1,6 @@
 {
   "name": "PLShortVideoKit",
-  "version": "1.11.1",
+  "version": "1.13.0",
   "summary": "PILI iOS short video record SDK",
   "homepage": "https://github.com/pili-engineering/PLShortVideoKit",
   "license": "Apache License 2.0",
@@ -8,8 +8,7 @@
     "pili": "pili@qiniu.com"
   },
   "source": {
-    "git": "https://github.com/pili-engineering/PLShortVideoKit.git",
-    "tag": "v1.11.1"
+    "http": "http://sdk-release.qnsdk.com/PLShortVideoKit-v1.13.0.zip"
   },
   "platforms": {
     "ios": "8.0"

@@ -23,13 +23,13 @@ PODS:
   - PLPlayerKit (3.3.1):
     - PLPlayerKit/iphoneos (= 3.3.1)
   - PLPlayerKit/iphoneos (3.3.1)
-  - PLShortVideoKit (1.11.1):
-    - PLShortVideoKit/ex-libMuseProcessor (= 1.11.1)
-    - PLShortVideoKit/libMuseProcessor (= 1.11.1)
+  - PLShortVideoKit (1.13.0):
+    - PLShortVideoKit/ex-libMuseProcessor (= 1.13.0)
+    - PLShortVideoKit/libMuseProcessor (= 1.13.0)
     - Qiniu (~> 7.1)
-  - PLShortVideoKit/ex-libMuseProcessor (1.11.1):
+  - PLShortVideoKit/ex-libMuseProcessor (1.13.0):
     - Qiniu (~> 7.1)
-  - PLShortVideoKit/libMuseProcessor (1.11.1):
+  - PLShortVideoKit/libMuseProcessor (1.13.0):
     - Qiniu (~> 7.1)
   - Qiniu (7.1.7):
     - AFNetworking (~> 3)
@@ -67,7 +67,7 @@ SPEC CHECKSUMS:
   HappyDNS: dc6a164ee81979093123c241c6353bcf0218add6
   Masonry: 7c429b56da9d4ee0bbb3ed77a5ea710d6a5df39e
   PLPlayerKit: 63a9c6a7661f497591c84121e854e8e6ac003256
-  PLShortVideoKit: 2989b14d5df393ccecb73c3cd96291d5829a0af0
+  PLShortVideoKit: 922cfb53e1a067fdaa3f27b46450f97d777c7b3e
   Qiniu: 56ea8b9d785326e45e3a6fdd45bdbc84f78d0eff
 
 PODFILE CHECKSUM: 52b7da48e404d168c557854032f9219299df1326

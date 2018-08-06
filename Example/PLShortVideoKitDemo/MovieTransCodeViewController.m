@@ -21,6 +21,14 @@
 #define PLS_SCREEN_HEIGHT CGRectGetHeight([UIScreen mainScreen].bounds)
 
 
+typedef enum : NSUInteger {
+    enumPanPositionTopLeft,
+    enumPanPositionTopRight,
+    enumPanPositionBottomLeft,
+    enumPanPositionBottomRight,
+    enumPanPositionCenter,
+} EnumPanPosition;
+
 @interface MovieTransCodeViewController ()
 <
 PLSClipMovieViewDelegate,
@@ -52,6 +60,12 @@ PLShortVideoEditorDelegate
 @property (assign, nonatomic) float bitrate;
 @property (strong, nonatomic) PLShortVideoTranscoder *shortVideoTranscoder;
 
+@property (strong, nonatomic) UIView *maxScopeView;
+@property (strong, nonatomic) UIImageView *scopeView;
+
+@property (strong, nonatomic) AVAsset *asset;
+@property (assign, nonatomic) EnumPanPosition enumTapPosition;
+
 @end
 
 @implementation MovieTransCodeViewController
@@ -74,6 +88,8 @@ PLShortVideoEditorDelegate
     [self setupSelectionView];
     
     [self setupClipMovieView];
+    
+    [self setupScopeCutView];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -102,6 +118,9 @@ PLShortVideoEditorDelegate
     self.movieSettings[PLSStartTimeKey] = [NSNumber numberWithFloat:0.f];
     self.movieSettings[PLSDurationKey] = [NSNumber numberWithFloat:CMTimeGetSeconds(asset.duration)];
     self.movieSettings[PLSVolumeKey] = [NSNumber numberWithFloat:1.0f];
+    
+    // 剪裁使用到
+    self.asset = asset;
     
     // 视频编辑类
     self.shortVideoEditor = [[PLShortVideoEditor alloc] initWithAsset:asset videoSize:CGSizeZero];
@@ -183,12 +202,13 @@ PLShortVideoEditorDelegate
 - (void)setupSelectionView {
     CGFloat rotateViewTopSpace;
     if (PLS_SCREEN_HEIGHT > 568) {
-        rotateViewTopSpace = PLS_BaseToolboxView_HEIGHT + PLS_SCREEN_WIDTH + 32;
+        rotateViewTopSpace = PLS_BaseToolboxView_HEIGHT + PLS_SCREEN_WIDTH + 5;
     } else{
         rotateViewTopSpace = PLS_BaseToolboxView_HEIGHT + PLS_SCREEN_WIDTH;
     }
     
     self.selectionView = [[PLSSelectionView alloc] initWithFrame:CGRectMake(0, rotateViewTopSpace, PLS_SCREEN_WIDTH, 35) lineWidth:1 lineColor:[UIColor blackColor]];
+    self.selectionView.backgroundColor = [UIColor redColor];
     [self.selectionView setItemsWithTitle:[NSArray arrayWithObjects:@"Medium", @"Highest", @"480P", @"540P", @"720P", @"1080P", nil] normalItemColor:[UIColor whiteColor] selectItemColor:[UIColor blackColor] normalTitleColor:[UIColor blackColor] selectTitleColor:[UIColor whiteColor] titleTextSize:15 selectItemNumber:3];
     self.selectionView.delegate = self;
     self.selectionView.layer.cornerRadius = 5.0;
@@ -207,8 +227,17 @@ PLShortVideoEditorDelegate
     rotateVideoButton.layer.borderWidth = 1;
     rotateVideoButton.layer.borderColor = [UIColor whiteColor].CGColor;
 
+    UILabel *cutLabel = [[UILabel alloc] init];
+    cutLabel.font = [UIFont systemFontOfSize:14];
+    cutLabel.text = @"移动红色线框选择剪裁区域";
+    cutLabel.textColor = [UIColor colorWithWhite:1 alpha:.5];
+    [cutLabel sizeToFit];
+    cutLabel.frame = CGRectMake(5, rotateVideoButton.frame.origin.y + 10, cutLabel.bounds.size.width, cutLabel.bounds.size.height);
+    [self.view addSubview:cutLabel];
+    
     [rotateVideoButton addTarget:self action:@selector(rotateVideoButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:rotateVideoButton];
+    
 }
 
 - (void)setupClipMovieView {
@@ -218,8 +247,24 @@ PLShortVideoEditorDelegate
     [self.view addSubview:self.clipMovieView];
     [self.clipMovieView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.right.bottom.mas_equalTo(0);
-        make.height.mas_equalTo(150);
+        make.height.mas_equalTo(145);
     }];
+}
+
+- (void)setupScopeCutView {
+    self.maxScopeView = [[UIView alloc] init];
+    [self.shortVideoEditor.previewView addSubview:self.maxScopeView];
+    self.maxScopeView.frame = [PLShortVideoTranscoder videoDisplay:self.asset bounds:self.shortVideoEditor.previewView.bounds rotate:self.rotateOrientation];
+    
+    self.scopeView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"scope_image"]];
+    self.scopeView.userInteractionEnabled = YES;
+    self.scopeView.layer.borderWidth = 1;
+    self.scopeView.layer.borderColor = [UIColor redColor].CGColor;
+    self.scopeView.frame = self.maxScopeView.bounds;
+    [self.maxScopeView addSubview:self.scopeView];
+    
+    UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panGestureHandle:)];
+    [self.scopeView addGestureRecognizer:panGesture];
 }
 
 // 加载视频转码的动画
@@ -237,6 +282,103 @@ PLShortVideoEditorDelegate
 - (void)removeActivityIndicatorView {
     [self.activityIndicatorView removeFromSuperview];
     [self.activityIndicatorView stopAnimating];
+}
+
+- (void)panGestureHandle:(UIPanGestureRecognizer *)gestureRecognizer {
+    CGPoint transPoint = [gestureRecognizer translationInView:gestureRecognizer.view];
+    [gestureRecognizer setTranslation:CGPointMake(0, 0) inView:gestureRecognizer.view];
+
+    switch (gestureRecognizer.state) {
+            
+        case UIGestureRecognizerStateBegan: {
+    
+            CGPoint point = [gestureRecognizer locationInView:gestureRecognizer.view];
+            CGFloat edgeWidth = self.scopeView.bounds.size.width / 3;
+            CGFloat edgeHeight = self.scopeView.bounds.size.height / 3;
+            if (point.x <= edgeWidth && point.y <= edgeHeight) {
+                self.enumTapPosition = enumPanPositionTopLeft;
+            } else if (point.x <= edgeWidth && point.y >= self.scopeView.bounds.size.height - edgeHeight) {
+                self.enumTapPosition = enumPanPositionBottomLeft;
+            } else if (point.x >= self.scopeView.bounds.size.width - edgeWidth && point.y <= edgeHeight) {
+                self.enumTapPosition = enumPanPositionTopRight;
+            } else if (point.x >= self.scopeView.bounds.size.width - edgeWidth && point.y >= self.scopeView.bounds.size.height - edgeHeight) {
+                self.enumTapPosition = enumPanPositionBottomRight;
+            } else {
+                self.enumTapPosition = enumPanPositionCenter;
+            }
+            break;
+            
+        }
+        case UIGestureRecognizerStateChanged: {
+            
+            CGRect rect = self.scopeView.frame;
+            CGRect maxRect = self.maxScopeView.bounds;
+            
+            switch (self.enumTapPosition) {
+                case enumPanPositionTopLeft: {
+                    transPoint.x = MIN(transPoint.x, rect.size.width);
+                    transPoint.y = MIN(transPoint.y, rect.size.height);
+                    if (rect.origin.x + transPoint.x < 0) {
+                        transPoint.x =  - rect.origin.x;
+                    }
+                    if (rect.origin.y + transPoint.y < 0) {
+                        transPoint.y =  - rect.origin.y;
+                    }
+                    rect = CGRectMake(rect.origin.x + transPoint.x, rect.origin.y + transPoint.y, rect.size.width - transPoint.x, rect.size.height - transPoint.y);
+                }
+                    break;
+                    
+                case enumPanPositionTopRight: {
+                    transPoint.x = MIN(maxRect.size.width - rect.size.width - rect.origin.x, transPoint.x);
+                    transPoint.x = MAX(-rect.size.width, transPoint.x);
+                    transPoint.y = MIN(transPoint.y, rect.size.height);
+                    if (rect.origin.y + transPoint.y < 0) {
+                        transPoint.y = -rect.origin.y;
+                    }
+                    rect = CGRectMake(rect.origin.x, rect.origin.y + transPoint.y, rect.size.width + transPoint.x, rect.size.height - transPoint.y);
+                }
+                    break;
+                case enumPanPositionBottomLeft: {
+                    transPoint.x = MIN(transPoint.x, rect.size.width);
+                    if (rect.origin.x + transPoint.x < 0) {
+                        transPoint.x =  - rect.origin.x;
+                    }
+                    transPoint.y = MAX(-rect.size.height, transPoint.y);
+                    transPoint.y = MIN(maxRect.size.height - rect.size.height - rect.origin.y, transPoint.y);
+                    
+                    rect = CGRectMake(rect.origin.x + transPoint.x, rect.origin.y, rect.size.width - transPoint.x, rect.size.height + transPoint.y);
+                }
+                    break;
+                case enumPanPositionBottomRight: {
+                    transPoint.x = MIN(maxRect.size.width - rect.origin.x - rect.size.width, transPoint.x);
+                    transPoint.y = MIN(maxRect.size.height - rect.origin.y - rect.size.height, transPoint.y);
+                    transPoint.x = MAX(-rect.size.width, transPoint.x);
+                    transPoint.y = MAX(-rect.size.height, transPoint.y);
+                    
+                    rect = CGRectMake(rect.origin.x, rect.origin.y, rect.size.width + transPoint.x, rect.size.height + transPoint.y);
+                }
+                    break;
+                case enumPanPositionCenter: {
+                    rect = CGRectMake(rect.origin.x + transPoint.x, rect.origin.y + transPoint.y, rect.size.width, rect.size.height);
+                    rect.origin.x = MAX(rect.origin.x, 0);
+                    rect.origin.x = MIN(maxRect.size.width - rect.size.width, rect.origin.x);
+                    rect.origin.y = MAX(rect.origin.y, 0);
+                    rect.origin.y = MIN(maxRect.size.height - rect.size.height, rect.origin.y);
+                }
+                    break;
+            }
+            self.scopeView.frame = rect;
+            
+            break;
+        }
+        case UIGestureRecognizerStateEnded:
+        case UIGestureRecognizerStateCancelled: {
+            
+            break;
+        }
+        default:
+            break;
+    }
 }
 
 #pragma mark - PLSClipMovieView delegate
@@ -326,6 +468,11 @@ PLShortVideoEditorDelegate
     
     self.rotateOrientation = [self.shortVideoEditor rotateVideoLayer];
     NSLog(@"videoLayerOrientation: %ld", (long)self.rotateOrientation);
+    
+    
+    self.maxScopeView.frame = [PLShortVideoTranscoder videoDisplay:self.asset bounds:self.shortVideoEditor.previewView.bounds rotate:self.rotateOrientation];
+    self.scopeView.frame = self.maxScopeView.bounds;
+    self.shortVideoTranscoder.videoSelectedRect = CGRectZero;
 }
 
 // 检查视频文件中是否含有视频轨道
@@ -374,6 +521,31 @@ PLShortVideoEditorDelegate
     self.shortVideoTranscoder.rotateOrientation = self.rotateOrientation;
 //    self.shortVideoTranscoder.outputURL = [self getFileURL:@"videoTranscoder-outputURL"]; // 自定义视频的存放地址
     
+    CGRect maxRect = self.maxScopeView.bounds;
+    if (CGRectEqualToRect(maxRect, self.scopeView.frame)) {
+        self.shortVideoTranscoder.videoSelectedRect = CGRectZero;
+    } else {
+        CGSize videoSize = [self.asset pls_videoSize];
+        if (PLSPreviewOrientationLandscapeLeft == self.rotateOrientation ||
+            PLSPreviewOrientationLandscapeRight == self.rotateOrientation) {
+            videoSize = CGSizeMake(videoSize.height, videoSize.width);
+        }
+        CGFloat scale = videoSize.width / maxRect.size.width;
+        
+        CGRect cutPixelFrame = CGRectMake(
+                                          (self.scopeView.frame.origin.x - maxRect.origin.x) * scale,
+                                          (self.scopeView.frame.origin.y - maxRect.origin.y) * scale,
+                                          self.scopeView.frame.size.width * scale,
+                                          self.scopeView.frame.size.height * scale
+                                          );
+        self.shortVideoTranscoder.videoSelectedRect = cutPixelFrame;
+        self.shortVideoTranscoder.destVideoSize = CGSizeMake(cutPixelFrame.size.width / 1.5, cutPixelFrame.size.height / 1.5);
+        self.shortVideoTranscoder.videoFrameRate = 25;
+        
+        NSLog(@"设置剪裁区域:%@", NSStringFromCGRect(cutPixelFrame));
+        NSLog(@"设置导出宽高:%@", NSStringFromCGSize(self.shortVideoTranscoder.destVideoSize));
+    }
+
     __weak typeof(self) weakSelf = self;
     [self.shortVideoTranscoder setCompletionBlock:^(NSURL *url){
 

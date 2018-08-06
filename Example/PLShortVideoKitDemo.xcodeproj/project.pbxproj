@@ -173,6 +173,7 @@
 		760F7706202AF92A0052F513 /* BaseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 760F76FA202AF92A0052F513 /* BaseViewController.m */; };
 		760F7707202AF92A0052F513 /* PLSPlayerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 760F76FB202AF92A0052F513 /* PLSPlayerView.m */; };
 		760F7709202AF92A0052F513 /* PLSClipMulitMediaView.m in Sources */ = {isa = PBXBuildFile; fileRef = 760F76FF202AF92A0052F513 /* PLSClipMulitMediaView.m */; };
+		76181FD721186ADE005F4F8B /* scope_image.png in Resources */ = {isa = PBXBuildFile; fileRef = 76181FD621186ADE005F4F8B /* scope_image.png */; };
 		7623E9E020B5414600847998 /* ImageRotateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7623E9DF20B5414600847998 /* ImageRotateViewController.m */; };
 		7635E3E120CE494900E36027 /* 3video_template@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7635E3DB20CE494800E36027 /* 3video_template@3x.png */; };
 		7635E3E220CE494900E36027 /* 2video_template@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7635E3DC20CE494800E36027 /* 2video_template@2x.png */; };
@@ -442,6 +443,7 @@
 		760F7700202AF92A0052F513 /* MulitPhotoAlbumViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MulitPhotoAlbumViewController.h; sourceTree = "<group>"; };
 		760F7701202AF92A0052F513 /* BaseViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseViewController.h; sourceTree = "<group>"; };
 		760F7702202AF92A0052F513 /* PLSPlayerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLSPlayerView.h; sourceTree = "<group>"; };
+		76181FD621186ADE005F4F8B /* scope_image.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = scope_image.png; sourceTree = "<group>"; };
 		7623E9DE20B5414600847998 /* ImageRotateViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImageRotateViewController.h; sourceTree = "<group>"; };
 		7623E9DF20B5414600847998 /* ImageRotateViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ImageRotateViewController.m; sourceTree = "<group>"; };
 		7635E3DB20CE494800E36027 /* 3video_template@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "3video_template@3x.png"; path = "images/3video_template@3x.png"; sourceTree = "<group>"; };
@@ -637,6 +639,7 @@
 				0A1DDC7E20BBE0CA00DF53B6 /* rotate_background.png */,
 				0A1DDC8020BBE0CA00DF53B6 /* rotate_image.png */,
 				0ADCCC5D209BFAA300BC114A /* gif1.gif */,
+				76181FD621186ADE005F4F8B /* scope_image.png */,
 				0ADCCC5C209BFAA300BC114A /* gif2.gif */,
 				0ADCCC5E209BFAA300BC114A /* gif3.gif */,
 				0ADCCC5B209BFAA200BC114A /* gif4.gif */,
@@ -963,7 +966,7 @@
 				0A9435791E6CA2E2008845A3 /* Frameworks */,
 				0A94357A1E6CA2E2008845A3 /* Resources */,
 				B051BAB51EADFEF900385FF0 /* ShellScript */,
-				E97B874681F4942673BDAA0F /* [CP] Embed Pods Frameworks */,
+				F12800A47717371B5B955FDD /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -985,7 +988,7 @@
 				TargetAttributes = {
 					0A94357B1E6CA2E2008845A3 = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = W2TP34G2MM;
+						DevelopmentTeam = GDFHW66V92;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -1140,6 +1143,7 @@
 				0A398F761ED62A1500996229 /* btn_banner_a@3x.png in Resources */,
 				0A24C5ED1EE951B900B2314E /* movie.png in Resources */,
 				0A1DDC8120BBE0CB00DF53B6 /* rotate_background.png in Resources */,
+				76181FD721186ADE005F4F8B /* scope_image.png in Resources */,
 				0AECA4F41E884CD200AF2931 /* btn_back.png in Resources */,
 				7635E40820CE8F5900E36027 /* select_meterial@2x.png in Resources */,
 				0AE8ACA01F065DCD006166E2 /* Greenery.m4a in Resources */,
@@ -1206,7 +1210,7 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Fabric/run\" 356922ded861e8764b53656f328bf3e7610fb59b 4e8f96a6c525321b1833e0fdb19f396702d2cb0b6e581fdf80efde45b2a3bfc1\n\n\nshortVersion=$(/usr/libexec/PlistBuddy -c \"Print :CFBundleShortVersionString\" \"${PROJECT_DIR}/${INFOPLIST_FILE}\")\nbuildNumber=$(/usr/libexec/PlistBuddy -c \"Print :CFBundleVersion\" \"${PROJECT_DIR}/${INFOPLIST_FILE}\")\n\ngitVersion=$(git log -1 --pretty=format:\"git-%cd-%h\" --date=short 2> /dev/null)\nbuildNumber=\"$shortVersion.$gitVersion\"\n\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $buildNumber\" \"${PROJECT_DIR}/${INFOPLIST_FILE}\"\n\n";
 		};
-		E97B874681F4942673BDAA0F /* [CP] Embed Pods Frameworks */ = {
+		F12800A47717371B5B955FDD /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1403,7 +1407,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = W2TP34G2MM;
+				DEVELOPMENT_TEAM = GDFHW66V92;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1434,7 +1438,7 @@
 			baseConfigurationReference = 85B60FAE619932ED649E6840 /* Pods-PLShortVideoKitDemo.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = W2TP34G2MM;
+				DEVELOPMENT_TEAM = GDFHW66V92;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",

@@ -13,6 +13,7 @@
 #import "ViewRecordViewController.h"
 #import "EditViewController.h"
 
+#define AlertViewShow(msg) [[[UIAlertView alloc] initWithTitle:@"warning" message:[NSString stringWithFormat:@"%@", msg] delegate:nil cancelButtonTitle:@"ok" otherButtonTitles:nil] show]
 #define iPhoneX ([UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(1125, 2436), [[UIScreen mainScreen] currentMode].size) : NO)
 #define PLS_RGBCOLOR(r,g,b) [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:1]
 #define PLS_SCREEN_WIDTH CGRectGetWidth([UIScreen mainScreen].bounds)
@@ -289,6 +290,7 @@
 @property (strong, nonatomic) PLSRateButtonView *rateButtonView;
 @property (assign, nonatomic) BOOL isMovieLandscapeOrientation;
 
+@property (strong, nonatomic) PLSImageToMovieComposer *imageToMovieComposer;
 @property (strong, nonatomic) PLSMovieComposer *movieComposer;
 
 @property (strong, nonatomic) UIActivityIndicatorView *activityIndicatorView;
@@ -721,18 +723,18 @@ static NSString * const reuseIdentifier = @"Cell";
     [self loadActivityIndicatorView];
     
     __weak typeof(self)weakSelf = self;
-    PLSImageToMovieComposer *imageToMovieComposer = [[PLSImageToMovieComposer alloc] initWithImages:self.urls];
+    self.imageToMovieComposer = [[PLSImageToMovieComposer alloc] initWithImages:self.urls];
     if (self.isMovieLandscapeOrientation) {
-        imageToMovieComposer.videoSize = CGSizeMake(960, 544);
+        self.imageToMovieComposer.videoSize = CGSizeMake(960, 544);
     } else {
-        imageToMovieComposer.videoSize = CGSizeMake(544, 960);
+        self.imageToMovieComposer.videoSize = CGSizeMake(544, 960);
     }
     
     // Warning：在这之前一定要给 self.imageDuration 赋值，不然就会 crash。
     // 在 - (void)setupEditToolboxView 里设置了 self.imageDuration = 2.0f;，self.imageDuration 的值的改变通过 - (void)imageDurationButtonClicked:(UIButton *)sender 事件。
-    imageToMovieComposer.imageDuration = self.imageDuration;
+    self.imageToMovieComposer.imageDuration = self.imageDuration;
     
-    [imageToMovieComposer setCompletionBlock:^(NSURL *url) {
+    [self.imageToMovieComposer setCompletionBlock:^(NSURL *url) {
         NSLog(@"imageToMovieComposer ur: %@", url);
         
         [weakSelf removeActivityIndicatorView];
@@ -740,21 +742,22 @@ static NSString * const reuseIdentifier = @"Cell";
         
         MovieTransCodeViewController *transCodeViewController = [[MovieTransCodeViewController alloc] init];
         transCodeViewController.url = url;
-        [self presentViewController:transCodeViewController animated:YES completion:nil];
+        [weakSelf presentViewController:transCodeViewController animated:YES completion:nil];
     }];
-    [imageToMovieComposer setFailureBlock:^(NSError *error) {
+    [self.imageToMovieComposer setFailureBlock:^(NSError *error) {
         NSLog(@"imageToMovieComposer failed");
-        
+        AlertViewShow(error);
+
         [weakSelf removeActivityIndicatorView];
         weakSelf.progressLabel.text = @"";
     }];
-    [imageToMovieComposer setProcessingBlock:^(float progress) {
+    [self.imageToMovieComposer setProcessingBlock:^(float progress) {
         NSLog(@"imageToMovieComposer progress: %f", progress);
         
         weakSelf.progressLabel.text = [NSString stringWithFormat:@"合成进度%d%%", (int)(progress * 100)];
     }];
     
-    [imageToMovieComposer startComposing];
+    [self.imageToMovieComposer startComposing];
 }
 
 // view 录制
@@ -802,7 +805,8 @@ static NSString * const reuseIdentifier = @"Cell";
     }];
     [self.movieComposer setFailureBlock:^(NSError *error) {
         NSLog(@"movieComposer failed");
-        
+        AlertViewShow(error);
+
         [weakSelf removeActivityIndicatorView];
         weakSelf.progressLabel.text = @"";
         
@@ -858,6 +862,7 @@ static NSString * const reuseIdentifier = @"Cell";
         self.activityIndicatorView = nil;
     }
     
+    self.imageToMovieComposer = nil;
     self.movieComposer = nil;
     
     NSLog(@"dealloc: %@", [[self class] description]);
