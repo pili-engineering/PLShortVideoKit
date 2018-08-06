@@ -98,6 +98,31 @@
 @property (assign, nonatomic) PLSPreviewOrientation rotateOrientation;
 
 /**
+ @abstract 视频剪裁区域，默认为 CGRectZero，不剪裁. 如果不为 emptyRect，会覆盖 @property outputFilePreset,
+           有效范围 [CGRectZero ~ {0, 0, videoOriginWidth, videoOriginHeight}]
+ 
+ @since      v1.13.0
+ */
+@property (assign, nonatomic) CGRect videoSelectedRect;
+
+/**
+ @abstract 导出视频的宽高，仅当 videoSelectedRect 不是 emptyRect 时，destVideoSize 才有效。默认为 CGSizeZero, 此时导出
+           视频的宽高为 videoSelectedRect.size. 每次设置 destVideoSize 的值的时候，bitrate 都会自动调整到合适的值。如果想
+           自定义输出码率，设置 destVideoSize 之后，需要再次设置 bitrate 的值
+ 
+ @since      v1.13.0
+ */
+@property (assign, nonatomic) CGSize destVideoSize;
+
+/**
+ @abstract 导出视频的帧率，默认 0，有效范围 [0 ~ 原视频帧率]，当为 0 的时候，导出视频帧率等于原视频帧率，
+           当设置的帧率大于原视频帧率时，会被自动调整为原视频帧率
+ 
+ @since      v1.13.0
+ */
+@property (assign, nonatomic) float videoFrameRate;
+
+/**
  @abstract 视频转码完成的 block
  
  @since      v1.0.5
@@ -151,6 +176,14 @@
  @since      v1.0.5
  */
 - (void)cancelTranscoding;
+
+/**
+ *  返回 AVAsset 在 bounds 大小的 view 中播放，有视频部分的 frame
+ *
+ 
+ @since      v1.13.0
+ */
++ (CGRect)videoDisplay:(AVAsset *)asset bounds:(CGRect)bounds rotate:(PLSPreviewOrientation)previewOrientation;
 
 @end
 
