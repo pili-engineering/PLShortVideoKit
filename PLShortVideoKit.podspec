@@ -9,18 +9,18 @@
 Pod::Spec.new do |s|
 
   s.name         = "PLShortVideoKit"
-  s.version      = "1.13.1"
+  s.version      = "1.14.0"
   s.summary      = "PILI iOS short video record SDK"
   s.homepage     = "https://github.com/pili-engineering/PLShortVideoKit"
   s.license      = "Apache License 2.0"
   s.author       = { "pili" => "pili@qiniu.com" }
-  s.source       = { :http => "http://sdk-release.qnsdk.com/PLShortVideoKit-v1.13.1.zip"}
+  s.source       = { :http => "http://sdk-release.qnsdk.com/PLShortVideoKit-v1.14.0.zip"}
   s.platform     = :ios
   s.requires_arc = true
 
   s.ios.deployment_target	= "8.0"
  
-  s.dependency 'Qiniu', '~> 7.1'
+  s.dependency 'Qiniu', '~> 7.2.5'
 
 
   s.subspec "ex-libMuseProcessor" do |ss1|
