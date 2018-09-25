@@ -176,6 +176,17 @@
 -(void)setWaterMarkWithImage:(UIImage *__nonnull)waterMarkImage position:(CGPoint)position;
 
 /**
+ *  开启水印
+ *
+ *  @param waterMarkImage 水印的图片
+ *  @param position       水印的位置
+ *  @param size           水印的大小，如果为 CGSizeZero，则使用水印图片的实际大小
+ 
+ @since      v1.14.0
+ */
+-(void)setWaterMarkWithImage:(UIImage *__nonnull)waterMarkImage position:(CGPoint)position size:(CGSize)size;
+
+/**
  *  移除水印
  
  @since      v1.1.0
@@ -192,7 +203,7 @@
 - (void)addFilter:(NSString *_Nullable)colorImagePath;
 
 /**
- *  添加 MV 图层
+ *  添加 MV 图层方法 1, 相当于 addMVLayerWithColor:colorURL alpha:alphaURL timeRange:kCMTimeRangeZero loopEnable:NO
  *
  *  @param colorURL 彩色层视频的地址
  *  @param alphaURL 被彩色层当作透明层的视频的地址
@@ -200,6 +211,18 @@
  @since      v1.5.0
  */
 - (void)addMVLayerWithColor:(NSURL *_Nullable)colorURL alpha:(NSURL *_Nullable)alphaURL;
+
+/**
+ *  添加 MV 图层方法 2
+ *
+ *  @param colorURL 彩色层视频的地址
+ *  @param alphaURL 被彩色层当作透明层的视频的地址
+ *  @param timeRange  选取 MV 文件的时间段, 如果选取整个 MV，直接传入 kCMTimeRangeZero 即可
+ *  @param loopEnable 当 MV 时长(timeRange.duration)小于视频时长时，是否循环播放 MV
+ 
+ @since      v1.14.0
+ */
+- (void)addMVLayerWithColor:(NSURL *)colorURL alpha:(NSURL *)alphaURL timeRange:(CMTimeRange)timeRange loopEnable:(BOOL)loopEnable;
 
 /**
  @brief 旋转视频的方向，能将竖屏视频旋转为横屏视频，横屏视频旋转为竖屏视频

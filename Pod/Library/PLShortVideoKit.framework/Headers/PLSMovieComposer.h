@@ -70,6 +70,13 @@
 @property (assign, nonatomic) float bitrate;
 
 /**
+ @abstract 拼接策略，默认：PLSComposerPriorityTypeSync
+ 
+ @since      v1.14.0
+ */
+@property (assign, nonatomic) PLSComposerPriorityType composerPriorityType;
+
+/**
  @brief 初始化
  
  @since      v1.4.0
