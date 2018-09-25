@@ -202,12 +202,50 @@
     options.networkAccessAllowed = YES;
     options.synchronous = YES;
     
+    // 设置 resizeMode = PHImageRequestOptionsResizeModeExact， 否则返回的图片大小不一定是设置的 targetSize
+    options.resizeMode = PHImageRequestOptionsResizeModeExact;
+    
+    // 设置 deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat，是保证 resultHandler 值回调一次，否则可能回回调多次，只有最后一次返回的图片大小等于设置的 targetSize
+    options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+    
     PHImageManager *manager = [PHImageManager defaultManager];
     [manager requestImageForAsset:phAsset targetSize:targetSize contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
         image = result;
     }];
     
     return image;
+}
+
+
+- (NSURL *)getImageFilePath {
+    
+    NSString *cacheFolder = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject];
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    formatter.dateFormat = @"yyyyMMddHHmmssSSS";
+    NSString *nowTimeStr = [formatter stringFromDate:[NSDate dateWithTimeIntervalSinceNow:0]];
+    NSString *urlString = [NSString stringWithFormat:@"%@/%@.JPG", cacheFolder, nowTimeStr];
+    return [NSURL fileURLWithPath:urlString];
+    
+}
+
+- (NSURL *)getImageURL:(PHAsset *)phAsset {
+    
+    PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
+    options.networkAccessAllowed = YES;
+    options.synchronous = YES;
+    
+    PHImageManager *manager = [PHImageManager defaultManager];
+    __block NSURL *url = nil;
+    __weak typeof(self) wself = self;
+    [manager requestImageDataForAsset:phAsset options:options resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
+        if (imageData) {
+            // 这里需要重新将图片数据写到 App 可以访问的目录，不然直接使用 info 中的 url，可能会获取不到图片数据
+            url = [wself getImageFilePath];
+            [[NSFileManager defaultManager] createFileAtPath:url.path contents:imageData attributes:nil];
+        }
+    }];
+    
+    return url;
 }
 
 @end
@@ -656,7 +694,7 @@ static NSString * const reuseIdentifier = @"Cell";
 #pragma mark -- UIAlertView delegate
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
     // 检测是否授权访问相册，没有授权就跳转到 App 的设置页
-    if (10001 != alertView.tag && 10002 != alertView.tag && 10003 != alertView.tag) {
+    if (10001 != alertView.tag && 10002 != alertView.tag && 10003 != alertView.tag && 10004 != alertView.tag) {
         if (buttonIndex == alertView.firstOtherButtonIndex) {
             [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
         }
@@ -686,8 +724,19 @@ static NSString * const reuseIdentifier = @"Cell";
         
     } else if (10003 == alertView.tag) {
         if (1 == buttonIndex) {
-            // 多个视频拼接 或者 单个视频转码 都可以用 PLSMovieComposer
-            [self movieComposerEvent];
+            
+            NSString *message = @"同步优先：优先考虑拼接之后音视频的同步性，但是可能造个各个视频的拼接处播放的时候出现音频或者视频卡顿\n\n流畅优先：优先考虑拼接之后播放的流畅性，各个视频的拼接处不会出现音视频卡顿现象，但是可能造成音视频不同步";
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:message delegate:self cancelButtonTitle:nil otherButtonTitles:@"同步优先", @"流畅优先", nil];
+            alert.tag = 10004;
+            
+            [alert show];
+        }
+    } else if (10004 == alertView.tag) {
+        // 多个视频拼接 或者 单个视频转码 都可以用 PLSMovieComposer
+        if (0 == buttonIndex) {
+            [self movieComposerEvent:PLSComposerPriorityTypeSync];
+        } else {
+            [self movieComposerEvent:PLSComposerPriorityTypeSmooth];
         }
     }
 }
@@ -712,18 +761,31 @@ static NSString * const reuseIdentifier = @"Cell";
     [self presentViewController:videoEditViewController animated:YES completion:nil];
 }
 
+//#define USE_IMAGE
+
 // 图片合成为视频
 - (void)imageToMovieEvent {
     [self.urls removeAllObjects];
     for (PHAsset *asset in self.dynamicScrollView.selectedAssets) {
+#ifdef USE_IMAGE
         UIImage *image = [asset imageURL:asset targetSize:CGSizeMake(544, 960)];
         [self.urls addObject:image];
+#else
+        NSURL *url = [asset getImageURL:asset];
+        if (url) {
+            [self.urls addObject:url];
+        }
+#endif
     }
     
     [self loadActivityIndicatorView];
     
     __weak typeof(self)weakSelf = self;
+#ifdef USE_IMAGE
     self.imageToMovieComposer = [[PLSImageToMovieComposer alloc] initWithImages:self.urls];
+#else
+    self.imageToMovieComposer = [[PLSImageToMovieComposer alloc] initWithImageURLs:self.urls];
+#endif
     if (self.isMovieLandscapeOrientation) {
         self.imageToMovieComposer.videoSize = CGSizeMake(960, 544);
     } else {
@@ -775,11 +837,12 @@ static NSString * const reuseIdentifier = @"Cell";
 }
 
 // 多个视频拼接 或者 单个视频转码 都可以用 PLSMovieComposer
-- (void)movieComposerEvent {
+- (void)movieComposerEvent:(PLSComposerPriorityType)type {
     [self loadActivityIndicatorView];
     
     __weak typeof(self)weakSelf = self;
     self.movieComposer = [[PLSMovieComposer alloc] initWithUrls:self.urls];
+    self.movieComposer.composerPriorityType = type;
 #if 1
     if (self.isMovieLandscapeOrientation) {
         self.movieComposer.videoSize = CGSizeMake(960, 544);
