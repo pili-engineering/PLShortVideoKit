@@ -16,7 +16,7 @@
   "requires_arc": true,
   "dependencies": {
     "Qiniu": [
-      "~> 7.2.5"
+      "7.2.5"
     ]
   },
   "subspecs": [
