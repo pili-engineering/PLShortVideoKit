@@ -191,6 +191,27 @@ typedef NS_ENUM(NSUInteger, PLSTransitionType) {
     PLSTransitionTypeFade    = 0, // 淡入淡出
 };
 
+/**
+ @abstract 多个视频拼接的时候，采用的拼接策略: 由于视频文件的音频通道和视频通道时长不一定相等（其实总是不相等,只是相差时间很短），
+           在多个视频拼接为一个视频的时候，音视频通道的总时长相差会变大，这可能不是开发者想要的结果。因此提供两种模式供开发者选择
+ 
+ @since      v1.14.0
+ */
+typedef NS_ENUM(NSUInteger, PLSComposerPriorityType) {
+    
+    /**
+     @brief 以拼接之后，单个视频时间段内音视频同步优先，这是默认模式：这种模式的好处是无论拼接多少个文件，总是能保证拼接后的文件音视频是同步的，
+            不好之处是拼接处可能会有音频的卡顿
+    */
+    PLSComposerPriorityTypeSync = 0,
+    
+    /**
+     @brief 以拼接之后，音视频播放连续性优先：这种模式的好处是无论拼接多少个文件，总是能保证拼接后的文件播放是流畅的，
+            不好之处是可能引起音视频不同步
+     */
+    PLSComposerPriorityTypeSmooth,
+};
+
 /*!
  @typedef    PLShortVideoLogLevel
  @abstract   短视频日志级别。

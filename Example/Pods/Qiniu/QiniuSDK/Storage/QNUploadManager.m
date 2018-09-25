@@ -72,7 +72,7 @@
         }
         _config = config;
 #if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000) || (defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 1090)
-        _httpManager = [[QNSessionManager alloc] initWithProxy:config.proxy timeout:config.timeoutInterval urlConverter:config.converter dns:config.dns];
+        _httpManager = [[QNSessionManager alloc] initWithProxy:config.proxy timeout:config.timeoutInterval urlConverter:config.converter];
 #endif
     }
     return self;
@@ -119,6 +119,15 @@
           token:(NSString *)token
        complete:(QNUpCompletionHandler)completionHandler
          option:(QNUploadOption *)option {
+    [self putData:data fileName:nil key:key token:token complete:completionHandler option:option];
+}
+
+- (void)putData:(NSData *)data
+       fileName:(NSString *)fileName
+            key:(NSString *)key
+          token:(NSString *)token
+       complete:(QNUpCompletionHandler)completionHandler
+         option:(QNUploadOption *)option {
     if ([QNUploadManager checkAndNotifyError:key token:token input:data complete:completionHandler]) {
         return;
     }
@@ -152,6 +161,7 @@
         QNFormUpload *up = [[QNFormUpload alloc]
                      initWithData:data
                           withKey:key
+                        withFileName:fileName
                         withToken:t
             withCompletionHandler:complete
                        withOption:option
@@ -193,7 +203,8 @@
 
             if ([file size] <= _config.putThreshold) {
                 NSData *data = [file readAll];
-                [self putData:data key:key token:token complete:complete option:option];
+                NSString *fileName = [[file path] lastPathComponent];
+                [self putData:data fileName:fileName key:key token:token complete:completionHandler option:option];
                 return;
             }
 

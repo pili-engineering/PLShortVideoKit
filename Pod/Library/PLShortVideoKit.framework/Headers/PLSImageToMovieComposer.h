@@ -89,7 +89,16 @@
  
  @since      v1.7.0
  */
-- (instancetype)initWithImages:(NSArray<UIImage *> *)images;
+- (instancetype)initWithImages:(NSArray<UIImage *> *)images __deprecated_msg("Method deprecated in v1.14.0 Use `initWithImageURLs:`");
+
+/**
+ @brief 初始化
+ *
+ @param urls 图片保存的路径数组
+ 
+ @since      v1.14.0
+ */
+- (instancetype)initWithImageURLs:(NSArray<NSURL *> *)urls;
 
 /**
  @brief 执行图片合成视频

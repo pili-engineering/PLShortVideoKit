@@ -99,7 +99,7 @@ static NSMutableString* formatPoints(NSArray<NSDictionary*>* events) {
         }
         _config = config;
 #if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000) || (defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 1090)
-        _httpManager = [[QNSessionManager alloc] initWithProxy:nil timeout:config.timeoutInterval urlConverter:nil dns:nil];
+        _httpManager = [[QNSessionManager alloc] initWithProxy:nil timeout:config.timeoutInterval urlConverter:nil];
 #endif
     }
     return self;

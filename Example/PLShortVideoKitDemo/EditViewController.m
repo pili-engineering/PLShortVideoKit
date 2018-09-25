@@ -318,7 +318,7 @@ PLSClipMovieViewDelegate
     CMTime duration = CMTimeMake([self.movieSettings[PLSDurationKey] floatValue] * 1000, 1000);
     self.shortVideoEditor.timeRange = CMTimeRangeMake(start, duration);
     // 视频编辑时，添加水印
-    [self.shortVideoEditor setWaterMarkWithImage:self.watermarkImage position:self.watermarkPosition];
+    [self.shortVideoEditor setWaterMarkWithImage:self.watermarkImage position:self.watermarkPosition size:self.watermarkSize];
     // 视频编辑时，改变预览分辨率
     self.shortVideoEditor.videoSize = self.videoSize;
     
@@ -1173,7 +1173,7 @@ PLSClipMovieViewDelegate
         self.shortVideoEditor.videoSize = self.videoSize;
     }
     
-    [self.shortVideoEditor addMVLayerWithColor:self.colorURL alpha:self.alphaURL];
+    [self.shortVideoEditor addMVLayerWithColor:self.colorURL alpha:self.alphaURL timeRange:kCMTimeRangeZero loopEnable:YES];
 }
 
 - (void)addFilter:(NSString *)colorImagePath {
@@ -1364,7 +1364,7 @@ PLSClipMovieViewDelegate
         self.watermarkSettings[PLSPointKey] = [NSValue valueWithCGPoint:self.watermarkPosition];
         
     } else {
-        [self.shortVideoEditor setWaterMarkWithImage:self.watermarkImage position:self.watermarkPosition];
+        [self.shortVideoEditor setWaterMarkWithImage:self.watermarkImage position:self.watermarkPosition size:self.watermarkSize];
         
         // 水印
         self.watermarkSettings[PLSURLKey] = self.watermarkURL;
@@ -1521,11 +1521,29 @@ PLSClipMovieViewDelegate
 
 #pragma mark - 时光倒流
 - (void)reverserButtonEvent:(id)sender {
+    
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"是否移除音频" message:@"如果不移除音频，将维持原音频，即不对音频进行倒序处理" preferredStyle:(UIAlertControllerStyleAlert)];
+    UIAlertAction *removeAction = [UIAlertAction actionWithTitle:@"移除" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+        [self doReserverEffect:YES];
+    }];
+    
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"保留" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+        [self doReserverEffect:NO];
+    }];
+    
+    [alertController addAction:removeAction];
+    [alertController addAction:cancelAction];
+    
+    [self presentViewController:alertController animated:YES completion:nil];
+}
+
+- (void)doReserverEffect:(BOOL)removeAudio {
+    
     [self.shortVideoEditor stopEditing];
     self.playButton.selected = YES;
     
     [self loadActivityIndicatorView];
-
+    
     if (self.reverser.isReversing) {
         NSLog(@"reverser effect isReversing");
         return;
@@ -1538,10 +1556,11 @@ PLSClipMovieViewDelegate
     __weak typeof(self)weakSelf = self;
     AVAsset *asset = self.movieSettings[PLSAssetKey];
     self.reverser = [[PLSReverserEffect alloc] initWithAsset:asset];
+    self.reverser.audioRemoved = removeAudio;
     self.inputAsset = self.movieSettings[PLSAssetKey];
     [self.reverser setCompletionBlock:^(NSURL *url) {
         [weakSelf removeActivityIndicatorView];
-
+        
         NSLog(@"reverser effect, url: %@", url);
         
         weakSelf.movieSettings[PLSURLKey] = url;
@@ -1554,7 +1573,7 @@ PLSClipMovieViewDelegate
     
     [self.reverser setFailureBlock:^(NSError *error){
         [weakSelf removeActivityIndicatorView];
-
+        
         NSLog(@"reverser effect, error: %@",error);
         
         weakSelf.movieSettings[PLSAssetKey] = weakSelf.inputAsset;
@@ -2098,7 +2117,7 @@ PLSClipMovieViewDelegate
     // 旋转视频
     exportSession.videoLayerOrientation = self.videoLayerOrientation;
     [exportSession addFilter:self.colorImagePath];
-    [exportSession addMVLayerWithColor:self.colorURL alpha:self.alphaURL];
+    [exportSession addMVLayerWithColor:self.colorURL alpha:self.alphaURL timeRange:kCMTimeRangeZero loopEnable:YES];
     
     __weak typeof(self) weakSelf = self;
     [exportSession setCompletionBlock:^(NSURL *url) {

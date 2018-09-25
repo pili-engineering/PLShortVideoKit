@@ -45,6 +45,13 @@
 @property (readonly, nonatomic) BOOL isReversing;
 
 /**
+ @brief audioRemoved 是否去掉音频，默认为 YES，即去掉音频。当设置为 NO 时，维持原音频，即不对音频进行倒序处理。
+ 
+ @since      v1.14.0
+ */
+@property (assign, nonatomic, getter=isAudioRemoved) BOOL audioRemoved;
+
+/**
  @brief 初始化
  
  @since      v1.5.0
