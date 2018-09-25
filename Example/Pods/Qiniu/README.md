@@ -3,21 +3,24 @@
 [![@qiniu on weibo](http://img.shields.io/badge/weibo-%40qiniutek-blue.svg)](http://weibo.com/qiniutek)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE.md)
 [![Build Status](https://travis-ci.org/qiniu/objc-sdk.svg?branch=master)](https://travis-ci.org/qiniu/objc-sdk)
+[![codecov](https://codecov.io/gh/qiniu/objc-sdk/branch/master/graph/badge.svg)](https://codecov.io/gh/qiniu/objc-sdk)
 [![Latest Stable Version](http://img.shields.io/cocoapods/v/Qiniu.svg)](https://github.com/qiniu/objc-sdk/releases)
 ![Platform](http://img.shields.io/cocoapods/p/Qiniu.svg)
+
 
 ## 安装
 
 通过 CocoaPods
 
 ```ruby
-pod "Qiniu", "~> 7.1"
+pod "Qiniu", "~> 7.2" 
 ```
 
 ## 运行环境
 
 |               Qiniu SDK 版本               | 最低 iOS版本 | 最低 OS X 版本 |     Notes     |
 | :--------------------------------------: | :------: | :--------: | :-----------: |
+|                  7.2.x                   |  iOS 7   | OS X 10.9  | Xcode 最低版本 6. |
 |         7.1.x / AFNetworking-3.x         |  iOS 7   | OS X 10.9  | Xcode 最低版本 6. |
 | [7.0.x / AFNetworking-2.x](https://github.com/qiniu/objc-sdk/tree/7.0.x/AFNetworking-2.x) |  iOS 6   | OS X 10.8  | Xcode 最低版本 5. |
 | [7.x / AFNetworking-1.x](https://github.com/qiniu/objc-sdk/tree/AFNetworking-1.x) |  iOS 5   | OS X 10.7  | Xcode 最低版本 5. |
@@ -43,7 +46,7 @@ pod "Qiniu", "~> 7.1"
 
 
 
-**注意**： 如使用最新版的sdk(7.1.4),可自动判断上传空间。按如下方式使用：
+**注意**： 如使用最新版的sdk(>7.1.4),可自动判断上传空间。按如下方式使用：
 
 ```objective-c
 QNConfiguration *config =[QNConfiguration  	build:^(QNConfigurationBuilder *builder) {
@@ -62,14 +65,14 @@ QNConfiguration *config =[QNConfiguration  	build:^(QNConfigurationBuilder *buil
 ### 所有测试
 
 ``` bash
-$ xctool -workspace QiniuSDK.xcworkspace -scheme "QiniuSDK Mac" -sdk macosx -configuration Release test -test-sdk macosx
+$ xcodebuild test -workspace QiniuSDK.xcworkspace -scheme QiniuSDK_Mac -configuration Release -destination 'platform=macOS,arch=x86_64'
 ```
 ### 指定测试
 
 可以在单元测试上修改, 熟悉 SDK
 
 ``` bash
-$ xctool -workspace QiniuSDK.xcworkspace -scheme "QiniuSDK_Mac" -sdk macosx -configuration Debug test -test-sdk macosx -only "QiniuSDK MacTests:QNResumeUploadTest/test500k"
+$ xcodebuild test -workspace QiniuSDK.xcworkspace -scheme QiniuSDK_Mac -configuration Release -destination 'platform=macOS,arch=x86_64' -only-testing:"QiniuSDK_MacTests/QNResumeUploadTest/test5M"
 ```
 
 ## 示例代码

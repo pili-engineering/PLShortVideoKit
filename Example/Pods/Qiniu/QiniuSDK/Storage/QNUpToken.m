@@ -37,7 +37,7 @@
 - (NSString *)getBucket:(NSDictionary *)info {
 
     NSString *scope = [info objectForKey:@"scope"];
-    if (!scope) {
+    if (!scope || [scope isKindOfClass:[NSNull class]]) {
         return @"";
     }
 

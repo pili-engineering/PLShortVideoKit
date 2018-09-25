@@ -146,10 +146,10 @@ static NSString *domain = @"qiniu.com";
             withBody:(NSData *)body {
     if (self = [super init]) {
         _statusCode = status;
-        _reqId = [reqId copy];
-        _xlog = [xlog copy];
-        _xvia = [xvia copy];
-        _host = [host copy];
+        _reqId = reqId;
+        _xlog = xlog;
+        _xvia = xvia;
+        _host = host;
         _duration = duration;
         _serverIp = ip;
         _id = [QNUserAgent sharedInstance].id;

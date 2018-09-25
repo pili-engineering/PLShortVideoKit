@@ -17,7 +17,7 @@
              error:(NSError **)error {
     @autoreleasepool {
         NSData *data = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:error];
-        if (*error != nil) {
+        if (error && *error) {
             return 0;
         }
         return [QNEtag data:data];

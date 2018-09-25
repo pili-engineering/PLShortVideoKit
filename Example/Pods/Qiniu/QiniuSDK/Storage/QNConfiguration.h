@@ -25,7 +25,6 @@ extern const UInt32 kQNBlockSize;
 typedef NSString * (^QNUrlConvert)(NSString *url);
 
 @class QNConfigurationBuilder;
-@class QNDnsManager;
 @class QNZone;
 /**
  *    Builder block
@@ -74,7 +73,6 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 
 @property (nonatomic, readonly) QNUrlConvert converter;
 
-@property (nonatomic, readonly) QNDnsManager *dns;
 
 @property (readonly) BOOL disableATS;
 
@@ -89,8 +87,8 @@ typedef void (^QNPrequeryReturn)(int code);
 
 @interface QNZone : NSObject
 
-@property (nonatomic, strong) NSArray <NSString *> * upDomainList;
-@property (nonatomic, strong) QNZoneInfo * zoneInfo;
+@property (nonatomic, strong) NSArray<NSString *> *upDomainList;
+@property (nonatomic, strong) QNZoneInfo *zoneInfo;
 
 /**
  *    默认上传服务器地址列表
@@ -107,11 +105,11 @@ typedef void (^QNPrequeryReturn)(int code);
 @interface QNZoneInfo : NSObject
 
 @property (readonly, nonatomic) long ttl;
-@property (readonly, nonatomic) NSMutableArray <NSString *> * upDomainsList;
-@property (readonly, nonatomic) NSMutableDictionary * upDomainsDic;
+@property (readonly, nonatomic) NSMutableArray<NSString *> *upDomainsList;
+@property (readonly, nonatomic) NSMutableDictionary *upDomainsDic;
 
 - (instancetype)init:(long)ttl
-       upDomainsList:(NSMutableArray <NSString *> *)upDomainsList
+       upDomainsList:(NSMutableArray<NSString *> *)upDomainsList
         upDomainsDic:(NSMutableDictionary *)upDomainsDic;
 - (QNZoneInfo *)buildInfoFromJson:(NSDictionary *)resp;
 
@@ -148,13 +146,11 @@ typedef void (^QNPrequeryReturn)(int code);
 + (instancetype)zoneNa0;
 
 /**
- *    Zone初始化方法
+ *    zone As0 新加坡
  *
- *    @param upList     默认上传服务器地址列表
- *
- *    @return Zone实例
- */
-- (instancetype)initWithupDomainList:(NSArray <NSString *> *)upList;
+ *    @return 实例
+*/
++ (instancetype)zoneAs0;
 
 /**
  *    Zone初始化方法
@@ -163,7 +159,16 @@ typedef void (^QNPrequeryReturn)(int code);
  *
  *    @return Zone实例
  */
-+ (instancetype)createWithHost:(NSArray <NSString *> *)upList;
+- (instancetype)initWithupDomainList:(NSArray<NSString *> *)upList;
+
+/**
+ *    Zone初始化方法
+ *
+ *    @param upList     默认上传服务器地址列表
+ *
+ *    @return Zone实例
+ */
++ (instancetype)createWithHost:(NSArray<NSString *> *)upList;
 
 - (void)preQuery:(QNUpToken *)token
               on:(QNPrequeryReturn)ret;
@@ -175,7 +180,6 @@ typedef void (^QNPrequeryReturn)(int code);
 
 @interface QNAutoZone : QNZone
 
-- (instancetype)initWithDns:(QNDnsManager *)dns;
 
 - (NSString *)up:(QNUpToken *)token
          isHttps:(BOOL)isHttps
@@ -223,7 +227,6 @@ typedef void (^QNPrequeryReturn)(int code);
 
 @property (nonatomic, strong) QNUrlConvert converter;
 
-@property (nonatomic, strong) QNDnsManager *dns;
 
 @property (assign) BOOL disableATS;
 
