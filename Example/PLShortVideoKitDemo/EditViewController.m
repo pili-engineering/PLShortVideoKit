@@ -60,7 +60,13 @@ PLSClipMovieViewDelegate
 // 水印
 @property (strong, nonatomic) NSURL *watermarkURL;
 @property (assign, nonatomic) CGSize watermarkSize;
-@property (assign, nonatomic) CGPoint watermarkPosition;
+@property (assign, nonatomic) CGPoint watermarkPosition1;
+@property (assign, nonatomic) CGPoint watermarkPosition2;
+@property (strong, nonatomic) UIButton *waterMarkButton;
+
+@property (assign, nonatomic) CGSize gifWatermarkSize;
+@property (strong, nonatomic) NSURL *gifWatermarkURL;
+@property (strong, nonatomic) UIButton *gifWaterMarkButton;
 
 // 视频的分辨率，设置之后影响编辑时的预览分辨率、导出的视频的的分辨率
 @property (assign, nonatomic) CGSize videoSize;
@@ -78,8 +84,12 @@ PLSClipMovieViewDelegate
 // 背景音乐是否循环播放
 @property (assign, nonatomic) BOOL backgroundAudioLoopEnable;
 // 水印
-@property (strong, nonatomic) NSMutableDictionary *watermarkSettings;
+@property (strong, nonatomic) NSMutableArray *watermarkSettingsArray;
 @property (strong, nonatomic) UIImage *watermarkImage;
+@property (strong, nonatomic) NSData *gifWatermarkData;
+@property (strong, nonatomic) NSMutableDictionary *watermarkSetting1;
+@property (strong, nonatomic) NSMutableDictionary *watermarkSetting2;
+
 // 贴纸信息
 @property (strong, nonatomic) NSMutableArray *stickerSettingsArray;
 
@@ -121,7 +131,7 @@ PLSClipMovieViewDelegate
 @property (strong, nonatomic) UILabel *progressLabel;
 @property (strong, nonatomic) UIActivityIndicatorView *activityIndicatorView;
 
-// 倍数下标
+// 倍速下标
 @property (assign, nonatomic) NSInteger titleIndex;
 @property (strong, nonatomic) NSArray *titleArray;
 @property (strong, nonatomic) NSMutableDictionary *originMovieSettings;
@@ -268,12 +278,12 @@ PLSClipMovieViewDelegate
     /* outputSettings 中的字典元素为 movieSettings, audioSettings, watermarkSettings */
     self.outputSettings = [[NSMutableDictionary alloc] init];
     self.movieSettings = [[NSMutableDictionary alloc] init];
-    self.watermarkSettings = [[NSMutableDictionary alloc] init];
+    self.watermarkSettingsArray = [[NSMutableArray alloc] init];
     self.stickerSettingsArray = [[NSMutableArray alloc] init];
     self.audioSettingsArray = [[NSMutableArray alloc] init];
 
     self.outputSettings[PLSMovieSettingsKey] = self.movieSettings;
-    self.outputSettings[PLSWatermarkSettingsKey] = self.watermarkSettings;
+    self.outputSettings[PLSWatermarkSettingsKey] = self.watermarkSettingsArray;
     self.outputSettings[PLSStickerSettingsKey] = self.stickerSettingsArray;
     self.outputSettings[PLSAudioSettingsKey] = self.audioSettingsArray;
     
@@ -291,15 +301,16 @@ PLSClipMovieViewDelegate
     self.backgroundAudioSettings[PLSVolumeKey] = [NSNumber numberWithFloat:1.0];
     
     // 水印图片路径
-    NSString *watermarkPath = [[NSBundle mainBundle] pathForResource:@"qiniu_logo" ofType:@".png"];
+    NSString *gifWatermarkPath = [[NSBundle mainBundle] pathForResource:@"watermark" ofType:@"gif"];
+    NSString *watermarkPath = [[NSBundle mainBundle] pathForResource:@"qiniu_logo" ofType:@"png"];
     self.watermarkImage = [UIImage imageWithContentsOfFile:watermarkPath];
     self.watermarkURL = [NSURL URLWithString:watermarkPath];
+    self.gifWatermarkURL = [NSURL URLWithString:gifWatermarkPath];
+    self.gifWatermarkData = [[NSFileManager defaultManager] contentsAtPath:gifWatermarkPath];
     self.watermarkSize = self.watermarkImage.size;
-    self.watermarkPosition = CGPointMake(10, 65);
-    // 水印
-    self.watermarkSettings[PLSURLKey] = self.watermarkURL;
-    self.watermarkSettings[PLSSizeKey] = [NSValue valueWithCGSize:self.watermarkSize];
-    self.watermarkSettings[PLSPointKey] = [NSValue valueWithCGPoint:self.watermarkPosition];
+    self.gifWatermarkSize = [UIImage imageWithContentsOfFile:gifWatermarkPath].size;
+    self.watermarkPosition1 = CGPointMake(10, 65);
+    self.watermarkPosition2 = CGPointMake(self.videoSize.width - self.watermarkSize.width - 10, self.videoSize.height - self.watermarkSize.height - 65);
     
     // 视频编辑类
     AVAsset *asset = self.movieSettings[PLSAssetKey];
@@ -318,9 +329,33 @@ PLSClipMovieViewDelegate
     CMTime duration = CMTimeMake([self.movieSettings[PLSDurationKey] floatValue] * 1000, 1000);
     self.shortVideoEditor.timeRange = CMTimeRangeMake(start, duration);
     // 视频编辑时，添加水印
-    [self.shortVideoEditor setWaterMarkWithImage:self.watermarkImage position:self.watermarkPosition size:self.watermarkSize];
+    [self.shortVideoEditor setWaterMarkWithImage:self.watermarkImage position:self.watermarkPosition1 size:self.watermarkSize];
     // 视频编辑时，改变预览分辨率
     self.shortVideoEditor.videoSize = self.videoSize;
+    
+    // 水印
+    self.watermarkSetting1 = [[NSMutableDictionary alloc] init];
+    self.watermarkSetting1[PLSURLKey] = self.watermarkURL;
+    self.watermarkSetting1[PLSSizeKey] = [NSValue valueWithCGSize:self.watermarkSize];
+    self.watermarkSetting1[PLSPointKey] = [NSValue valueWithCGPoint:self.watermarkPosition1];
+    self.watermarkSetting1[PLSStartTimeKey] = [NSNumber numberWithFloat:0.0];
+    self.watermarkSetting1[PLSDurationKey] = [NSNumber numberWithFloat:CMTimeGetSeconds(duration)/3.0];
+    self.watermarkSetting1[PLSAlphaKey] = [NSNumber numberWithFloat:1.0];
+    self.watermarkSetting1[PLSTypeKey] = [NSNumber numberWithInteger:PLSWaterMarkTypeStatic];
+    self.watermarkSetting1[PLSRotationKey] = [NSNumber numberWithFloat:0];
+
+    self.watermarkSetting2 = [[NSMutableDictionary alloc] init];
+    self.watermarkSetting2[PLSURLKey] = self.watermarkURL;
+    self.watermarkSetting2[PLSSizeKey] = [NSValue valueWithCGSize:self.watermarkSize];
+    self.watermarkSetting2[PLSPointKey] = [NSValue valueWithCGPoint:self.watermarkPosition2];
+    self.watermarkSetting2[PLSStartTimeKey] = [NSNumber numberWithFloat:CMTimeGetSeconds(duration)/3.0 * 2];
+    self.watermarkSetting2[PLSDurationKey] = [NSNumber numberWithFloat:CMTimeGetSeconds(duration)/3.0];
+    self.watermarkSetting2[PLSAlphaKey] = [NSNumber numberWithFloat:0.5];
+    self.watermarkSetting2[PLSTypeKey] = [NSNumber numberWithInteger:PLSWaterMarkTypeStatic];
+    self.watermarkSetting2[PLSRotationKey] = [NSNumber numberWithFloat:0];
+
+    [self.watermarkSettingsArray addObject:self.watermarkSetting1];
+    [self.watermarkSettingsArray addObject:self.watermarkSetting2];
     
     // 滤镜
     UIImage *coverImage = [self getVideoPreViewImage:self.movieSettings[PLSAssetKey]];
@@ -522,6 +557,32 @@ PLSClipMovieViewDelegate
     watermarkButton.titleLabel.font = [UIFont systemFontOfSize:fontSize];
     [watermarkButton addTarget:self action:@selector(watermarkButtonClick:) forControlEvents:UIControlEventTouchUpInside];
     [buttonScrollView addSubview:watermarkButton];
+    watermarkButton.selected = YES;
+    self.waterMarkButton = watermarkButton;
+    
+    index++;
+    
+    // gif 水印
+    UIButton *gifWatermarkButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    gifWatermarkButton.frame = CGRectMake(startX + space * index, 0, width + 10, height);
+    [gifWatermarkButton setTitle:@"gif水印" forState:UIControlStateNormal];
+    [gifWatermarkButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    gifWatermarkButton.titleLabel.font = [UIFont systemFontOfSize:fontSize];
+    [gifWatermarkButton addTarget:self action:@selector(gifWatermarkButtonClick:) forControlEvents:UIControlEventTouchUpInside];
+    [buttonScrollView addSubview:gifWatermarkButton];
+    self.gifWaterMarkButton = gifWatermarkButton;
+    
+    index++;
+
+    // 旋转 水印
+    UIButton *rotateWatermarkButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    rotateWatermarkButton.frame = CGRectMake(startX + space * index, 0, width + 10, height);
+    [rotateWatermarkButton setTitle:@"旋转水印" forState:UIControlStateNormal];
+    rotateWatermarkButton.titleLabel.adjustsFontSizeToFitWidth = YES;
+    [rotateWatermarkButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    rotateWatermarkButton.titleLabel.font = [UIFont systemFontOfSize:fontSize - 2];
+    [rotateWatermarkButton addTarget:self action:@selector(rotateWatermarkButtonClick:) forControlEvents:UIControlEventTouchUpInside];
+    [buttonScrollView addSubview:rotateWatermarkButton];
     
     index++;
 
@@ -917,8 +978,8 @@ PLSClipMovieViewDelegate
 - (NSMutableArray *)videoSpeedArray {
     NSMutableArray *array = [[NSMutableArray alloc] init];
 
-    NSArray *nameArray = @[@"极慢", @"慢", @"正常", @"快", @"极快"];
-    NSArray *dirArray = @[@"jiman", @"man", @"zhengchang", @"kuai", @"jikuai"];
+    NSArray *nameArray = @[@"极慢", @"慢", @"正常", @"快", @"极快", @"多段变速"];
+    NSArray *dirArray = @[@"jiman", @"man", @"zhengchang", @"kuai", @"jikuai", @"mulitRate"];
 
     for (int i = 0; i < nameArray.count; i++) {
         NSString *name = nameArray[i];
@@ -1355,21 +1416,83 @@ PLSClipMovieViewDelegate
 #pragma mark - 水印
 - (void)watermarkButtonClick:(UIButton *)button {
     button.selected = !button.selected;
-    if (button.selected) {
+    self.gifWaterMarkButton.selected = NO;
+    if (!button.selected) {
         [self.shortVideoEditor clearWaterMark];
         
         // 水印
-        self.watermarkSettings[PLSURLKey] = [NSNull null];
-        self.watermarkSettings[PLSSizeKey] = [NSValue valueWithCGSize:self.watermarkSize];
-        self.watermarkSettings[PLSPointKey] = [NSValue valueWithCGPoint:self.watermarkPosition];
+        self.watermarkSetting1[PLSURLKey] = [NSNull null];
+        self.watermarkSetting1[PLSSizeKey] = [NSValue valueWithCGSize:self.watermarkSize];
+        self.watermarkSetting1[PLSPointKey] = [NSValue valueWithCGPoint:self.watermarkPosition1];
+        
+        self.watermarkSetting2[PLSURLKey] = [NSNull null];
+        self.watermarkSetting2[PLSSizeKey] = [NSValue valueWithCGSize:self.watermarkSize];
+        self.watermarkSetting2[PLSPointKey] = [NSValue valueWithCGPoint:self.watermarkPosition2];
         
     } else {
-        [self.shortVideoEditor setWaterMarkWithImage:self.watermarkImage position:self.watermarkPosition size:self.watermarkSize];
+        CGFloat degree =  [self.watermarkSetting1[PLSRotationKey] floatValue];
+        [self.shortVideoEditor setWaterMarkWithImage:self.watermarkImage position:self.watermarkPosition1 size:self.watermarkSize waterMarkType:(PLSWaterMarkTypeStatic) alpha:1 rotateDegree:degree];
         
         // 水印
-        self.watermarkSettings[PLSURLKey] = self.watermarkURL;
-        self.watermarkSettings[PLSSizeKey] = [NSValue valueWithCGSize:self.watermarkSize];
-        self.watermarkSettings[PLSPointKey] = [NSValue valueWithCGPoint:self.watermarkPosition];
+        self.watermarkSetting1[PLSURLKey] = self.watermarkURL;
+        self.watermarkSetting1[PLSSizeKey] = [NSValue valueWithCGSize:self.watermarkSize];
+        self.watermarkSetting1[PLSPointKey] = [NSValue valueWithCGPoint:self.watermarkPosition1];
+        self.watermarkSetting1[PLSTypeKey] = [NSNumber numberWithInteger:PLSWaterMarkTypeStatic];
+
+        self.watermarkSetting2[PLSURLKey] = self.watermarkURL;
+        self.watermarkSetting2[PLSSizeKey] = [NSValue valueWithCGSize:self.watermarkSize];
+        self.watermarkSetting2[PLSPointKey] = [NSValue valueWithCGPoint:self.watermarkPosition2];
+        self.watermarkSetting2[PLSTypeKey] = [NSNumber numberWithInteger:PLSWaterMarkTypeStatic];
+    }
+}
+
+- (void)gifWatermarkButtonClick:(UIButton *)button {
+    button.selected = !button.selected;
+    self.waterMarkButton.selected = NO;
+    if (!button.selected) {
+        [self.shortVideoEditor clearWaterMark];
+        
+        // 水印
+        self.watermarkSetting1[PLSURLKey] = [NSNull null];
+        self.watermarkSetting1[PLSSizeKey] = [NSValue valueWithCGSize:self.watermarkSize];
+        self.watermarkSetting1[PLSPointKey] = [NSValue valueWithCGPoint:self.watermarkPosition1];
+        
+        CGPoint point2 = CGPointMake(self.videoSize.width - self.gifWatermarkSize.width - 10, self.videoSize.height - self.gifWatermarkSize.height - 65);
+
+        self.watermarkSetting2[PLSURLKey] = [NSNull null];
+        self.watermarkSetting2[PLSSizeKey] = [NSValue valueWithCGSize:self.watermarkSize];
+        self.watermarkSetting2[PLSPointKey] = [NSValue valueWithCGPoint:point2];
+        
+    } else {
+        CGFloat degree =  [self.watermarkSetting1[PLSRotationKey] floatValue];
+        [self.shortVideoEditor setGifWaterMarkWithData:self.gifWatermarkData position:self.watermarkPosition1 size:self.gifWatermarkSize alpha:1 rotateDegree:degree];
+        
+        // 水印
+        self.watermarkSetting1[PLSURLKey] = self.gifWatermarkURL;
+        self.watermarkSetting1[PLSSizeKey] = [NSValue valueWithCGSize:self.gifWatermarkSize];
+        self.watermarkSetting1[PLSPointKey] = [NSValue valueWithCGPoint:self.watermarkPosition1];
+        self.watermarkSetting1[PLSTypeKey] = [NSNumber numberWithInteger:PLSWaterMarkTypeGif];
+
+        CGPoint point2 = CGPointMake(self.videoSize.width - self.gifWatermarkSize.width - 10, self.videoSize.height - self.gifWatermarkSize.height - 65);
+        
+        self.watermarkSetting2[PLSURLKey] = self.gifWatermarkURL;
+        self.watermarkSetting2[PLSSizeKey] = [NSValue valueWithCGSize:self.gifWatermarkSize];
+        self.watermarkSetting2[PLSPointKey] = [NSValue valueWithCGPoint:point2];
+        self.watermarkSetting2[PLSTypeKey] = [NSNumber numberWithInteger:PLSWaterMarkTypeGif];
+    }
+}
+
+- (void)rotateWatermarkButtonClick:(UIButton *)button {
+    if (self.gifWaterMarkButton.isSelected || self.waterMarkButton.isSelected) {
+        CGFloat degree =  [self.watermarkSetting1[PLSRotationKey] floatValue];
+        degree += 45;
+        self.watermarkSetting1[PLSRotationKey] = [NSNumber numberWithFloat:degree];
+        self.watermarkSetting2[PLSRotationKey] = [NSNumber numberWithFloat:degree];
+        if (self.gifWaterMarkButton.isSelected) {
+            [self.shortVideoEditor setGifWaterMarkWithData:self.gifWatermarkData position:self.watermarkPosition1 size:self.gifWatermarkSize alpha:1 rotateDegree:degree];
+        } else if(self.waterMarkButton.isSelected) {
+            [self.shortVideoEditor setWaterMarkWithImage:self.watermarkImage position:self.watermarkPosition1 size:self.watermarkSize waterMarkType:(PLSWaterMarkTypeStatic) alpha:1 rotateDegree:degree];
+        }
     }
 }
 
@@ -1416,7 +1539,14 @@ PLSClipMovieViewDelegate
     self.movieSettings[PLSStartTimeKey] = [NSNumber numberWithFloat:rateStart];
     self.movieSettings[PLSDurationKey] = [NSNumber numberWithFloat:rateDuration];
     
-    self.shortVideoEditor.timeRange = CMTimeRangeMake(CMTimeMake(rateStart * 1000, 1000), CMTimeMake(rateDuration * 1000, 1000));
+    CMTimeRange timeRange = CMTimeRangeMake(CMTimeMake(rateStart * 1000, 1000), CMTimeMake(rateDuration * 1000, 1000));
+    self.watermarkSetting1[PLSStartTimeKey] = [NSNumber numberWithFloat:0];
+    self.watermarkSetting1[PLSDurationKey] = [NSNumber numberWithFloat:CMTimeGetSeconds(timeRange.duration)/3.0];
+    
+    self.watermarkSetting2[PLSStartTimeKey] = [NSNumber numberWithFloat:CMTimeGetSeconds(timeRange.duration)/3.0*2];
+    self.watermarkSetting2[PLSDurationKey] = [NSNumber numberWithFloat:CMTimeGetSeconds(timeRange.duration)/3.0];
+    
+    self.shortVideoEditor.timeRange = timeRange;
     [self.shortVideoEditor startEditing];
 }
 
@@ -1997,29 +2127,74 @@ PLSClipMovieViewDelegate
         case 4:
             rateType = PLSVideoRecoderRateTopFast;
             break;
+        case 5:
+            rateType = PLSVideoRecoderRateNormal;
+            break;
     }
 
-    self.currentRateType = rateType;
-    
     AVAsset *outputAsset = nil;
-
     // PLShortVideoAsset 初始化
     AVAsset *asset = self.originMovieSettings[PLSAssetKey];
     PLShortVideoAsset *shortVideoAsset = [[PLShortVideoAsset alloc] initWithAsset:asset];
 
-    // 倍数处理
-    outputAsset = [shortVideoAsset scaleTimeRange:CMTimeRangeMake(kCMTimeZero, asset.duration) toRateType:rateType];
+    if (titleIndex < 5) {
+        self.currentRateType = rateType;
+        
+        // 倍速处理
+        outputAsset = [shortVideoAsset scaleTimeRange:CMTimeRangeMake(kCMTimeZero, asset.duration) toRateType:rateType];
+        
+        // 处理后的视频信息、不做scale处理，会出现播放时长超过视频时长或者播放时长小于视频时长
+        CGFloat rate = [self getRateNumberWithRateType:rateType];
+        self.movieSettings[PLSAssetKey]  = outputAsset;
+        self.movieSettings[PLSDurationKey] = [NSNumber numberWithFloat:[self.originMovieSettings[PLSDurationKey] floatValue] * rate];
+        self.movieSettings[PLSStartTimeKey] = [NSNumber numberWithFloat:[self.originMovieSettings[PLSStartTimeKey] floatValue] * rate];
+        
+        CMTime start = CMTimeMake([self.movieSettings[PLSStartTimeKey] floatValue]  * 1000, 1000);
+        CMTime duration = CMTimeMake([self.movieSettings[PLSDurationKey] floatValue] * 1000, 1000);
+        
+        self.shortVideoEditor.timeRange = CMTimeRangeMake(start, duration);
 
-    // 处理后的视频信息、不做scale处理，会出现播放时长超过视频时长或者播放时长小于视频时长
-    CGFloat rate = [self getRateNumberWithRateType:rateType];
-    self.movieSettings[PLSAssetKey]  = outputAsset;
-    self.movieSettings[PLSDurationKey] = [NSNumber numberWithFloat:[self.originMovieSettings[PLSDurationKey] floatValue] * rate];
-    self.movieSettings[PLSStartTimeKey] = [NSNumber numberWithFloat:[self.originMovieSettings[PLSStartTimeKey] floatValue] * rate];
+    } else {
+        NSArray *rateArray = @[@(PLSVideoRecoderRateTopSlow),
+                               @(PLSVideoRecoderRateSlow),
+                               @(PLSVideoRecoderRateFast),
+                               @(PLSVideoRecoderRateTopFast)
+                               ];
+        CGFloat duration = [self.originMovieSettings[PLSDurationKey] floatValue];
+        CMTimeRange topSlowTimeRange = CMTimeRangeMake(kCMTimeZero, CMTimeMake(1000 * duration / 5, 1000));
+        CMTimeRange slowTimeRange = CMTimeRangeMake(CMTimeMake(1000 * duration / 5, 1000), CMTimeMake(1000 * duration / 5, 1000));
+        CMTimeRange fastTimeRange = CMTimeRangeMake(CMTimeMake(1000 * duration / 5 * 3, 1000), CMTimeMake(1000 * duration / 5, 1000));
+        CMTimeRange topFastTimeRange = CMTimeRangeMake(CMTimeMake(1000 * duration / 5 * 4, 1000), CMTimeMake(1000 * duration / 5, 1000));
+        
+        NSArray *timeRangeArray = @[[NSValue valueWithCMTimeRange:topSlowTimeRange],
+                                    [NSValue valueWithCMTimeRange:slowTimeRange],
+                                    [NSValue valueWithCMTimeRange:fastTimeRange],
+                                    [NSValue valueWithCMTimeRange:topFastTimeRange]
+                                    ];
+        outputAsset = [shortVideoAsset scaleTimeRanges:timeRangeArray toRateTypes:rateArray];
+        
+        // 这里做了改变之后，计算开始时间，时长比较麻烦，Demo 就直接将开始改为 0，时长改为整个 duration
+        self.originMovieSettings[PLSDurationKey] = [NSNumber numberWithFloat:CMTimeGetSeconds(asset.duration)];
+        self.originMovieSettings[PLSStartTimeKey] = @(0.0);
+        self.movieSettings[PLSAssetKey]  = outputAsset;
+        
+        CMTime perSegmentDuration = CMTimeMake(1000 * duration / 5.0, 1000);
+        CMTime newDuration = perSegmentDuration;//正常播放的时间段
+        // 0.5 倍速播放的时间段
+        newDuration = CMTimeAdd(newDuration, CMTimeMake(perSegmentDuration.value / 0.5, perSegmentDuration.timescale));
+        // 0.666667 倍速播放的时间段
+        newDuration = CMTimeAdd(newDuration, CMTimeMake(perSegmentDuration.value / 0.666667, perSegmentDuration.timescale));
+        // 1.5 倍速播放的时间段
+        newDuration = CMTimeAdd(newDuration, CMTimeMake(perSegmentDuration.value / 1.5, perSegmentDuration.timescale));
+        // 2.0 倍速播放的时间段
+        newDuration = CMTimeAdd(newDuration, CMTimeMake(perSegmentDuration.value / 2.0, perSegmentDuration.timescale));
+        
+        self.movieSettings[PLSDurationKey] = [NSNumber numberWithFloat:CMTimeGetSeconds(newDuration)];
+        self.movieSettings[PLSStartTimeKey] = [NSNumber numberWithFloat:0.0];
+        
+        self.shortVideoEditor.timeRange = CMTimeRangeMake(kCMTimeZero, newDuration);
+    }
     
-    CMTime start = CMTimeMake([self.movieSettings[PLSStartTimeKey] floatValue]  * 1000, 1000);
-    CMTime duration = CMTimeMake([self.movieSettings[PLSDurationKey] floatValue] * 1000, 1000);
-
-    self.shortVideoEditor.timeRange = CMTimeRangeMake(start, duration);
     [self.shortVideoEditor replaceCurrentAssetWithAsset:outputAsset];
     [self.shortVideoEditor startEditing];
     self.playButton.selected = NO;
@@ -2106,6 +2281,7 @@ PLSClipMovieViewDelegate
     exportSession.outputSettings = self.outputSettings;
     exportSession.delegate = self;
     exportSession.isExportMovieToPhotosAlbum = YES;
+    exportSession.outputVideoFrameRate = MIN(60, asset.pls_normalFrameRate);
 //    // 设置视频的码率
 //    exportSession.bitrate = 3000*1000;
 //    // 设置视频的输出路径

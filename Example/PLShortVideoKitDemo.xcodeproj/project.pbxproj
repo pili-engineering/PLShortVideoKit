@@ -173,6 +173,7 @@
 		760F7706202AF92A0052F513 /* BaseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 760F76FA202AF92A0052F513 /* BaseViewController.m */; };
 		760F7707202AF92A0052F513 /* PLSPlayerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 760F76FB202AF92A0052F513 /* PLSPlayerView.m */; };
 		760F7709202AF92A0052F513 /* PLSClipMulitMediaView.m in Sources */ = {isa = PBXBuildFile; fileRef = 760F76FF202AF92A0052F513 /* PLSClipMulitMediaView.m */; };
+		7615EE5421835E3800F7D55D /* watermark.gif in Resources */ = {isa = PBXBuildFile; fileRef = 7615EE5321835E3800F7D55D /* watermark.gif */; };
 		76181FD721186ADE005F4F8B /* scope_image.png in Resources */ = {isa = PBXBuildFile; fileRef = 76181FD621186ADE005F4F8B /* scope_image.png */; };
 		7623E9E020B5414600847998 /* ImageRotateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7623E9DF20B5414600847998 /* ImageRotateViewController.m */; };
 		7635E3E120CE494900E36027 /* 3video_template@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7635E3DB20CE494800E36027 /* 3video_template@3x.png */; };
@@ -443,6 +444,7 @@
 		760F7700202AF92A0052F513 /* MulitPhotoAlbumViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MulitPhotoAlbumViewController.h; sourceTree = "<group>"; };
 		760F7701202AF92A0052F513 /* BaseViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseViewController.h; sourceTree = "<group>"; };
 		760F7702202AF92A0052F513 /* PLSPlayerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLSPlayerView.h; sourceTree = "<group>"; };
+		7615EE5321835E3800F7D55D /* watermark.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = watermark.gif; sourceTree = "<group>"; };
 		76181FD621186ADE005F4F8B /* scope_image.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = scope_image.png; sourceTree = "<group>"; };
 		7623E9DE20B5414600847998 /* ImageRotateViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImageRotateViewController.h; sourceTree = "<group>"; };
 		7623E9DF20B5414600847998 /* ImageRotateViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ImageRotateViewController.m; sourceTree = "<group>"; };
@@ -639,6 +641,7 @@
 				0A1DDC7E20BBE0CA00DF53B6 /* rotate_background.png */,
 				0A1DDC8020BBE0CA00DF53B6 /* rotate_image.png */,
 				0ADCCC5D209BFAA300BC114A /* gif1.gif */,
+				7615EE5321835E3800F7D55D /* watermark.gif */,
 				76181FD621186ADE005F4F8B /* scope_image.png */,
 				0ADCCC5C209BFAA300BC114A /* gif2.gif */,
 				0ADCCC5E209BFAA300BC114A /* gif3.gif */,
@@ -1080,6 +1083,7 @@
 				0A06925A1E8A3C720035CB7B /* btn_del_a@3x.png in Resources */,
 				0A5DF89220BE834B00F79CE0 /* pls_multi_musics.json in Resources */,
 				0A94DFCE1E6DF5D2007BDD0D /* end_normal.png in Resources */,
+				7615EE5421835E3800F7D55D /* watermark.gif in Resources */,
 				0A06924F1E8A3B590035CB7B /* btn_camera_done_a@2x.png in Resources */,
 				0A24C5E21EE912E500B2314E /* Road_to_Moscow.mp3 in Resources */,
 				0A0692431E8A3B590035CB7B /* btn_bar_back_a@2x.png in Resources */,
