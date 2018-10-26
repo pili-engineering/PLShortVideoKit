@@ -121,6 +121,14 @@
 
 
 #pragma mark -- 视频录制动作的回调
+
+/**
+ @abstract 删除了某段视频回调
+ 
+ @since      v1.15.0
+ */
+- (void)videoMixRecorder:(PLSVideoMixRecorder *__nonnull)recorder didDeleteFileAtURL:(NSURL *__nonnull)fileURL fileDuration:(CGFloat)fileDuration totalDuration:(CGFloat)totalDuration;
+
 /**
  @abstract 开始录制一段视频时
  
@@ -309,6 +317,13 @@
  @since      v1.11.0
  */
 - (void)resetRecording;
+
+/**
+ @brief 删除上一个录制的视频段
+ 
+ @since      v1.15.0
+ */
+- (void)deleteLastFile;
 
 /**
  @brief 获取所有录制的视频段的地址

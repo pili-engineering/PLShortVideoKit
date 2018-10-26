@@ -387,7 +387,7 @@ PLSRateButtonViewDelegate
     [self.view addSubview:self.recordToolboxView];
 
     
-    // 倍数拍摄
+    // 倍速拍摄
     self.titleArray = @[@"极慢", @"慢", @"正常", @"快", @"极快"];
     CGFloat rateTopSapce;
     if (PLS_SCREEN_HEIGHT > 568) {

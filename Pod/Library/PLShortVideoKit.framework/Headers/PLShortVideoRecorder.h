@@ -491,6 +491,13 @@
 @interface PLShortVideoRecorder (CameraSource)
 
 /**
+ @brief 只读变量，给有特殊需求的开发者使用
+ 
+ @since      v1.15.0
+ */
+@property (readonly, nonatomic) AVCaptureSession   *_Nullable captureSession;
+
+/**
  @brief 视频采集输入源，只读变量，给有特殊需求的开发者使用
  
  @since      v1.11.1

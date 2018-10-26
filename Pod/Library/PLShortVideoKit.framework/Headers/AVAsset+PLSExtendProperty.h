@@ -38,4 +38,11 @@
  */
 @property (assign, nonatomic, readonly) float pls_bitrate;
 
+/**
+ @brief 视频的帧率
+ 
+ @since      v1.15.0
+ */
+@property (assign, nonatomic, readonly) float pls_normalFrameRate;
+
 @end

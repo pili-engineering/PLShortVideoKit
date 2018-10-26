@@ -40,7 +40,7 @@ UICollectionViewDelegateFlowLayout
 @property (strong, nonatomic) PLSVideoMixRecorder *videoMixRecorder;
 @property (strong, nonatomic) PLSProgressBar *progressBar;
 @property (strong, nonatomic) UIButton *recordButton;
-@property (strong, nonatomic) PLSDeleteButton *resetButton;
+@property (strong, nonatomic) PLSDeleteButton *deleteButton;
 @property (strong, nonatomic) UIButton *endButton;
 @property (strong, nonatomic) UIButton *selectVideoButton;
 @property (strong, nonatomic) NSArray *titleArray;
@@ -349,14 +349,14 @@ UICollectionViewDelegateFlowLayout
     // 删除视频片段的按钮
     CGPoint center = self.recordButton.center;
     center.x = 40;
-    self.resetButton = [PLSDeleteButton getInstance];
-    self.resetButton.style = PLSDeleteButtonStyleNormal;
-    self.resetButton.frame = CGRectMake(15, PLS_SCREEN_HEIGHT - 80, 50, 50);
-    self.resetButton.center = center;
-    [self.resetButton setImage:[UIImage imageNamed:@"btn_del_a"] forState:UIControlStateNormal];
-    [self.resetButton addTarget:self action:@selector(resetButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
-    [self.recordToolboxView addSubview:self.resetButton];
-    self.resetButton.hidden = NO;
+    self.deleteButton = [PLSDeleteButton getInstance];
+    self.deleteButton.style = PLSDeleteButtonStyleNormal;
+    self.deleteButton.frame = CGRectMake(15, PLS_SCREEN_HEIGHT - 80, 50, 50);
+    self.deleteButton.center = center;
+    [self.deleteButton setImage:[UIImage imageNamed:@"btn_del_a"] forState:UIControlStateNormal];
+    [self.deleteButton addTarget:self action:@selector(deleteButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
+    [self.recordToolboxView addSubview:self.deleteButton];
+    self.deleteButton.hidden = NO;
     
     // 结束录制的按钮
     center = self.recordButton.center;
@@ -473,12 +473,21 @@ UICollectionViewDelegateFlowLayout
     }
 }
 
-// 删除已经录制视频重新录制
-- (void)resetButtonEvent:(id)sender {
-    [self.videoMixRecorder resetRecording];
-    self.endButton.hidden = YES;
-    self.fileEndDecoding = NO;
-    [_progressBar deleteAllProgress];
+// 删除上一段视频
+- (void)deleteButtonEvent:(id)sender {
+    if (_deleteButton.style == PLSDeleteButtonStyleNormal) {
+        
+        [_progressBar setLastProgressToStyle:PLSProgressBarProgressStyleDelete];
+        _deleteButton.style = PLSDeleteButtonStyleDelete;
+        
+    } else if (_deleteButton.style == PLSDeleteButtonStyleDelete) {
+        
+        [self.videoMixRecorder deleteLastFile];
+        
+        [_progressBar deleteLastProgress];
+        
+        _deleteButton.style = PLSDeleteButtonStyleNormal;
+    }
 }
 
 // 录制视频
@@ -626,7 +635,7 @@ UICollectionViewDelegateFlowLayout
     
     self.endButton.hidden = YES;
     self.filePathButton.hidden = YES;
-    self.resetButton.hidden = YES;
+    self.deleteButton.hidden = YES;
     self.selectVideoButton.hidden = YES;
     
     self.durationLabel.text = [NSString stringWithFormat:@"%.2fs", totalDuration];
@@ -640,7 +649,7 @@ UICollectionViewDelegateFlowLayout
     
     self.endButton.enabled = totalDuration > self.minDuration;
     self.endButton.hidden = NO;
-    self.resetButton.hidden = NO;
+    self.deleteButton.hidden = NO;
     self.selectVideoButton.hidden = NO;
     self.microphoneSwitch.enabled = YES;
     self.sampleSwitch.enabled = YES;
@@ -649,6 +658,12 @@ UICollectionViewDelegateFlowLayout
     if (self.fileEndDecoding) {
         [self endButtonEvent:nil];
     }
+}
+
+// 删除了最后一段成功的回调
+- (void)videoMixRecorder:(PLSVideoMixRecorder *)recorder didDeleteFileAtURL:(NSURL *)fileURL fileDuration:(CGFloat)fileDuration totalDuration:(CGFloat)totalDuration {
+    self.fileEndDecoding = NO;
+    self.endButton.enabled = totalDuration >= self.minDuration;
 }
 
 // 素材视频已经到达尾部

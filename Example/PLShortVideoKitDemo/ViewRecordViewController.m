@@ -232,7 +232,7 @@ PLShortVideoRecorderDelegate
     [self.recordToolboxView addSubview:self.deleteButton];
     self.deleteButton.hidden = YES;
     
-    // 倍数拍摄
+    // 倍速拍摄
     self.titleArray = @[@"极慢", @"慢", @"正常", @"快", @"极快"];
     self.rateButtonView = [[PLSRateButtonView alloc] initWithFrame:CGRectMake(40, self.recordButton.frame.origin.y - 34 - 2, PLS_SCREEN_WIDTH - 80, 34) defaultIndex:2];
     self.rateButtonView.hidden = NO;
