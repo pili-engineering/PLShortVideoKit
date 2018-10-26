@@ -308,6 +308,33 @@
 - (void)setWaterMarkWithImage:(UIImage *)waterMarkImage position:(CGPoint)position size:(CGSize)size;
 
 /**
+ *  开启水印
+ *
+ *  @param waterMarkImage 水印的图片
+ *  @param position       水印的位置
+ *  @param size           水印的大小，如果为 CGSizeZero，则使用水印图片的实际大小
+ *  @param type           水印的类型
+ *  @param alpha          水印的透明度 (0 ~ 1)
+ *  @param degree         水印旋转角度 (单位：度)
+ 
+ @since      v1.15.0
+ */
+- (void)setWaterMarkWithImage:(UIImage *)waterMarkImage position:(CGPoint)position size:(CGSize)size waterMarkType:(PLSWaterMarkType)type alpha:(CGFloat)alpha rotateDegree:(CGFloat)degree;
+
+/**
+ *  开启水印，此方法只能设置 gif 水印
+ *
+ *  @param gifData        gif 图片数据
+ *  @param position       水印的位置
+ *  @param size           水印的大小，如果为 CGSizeZero，则使用水印图片的实际大小
+ *  @param alpha          水印的透明度 (0 ~ 1)
+ *  @param degree         水印旋转角度 (单位：度)
+ 
+ @since      v1.15.0
+ */
+- (void)setGifWaterMarkWithData:(NSData *)gifData position:(CGPoint)position size:(CGSize)size alpha:(CGFloat)alpha rotateDegree:(CGFloat)degree;
+
+/**
  *  移除水印
  
  @since      v1.5.0

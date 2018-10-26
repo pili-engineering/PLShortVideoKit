@@ -212,6 +212,25 @@ typedef NS_ENUM(NSUInteger, PLSComposerPriorityType) {
     PLSComposerPriorityTypeSmooth,
 };
 
+/**
+ @abstract 水印的类型
+ 
+ @since      v1.15.0
+ */
+typedef NS_ENUM(NSUInteger, PLSWaterMarkType) {
+    
+    /**
+     @brief 静态水印，比如：PNG、JPG 等静态图片
+     */
+    PLSWaterMarkTypeStatic = 0,
+    
+    /**
+     @brief GIF 水印
+     */
+    PLSWaterMarkTypeGif,
+};
+
+
 /*!
  @typedef    PLShortVideoLogLevel
  @abstract   短视频日志级别。

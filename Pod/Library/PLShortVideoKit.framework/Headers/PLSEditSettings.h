@@ -96,6 +96,10 @@ PLS_EXPORT NSString *const PLSSizeKey; /* NSValue(CGSize) */
 
 PLS_EXPORT NSString *const PLSPointKey; /* NSValue(CGPoint) */
 
+PLS_EXPORT NSString *const PLSAlphaKey; /* NSNumber(float) */
+
+PLS_EXPORT NSString *const PLSTypeKey; /* NSNumber(NSInteger) */
+
 PLS_EXPORT NSString *const PLSStickerKey; /* UIView */
 
 PLS_EXPORT NSString *const PLSRotationKey; /* NSNumber(float)，单位为度，比如：0，45，90，180 */

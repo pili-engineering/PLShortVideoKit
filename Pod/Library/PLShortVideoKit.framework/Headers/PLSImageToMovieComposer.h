@@ -89,7 +89,7 @@
  
  @since      v1.7.0
  */
-- (instancetype)initWithImages:(NSArray<UIImage *> *)images __deprecated_msg("Method deprecated in v1.14.0 Use `initWithImageURLs:`");
+- (instancetype)initWithImages:(NSArray<UIImage *> *)images;
 
 /**
  @brief 初始化
