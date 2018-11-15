@@ -201,6 +201,7 @@
 		7697484820285747001AC847 /* transition_black.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 7697484320285747001AC847 /* transition_black.mp4 */; };
 		7697484920285747001AC847 /* pink_line.png in Resources */ = {isa = PBXBuildFile; fileRef = 7697484420285747001AC847 /* pink_line.png */; };
 		76DA9AC120CA31DB001D3002 /* MultiVideoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 76DA9AC020CA31DB001D3002 /* MultiVideoViewController.m */; };
+		76F41C52219D77B40099E668 /* mulitRate.png in Resources */ = {isa = PBXBuildFile; fileRef = 76F41C51219D77B40099E668 /* mulitRate.png */; };
 		9343A8C01F66763A007213BD /* Time_Machine_No_Reverser.png in Resources */ = {isa = PBXBuildFile; fileRef = 9343A8BE1F66763A007213BD /* Time_Machine_No_Reverser.png */; };
 		9343A8C11F66763A007213BD /* Time_Machine_Reverser.png in Resources */ = {isa = PBXBuildFile; fileRef = 9343A8BF1F66763A007213BD /* Time_Machine_Reverser.png */; };
 		C35043641FB3152600F9633D /* draft_video.png in Resources */ = {isa = PBXBuildFile; fileRef = C35043631FB3121E00F9633D /* draft_video.png */; };
@@ -482,6 +483,7 @@
 		7697484F20294D92001AC847 /* PrefixHeader.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PrefixHeader.pch; sourceTree = "<group>"; };
 		76DA9ABF20CA31DB001D3002 /* MultiVideoViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MultiVideoViewController.h; sourceTree = "<group>"; };
 		76DA9AC020CA31DB001D3002 /* MultiVideoViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MultiVideoViewController.m; sourceTree = "<group>"; };
+		76F41C51219D77B40099E668 /* mulitRate.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = mulitRate.png; path = images/mulitRate.png; sourceTree = "<group>"; };
 		85B60FAE619932ED649E6840 /* Pods-PLShortVideoKitDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PLShortVideoKitDemo.release.xcconfig"; path = "Pods/Target Support Files/Pods-PLShortVideoKitDemo/Pods-PLShortVideoKitDemo.release.xcconfig"; sourceTree = "<group>"; };
 		9343A8BE1F66763A007213BD /* Time_Machine_No_Reverser.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Time_Machine_No_Reverser.png; path = images/Time_Machine_No_Reverser.png; sourceTree = "<group>"; };
 		9343A8BF1F66763A007213BD /* Time_Machine_Reverser.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Time_Machine_Reverser.png; path = images/Time_Machine_Reverser.png; sourceTree = "<group>"; };
@@ -621,6 +623,7 @@
 		0A94357F1E6CA2E2008845A3 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				76F41C51219D77B40099E668 /* mulitRate.png */,
 				0AD98DC5203188CE006551EC /* h265_video */,
 				7697483F20285747001AC847 /* TransitionResources */,
 				0AF33BF41F7180D100CCFB42 /* 爱马仕.mp4 */,
@@ -1113,6 +1116,7 @@
 				0AF33C061F7180D200CCFB42 /* 芬迪.mp4 in Resources */,
 				0A1DDC8220BBE0CB00DF53B6 /* rotate_image.png in Resources */,
 				0A4F78FC20072B80003E8218 /* btn_play_bg_a@3x.png in Resources */,
+				76F41C52219D77B40099E668 /* mulitRate.png in Resources */,
 				0A3CCE7A1FA91CC8003D766A /* dubber_start.png in Resources */,
 				0AD7D3151EA329A400144411 /* btn_record_a.png in Resources */,
 				0AE93A78209424430096286E /* 古代韵味音效.m4r in Resources */,
