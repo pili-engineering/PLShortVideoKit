@@ -123,6 +123,21 @@
 @property (assign, nonatomic) float outputVideoFrameRate;
 
 /**
+ @brief 导出视频的音频码率，默认：PLSAudioBitRate_128Kbps
+ 
+ @since      v1.16.0
+ */
+@property (assign, nonatomic) PLSAudioBitRate audioBitrate;
+
+/**
+ @brief 导出视频的音频声道数，目前支持单声道和双声道（即 1 个声道数和 2 个声道数）. 如果不设置，将按照如下规则处理：
+        如果原视频是单声道，则导出视频将使用单声道. 如果原视频声道数不小于 2，则导出视频声道数为 2
+ 
+ @since      v1.16.0
+ */
+@property (assign, nonatomic) NSInteger audioChannel;
+
+/**
  @brief 是否设置便于网络环境下的传输，默认为 YES
  
  @since      v1.1.0

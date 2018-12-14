@@ -63,6 +63,8 @@ PLSRateButtonViewDelegate
 @property (strong, nonatomic) UIView *importMovieView;
 @property (strong, nonatomic) UIButton *importMovieButton;
 
+@property (strong, nonatomic) UIScrollView *rightScrollView;
+
 // 录制的视频文件的存储路径设置
 @property (strong, nonatomic) UIButton *filePathButton;
 @property (assign, nonatomic) BOOL useSDKInternalPath;
@@ -122,6 +124,7 @@ PLSRateButtonViewDelegate
     // --------------------------
     [self setupBaseToolboxView];
     [self setupRecordToolboxView];
+    [self setupRightButtonView];
 }
 
 - (void)viewDidLoad {
@@ -331,53 +334,76 @@ PLSRateButtonViewDelegate
     self.filePathButton.selected = NO;
     self.useSDKInternalPath = YES;
     
-    // 拍照
-    self.snapshotButton = [[UIButton alloc] initWithFrame:CGRectMake(PLS_SCREEN_WIDTH - 60, 10, 46, 46)];
-    self.snapshotButton.layer.cornerRadius = 23;
-    self.snapshotButton.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.55];
-    [self.snapshotButton setImage:[UIImage imageNamed:@"icon_trim"] forState:UIControlStateNormal];
-    self.snapshotButton.imageEdgeInsets = UIEdgeInsetsMake(6, 6, 6, 6);
-    [self.snapshotButton addTarget:self action:@selector(snapshotButtonOnClick:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:_snapshotButton];
-    
-    // 加载草稿视频
-    self.draftButton = [[UIButton alloc] initWithFrame:CGRectMake(PLS_SCREEN_WIDTH - 60, 70, 46, 46)];
-    self.draftButton.layer.cornerRadius = 23;
-    self.draftButton.backgroundColor = [UIColor colorWithRed:116/255 green:116/255 blue:116/255 alpha:0.55];
-    [self.draftButton setImage:[UIImage imageNamed:@"draft_video"] forState:UIControlStateNormal];
-    self.draftButton.imageEdgeInsets = UIEdgeInsetsMake(6, 6, 6, 6);
-    [self.draftButton addTarget:self action:@selector(draftVideoButtonOnClick:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:_draftButton];
-    
-    // 是否使用背景音乐
-    self.musicButton = [[UIButton alloc] initWithFrame:CGRectMake(PLS_SCREEN_WIDTH - 60, 130, 46, 46)];
-    self.musicButton.layer.cornerRadius = 23;
-    self.musicButton.backgroundColor = [UIColor colorWithRed:116/255 green:116/255 blue:116/255 alpha:0.55];
-    [self.musicButton setImage:[UIImage imageNamed:@"music_no_selected"] forState:UIControlStateNormal];
-    [self.musicButton setImage:[UIImage imageNamed:@"music_selected"] forState:UIControlStateSelected];
-    self.musicButton.imageEdgeInsets = UIEdgeInsetsMake(6, 6, 6, 6);
-    [self.musicButton addTarget:self action:@selector(musicButtonOnClick:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:_musicButton];
-    
-    //是否开启 SDK 退到后台监听
-    self.monitorButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [self.monitorButton setTitle:@"监听已关闭" forState:UIControlStateNormal];
-    [self.monitorButton setTitle:@"监听已打开" forState:UIControlStateSelected];
-    self.monitorButton.selected = NO;
-    [self.monitorButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    self.monitorButton.titleLabel.font = [UIFont systemFontOfSize:14];
-    [self.monitorButton sizeToFit];
-    self.monitorButton.frame = CGRectMake(PLS_SCREEN_WIDTH - self.monitorButton.bounds.size.width, 190, self.monitorButton.bounds.size.width, self.monitorButton.bounds.size.height);
-    [self.monitorButton addTarget:self action:@selector(monitorButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:self.monitorButton];
-
-    
-    
     // 展示拼接视频的动画
     self.activityIndicatorView = [[UIActivityIndicatorView alloc] initWithFrame:self.view.bounds];
     self.activityIndicatorView.center = self.view.center;
     [self.activityIndicatorView setActivityIndicatorViewStyle:UIActivityIndicatorViewStyleWhiteLarge];
     self.activityIndicatorView.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.5];
+}
+
+- (void)setupRightButtonView {
+    
+    self.rightScrollView = [[UIScrollView alloc] init];
+    self.rightScrollView.bounces = YES;
+    CGRect rc = self.rateButtonView.bounds;
+    rc = [self.rateButtonView convertRect:rc toView:self.view];
+    self.rightScrollView.frame = CGRectMake(self.view.bounds.size.width - 60, 0, 60, rc.origin.y);
+    __weak typeof(self) weakSelf = self;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [weakSelf.rightScrollView flashScrollIndicators];
+    });
+    
+    UIColor *backgroundColor = [UIColor colorWithWhite:0.0 alpha:.55];
+    
+    int index = 0;
+    // 拍照
+    self.snapshotButton = [[UIButton alloc] initWithFrame:CGRectMake(0, index * 60 + 10, 46, 46)];
+    self.snapshotButton.layer.cornerRadius = 23;
+    self.snapshotButton.backgroundColor = backgroundColor;
+    [self.snapshotButton setImage:[UIImage imageNamed:@"icon_trim"] forState:UIControlStateNormal];
+    self.snapshotButton.imageEdgeInsets = UIEdgeInsetsMake(6, 6, 6, 6);
+    [self.snapshotButton addTarget:self action:@selector(snapshotButtonOnClick:) forControlEvents:UIControlEventTouchUpInside];
+    [self.rightScrollView addSubview:_snapshotButton];
+    
+    index ++;
+    // 加载草稿视频
+    self.draftButton = [[UIButton alloc] initWithFrame:CGRectMake(0, index * 60 + 10, 46, 46)];
+    self.draftButton.layer.cornerRadius = 23;
+    self.draftButton.backgroundColor = backgroundColor;
+    [self.draftButton setImage:[UIImage imageNamed:@"draft_video"] forState:UIControlStateNormal];
+    self.draftButton.imageEdgeInsets = UIEdgeInsetsMake(6, 6, 6, 6);
+    [self.draftButton addTarget:self action:@selector(draftVideoButtonOnClick:) forControlEvents:UIControlEventTouchUpInside];
+    [self.rightScrollView addSubview:self.draftButton];
+    
+    index ++;
+    // 是否使用背景音乐
+    self.musicButton = [[UIButton alloc] initWithFrame:CGRectMake(0, index * 60 + 10, 46, 46)];
+    self.musicButton.layer.cornerRadius = 23;
+    self.musicButton.backgroundColor = backgroundColor;
+    [self.musicButton setImage:[UIImage imageNamed:@"music_no_selected"] forState:UIControlStateNormal];
+    [self.musicButton setImage:[UIImage imageNamed:@"music_selected"] forState:UIControlStateSelected];
+    self.musicButton.imageEdgeInsets = UIEdgeInsetsMake(6, 6, 6, 6);
+    [self.musicButton addTarget:self action:@selector(musicButtonOnClick:) forControlEvents:UIControlEventTouchUpInside];
+    [self.rightScrollView addSubview:self.musicButton];
+    
+    index ++;
+    //是否开启 SDK 退到后台监听
+    self.monitorButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    self.monitorButton.layer.cornerRadius = 23;
+    self.monitorButton.backgroundColor = backgroundColor;
+    [self.monitorButton setTitle:@"监听关" forState:UIControlStateNormal];
+    [self.monitorButton setTitle:@"监听开" forState:UIControlStateSelected];
+    self.monitorButton.selected = NO;
+    [self.monitorButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    self.monitorButton.titleLabel.font = [UIFont systemFontOfSize:14];
+    [self.monitorButton sizeToFit];
+    self.monitorButton.frame = CGRectMake(0, index * 60 + 10, 46, 46);
+    [self.monitorButton addTarget:self action:@selector(monitorButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
+    [self.rightScrollView addSubview:self.monitorButton];
+    
+    index ++;
+    [self.view addSubview:self.rightScrollView];
+    self.rightScrollView.contentSize = CGSizeMake(60, index * 60 + 10);
 }
 
 - (void)setupRecordToolboxView {

@@ -1,0 +1,32 @@
+{
+  "musics": [
+    {
+      "name": "counter-6s.m4a",
+      "category": "default"
+    },
+    {
+      "name": "counter-35s.m4a",
+      "category": "default"
+    },
+    {
+      "name": "Fire_Breather.m4a",
+      "category": "default"
+    },
+    {
+       "name": "Greenery.m4a",
+       "category": "default"
+    },
+    {
+      "name": "If_I_Had_a_Chicken.m4a",
+      "category": "default"
+    },
+    {
+      "name": "Road_to_Moscow.mp3",
+      "category": "default"
+    },
+    {
+      "name": "Whistling_Down_the_Road.m4a",
+      "category": "default"
+    },
+  ]
+}

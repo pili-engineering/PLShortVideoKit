@@ -60,3 +60,5 @@ FOUNDATION_EXPORT const unsigned char PLShortVideoKitVersionString[];
 
 #import <PLShortVideoKit/AVAsset+PLSExtendProperty.h>
 
+#import <PLShortVideoKit/PLSImageVideoComposer.h>
+#import <PLShortVideoKit/PLSComposeMediaItem.h>

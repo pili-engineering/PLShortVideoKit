@@ -204,6 +204,7 @@
 		76F41C52219D77B40099E668 /* mulitRate.png in Resources */ = {isa = PBXBuildFile; fileRef = 76F41C51219D77B40099E668 /* mulitRate.png */; };
 		9343A8C01F66763A007213BD /* Time_Machine_No_Reverser.png in Resources */ = {isa = PBXBuildFile; fileRef = 9343A8BE1F66763A007213BD /* Time_Machine_No_Reverser.png */; };
 		9343A8C11F66763A007213BD /* Time_Machine_Reverser.png in Resources */ = {isa = PBXBuildFile; fileRef = 9343A8BF1F66763A007213BD /* Time_Machine_Reverser.png */; };
+		BCCF75E121C3884500BF9BA2 /* ImageVideoMixViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BCCF75DF21C3884500BF9BA2 /* ImageVideoMixViewController.m */; };
 		C35043641FB3152600F9633D /* draft_video.png in Resources */ = {isa = PBXBuildFile; fileRef = C35043631FB3121E00F9633D /* draft_video.png */; };
 		C35043971FBED6B900F9633D /* music_no_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = C35043941FBED11C00F9633D /* music_no_selected.png */; };
 		C35043981FBED6B900F9633D /* music_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = C35043961FBED11C00F9633D /* music_selected.png */; };
@@ -487,6 +488,8 @@
 		85B60FAE619932ED649E6840 /* Pods-PLShortVideoKitDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PLShortVideoKitDemo.release.xcconfig"; path = "Pods/Target Support Files/Pods-PLShortVideoKitDemo/Pods-PLShortVideoKitDemo.release.xcconfig"; sourceTree = "<group>"; };
 		9343A8BE1F66763A007213BD /* Time_Machine_No_Reverser.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Time_Machine_No_Reverser.png; path = images/Time_Machine_No_Reverser.png; sourceTree = "<group>"; };
 		9343A8BF1F66763A007213BD /* Time_Machine_Reverser.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Time_Machine_Reverser.png; path = images/Time_Machine_Reverser.png; sourceTree = "<group>"; };
+		BCCF75DF21C3884500BF9BA2 /* ImageVideoMixViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageVideoMixViewController.m; sourceTree = "<group>"; };
+		BCCF75E021C3884500BF9BA2 /* ImageVideoMixViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageVideoMixViewController.h; sourceTree = "<group>"; };
 		C35043631FB3121E00F9633D /* draft_video.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = draft_video.png; path = images/draft_video.png; sourceTree = "<group>"; };
 		C35043941FBED11C00F9633D /* music_no_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = music_no_selected.png; path = images/music_no_selected.png; sourceTree = "<group>"; };
 		C35043961FBED11C00F9633D /* music_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = music_selected.png; path = images/music_selected.png; sourceTree = "<group>"; };
@@ -601,6 +604,8 @@
 				0AE93A712093F7C50096286E /* ViewRecordViewController.m */,
 				0A6340281F15C9C9005ADF6C /* MovieTransCodeViewController.h */,
 				0A6340291F15C9C9005ADF6C /* MovieTransCodeViewController.m */,
+				BCCF75E021C3884500BF9BA2 /* ImageVideoMixViewController.h */,
+				BCCF75DF21C3884500BF9BA2 /* ImageVideoMixViewController.m */,
 				0A52C1911E9C987900561F37 /* EditViewController.h */,
 				0A52C1921E9C987900561F37 /* EditViewController.m */,
 				C3FCBFC91F305B21007EBB10 /* GifFormatViewController.h */,
@@ -1282,6 +1287,7 @@
 				0ACE7C371ED8B072002FF4C9 /* PLSDeleteButton.m in Sources */,
 				C3FCBFCF1F305B37007EBB10 /* PLSFormatGifView.m in Sources */,
 				0ACE7C391ED8B072002FF4C9 /* PLSProgressBar.m in Sources */,
+				BCCF75E121C3884500BF9BA2 /* ImageVideoMixViewController.m in Sources */,
 				0AECA5001E88A60C00AF2931 /* RecordViewController.m in Sources */,
 				76564FCC210B2871004B62E9 /* VersionViewController.m in Sources */,
 				0AECA4F21E88466300AF2931 /* PlayViewController.m in Sources */,

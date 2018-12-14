@@ -11,6 +11,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import "PLSTypeDefines.h"
 
+__deprecated_msg("Class PLSMovieComposer is deprecated in v1.16.0, use PLSImageVideoComposer with disableTransition instead")
 @interface PLSMovieComposer : NSObject
 
 /**

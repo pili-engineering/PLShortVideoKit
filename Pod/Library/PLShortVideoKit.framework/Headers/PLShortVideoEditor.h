@@ -278,13 +278,25 @@
 - (void)updateMusic:(CMTimeRange)timeRange volume:(NSNumber *)volume;
 
 /**
- *  更新多个背景音效
+ *  更新多个背景音效，相当于 updateMultiMusics:multiMusicsSettings keepMoviePlayerStatus:NO
  *
  *  @param multiMusicsSettings 多个背景音效的设置信息。每个元素都为字典，信息由 PLSAudioSettingsKey 配置
  
  @since      v1.11.0
  */
 - (void)updateMultiMusics:(NSArray <NSDictionary *>*)multiMusicsSettings;
+
+/**
+ *  更新多个背景音效 2
+ *
+ *  @param multiMusicsSettings 多个背景音效的设置信息。每个元素都为字典，信息由 PLSAudioSettingsKey 配置
+ *
+ *  @param keepStatus 添加多个背景音乐之后视频播放器是否保持当前状态，如果传 YES，视频播放器将不做任何处理。如果传入 NO，
+           视频播放器将重新开始播放
+ 
+ @since      v1.16.0
+ */
+- (void)updateMultiMusics:(NSArray <NSDictionary *>*)multiMusicsSettings keepMoviePlayerStatus:(BOOL)keepStatus;
 
 /**
  *  开启水印
