@@ -116,19 +116,52 @@ typedef NS_ENUM(NSInteger, PLSVideoRecoderRateType) {
 
 /**
  @typedef    PLSAudioSampleRate
- @abstract   音频编码采样率。
+ @abstract   音频编码采样率。音频编码采样率 和 音频编码的码率直接相关。下表为码率推荐表：
+            |================================================================|
+            |     采样率 Hz      |  推荐码率（单声道）bps |   推荐码率 (双声道) bps |
+            |================================================================|
+            |       48000       |        96*1000      |      192*1000        |
+            |----------------------------------------------------------------|
+            |       44100       |        64*1000      |      128*1000        |
+            |----------------------------------------------------------------|
+            |       22050       |        32*1000      |      64*1000         |
+            |----------------------------------------------------------------|
+            |       16000       |        32*1000      |      64*1000         |
+            |----------------------------------------------------------------|
+            |       11025       |        32*1000      |      32*1000         |
+            |----------------------------------------------------------------|
  
- @constant   PLSAudioSampleRate_48000Hz 48000Hz 音频编码采样率
- @constant   PLSAudioSampleRate_44100Hz 44100Hz 音频编码采样率
- @constant   PLSAudioSampleRate_22050Hz 22050Hz 音频编码采样率
- @constant   PLSAudioSampleRate_11025Hz 11025Hz 音频编码采样率
+            更多详细的码率设置，可以参考如下网页：
+             http://wiki.hydrogenaud.io/index.php?title=Fraunhofer_FDK_AAC#Bitrate_Modes
  
  @since      v1.0.0
  */
 typedef NS_ENUM(NSUInteger, PLSAudioSampleRate) {
+    /**
+     @brief   PLSAudioSampleRate_48000Hz 48000Hz 音频编码采样率
+     */
     PLSAudioSampleRate_48000Hz = 48000,
+    
+    /**
+     @brief   PLSAudioSampleRate_44100Hz 44100Hz 音频编码采样率
+     */
     PLSAudioSampleRate_44100Hz = 44100,
+    
+    /**
+     @brief   PLSAudioSampleRate_22050Hz 22050Hz 音频编码采样率
+     */
     PLSAudioSampleRate_22050Hz = 22050,
+    
+    /**
+     @brief   PLSAudioSampleRate_16000Hz 16000Hz 音频编码采样率
+     
+     @since      v1.16.0
+     */
+    PLSAudioSampleRate_16000Hz = 16000,
+    
+    /**
+     @brief   PLSAudioSampleRate_11025Hz 11025Hz 音频编码采样率
+     */
     PLSAudioSampleRate_11025Hz = 11025,
 };
 
@@ -138,16 +171,44 @@ typedef NS_ENUM(NSUInteger, PLSAudioSampleRate) {
  @typedef    PLSAudioBitRate
  @abstract   音频编码码率。
  
- @constant   PLSAudioBitRate_64Kbps 64Kbps 音频码率
- @constant   PLSAudioBitRate_96Kbps 96Kbps 音频码率
- @constant   PLSAudioBitRate_128Kbps 128Kbps 音频码率
- 
  @since      v1.0.0
  */
 typedef enum {
+    
+    /**
+     @brief   PLSAudioBitRate_32Kbps 32Kbps 音频码率
+     
+     @since      v1.16.0
+     */
+    PLSAudioBitRate_32Kbps = 32000,
+    
+    /**
+     @brief   PLSAudioBitRate_64Kbps 64Kbps 音频码率
+     */
     PLSAudioBitRate_64Kbps = 64000,
+    
+    /**
+     @brief   PLSAudioBitRate_96Kbps 96Kbps 音频码率
+     */
     PLSAudioBitRate_96Kbps = 96000,
+    
+    /**
+     @brief   PLSAudioBitRate_128Kbps 128Kbps 音频码率
+     */
     PLSAudioBitRate_128Kbps = 128000,
+    
+    /**
+     @brief   PLSAudioBitRate_192Kbps 192Kbps 音频码率
+     */
+    PLSAudioBitRate_192Kbps = 192000,
+    
+    /**
+     @brief   PLSAudioBitRate_256Kbps 256Kbps 音频码率
+     
+     @since      v1.16.0
+     */
+    PLSAudioBitRate_256Kbps = 256000,
+    
 } PLSAudioBitRate;
 
 #pragma mark - Video File Type
@@ -210,6 +271,22 @@ typedef NS_ENUM(NSUInteger, PLSComposerPriorityType) {
             不好之处是可能引起音视频不同步
      */
     PLSComposerPriorityTypeSmooth,
+    
+    /**
+     @brief 以拼接的文件视频通道长度为准，当参与拼接文件的音频通道时长比视频通道时长长的时候，将多出的音频数据丢弃掉。当视音频通道时长比视频通道
+            时长短的视频，则将音频通道补齐和视频通道一样长。当一段视频中，音频数据和视频数据时长相差较大（超过 0.1 秒）时，不建议使用这种模式
+     
+     @since      v1.16.0
+     */
+    PLSComposerPriorityTypeVideo,
+    
+    /**
+     @brief 以拼接的文件音频通道长度为准，当参与拼接文件的视频通道时长比音频通道时长长的时候，将多出的视频数据丢弃掉。当视频通道时长比音频通道
+            时长短的视频，则将视频通道补齐和音频通道一样长。当一段视频中，音频数据和视频数据时长相差较大（超过 0.1 秒）时，不建议使用这种模式
+     
+     @since      v1.16.0
+     */
+    PLSComposerPriorityTypeAudio,
 };
 
 /**
@@ -228,6 +305,29 @@ typedef NS_ENUM(NSUInteger, PLSWaterMarkType) {
      @brief GIF 水印
      */
     PLSWaterMarkTypeGif,
+};
+
+/**
+ @abstract 媒体类型
+ 
+ @since      v1.16.0
+ */
+typedef NS_ENUM(NSUInteger, PLSMediaType) {
+    
+    /**
+     @brief 图片
+     */
+    PLSMediaTypeImage = 0,
+    
+    /**
+     @brief 视频
+     */
+    PLSMediaTypeVideo,
+    
+    /**
+     @brief GIF
+     */
+    PLSMediaTypeGIF,
 };
 
 

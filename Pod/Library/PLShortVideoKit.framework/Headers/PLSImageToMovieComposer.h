@@ -10,6 +10,7 @@
 #import <UIKit/UIKit.h>
 #import "PLSTypeDefines.h"
 
+__deprecated_msg("Class PLSImageToMovieComposer is deprecated in v1.16.0, use PLSImageVideoComposer instead")
 @interface PLSImageToMovieComposer : NSObject
 
 /**
