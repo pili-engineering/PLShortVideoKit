@@ -25,6 +25,7 @@
 #import "PLSClipMovieView.h"
 #import <Masonry/Masonry.h>
 #import "PLSTimeLineAudioItem.h"
+#import <Photos/Photos.h>
 
 #define AlertViewShow(msg) [[[UIAlertView alloc] initWithTitle:@"warning" message:[NSString stringWithFormat:@"%@", msg] delegate:nil cancelButtonTitle:@"ok" otherButtonTitles:nil] show]
 #define iPhoneX ([UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(1125, 2436), [[UIScreen mainScreen] currentMode].size) : NO)
@@ -56,6 +57,7 @@ PLSClipMovieViewDelegate
 @property (strong, nonatomic) UIView *baseToolboxView;
 @property (strong, nonatomic) UIView *editDisplayView;
 @property (strong, nonatomic) UIView *editToolboxView;
+@property (strong, nonatomic) UIScrollView *buttonScrollView;
 
 // 水印
 @property (strong, nonatomic) NSURL *watermarkURL;
@@ -443,11 +445,22 @@ PLSClipMovieViewDelegate
     [self.editDisplayView addSubview:self.playButton];
     [self.playButton addTarget:self action:@selector(playButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
     
-    // 视频分辨率
-    AVAsset *asset = self.movieSettings[PLSAssetKey];
+    self.stickerOverlayView = [[PLSStickerOverlayView alloc] init];
+    [self.editDisplayView addSubview:self.stickerOverlayView];
+    self.stickerOverlayView.backgroundColor = [UIColor clearColor];
+    [self updateStickerOverlayView:self.movieSettings[PLSAssetKey]];
     
-    CGSize vSize = asset.pls_videoSize;
+    // 添加点击手势
+    self.tapGes = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onTouchBGView:)];
+    self.tapGes.cancelsTouchesInView = NO;
+    self.tapGes.delegate = self;
+    [self.view addGestureRecognizer:self.tapGes];
+}
 
+- (void)updateStickerOverlayView:(AVAsset *)asset {
+    // 视频分辨率
+    CGSize vSize = asset.pls_videoSize;
+    
     CGFloat x = 0;
     CGFloat y = 0;
     
@@ -464,16 +477,7 @@ PLSClipMovieViewDelegate
         height = vSize.height / vSize.width * displayViewWidth;
         y = (displayViewHeight - height) * 0.5;
     }
-    
-    self.stickerOverlayView = [[PLSStickerOverlayView alloc] initWithFrame:CGRectMake(x, y, width, height)];
-    [self.editDisplayView addSubview:self.stickerOverlayView];
-    self.stickerOverlayView.backgroundColor = [UIColor clearColor];
-    
-    // 添加点击手势
-    self.tapGes = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onTouchBGView:)];
-    self.tapGes.cancelsTouchesInView = NO;
-    self.tapGes.delegate = self;
-    [self.view addGestureRecognizer:self.tapGes];
+    self.stickerOverlayView.frame = CGRectMake(x, y, width, height);
 }
 
 // self.tapGes 手势的响应事件
@@ -487,37 +491,63 @@ PLSClipMovieViewDelegate
     // 回收键盘
     [self.view endEditing:YES];
     
+    [self hideAllBottomViews];
+}
+
+- (void)hideAllBottomViews {
     // 隐藏显示功能面板
     [self hideStickerbar];
-    
     // 隐藏显示滤镜、音乐、MV 资源的视图
     [self hideSourceCollectionView];
-    
     // 隐藏剪视频的视图
     [self hideClipMovieView];
-    
     // 隐藏视频列表视图
     [self removeVideoListView];
 }
 
 #pragma mark - UIGestureRecognizer 手势代理
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
+    NSMutableArray *classArray = [[NSMutableArray alloc] init];
+    UIView *view = touch.view;
+    while (view) {
+        [classArray addObject:NSStringFromClass(view.class)];
+        view = view.superview;
+    }
+    
     // 过滤掉 PLSEditVideoCell，让 PLSEditVideoCell 响应它自身的点击事件
-    if ([touch.view.superview isKindOfClass:[PLSEditVideoCell class]]) {
+    if ([classArray containsObject:NSStringFromClass(PLSEditVideoCell.class)]) {
         return NO;
     }
     
     // 过滤掉 PLSStickerBar，让 PLSStickerBar 响应它自身的点击事件
-    if ([touch.view.superview.superview isKindOfClass:[PLSStickerBar class]]) {
+    if ([classArray containsObject:NSStringFromClass(PLSStickerBar.class)]) {
         return NO;
     }
     
     // 过滤掉 UIScrollView，让 UIScrollView 响应它自身的点击事件，UIScrollView 用于展示了底部的功能按钮键
-    if ([touch.view.superview.superview isKindOfClass:[UIScrollView class]]) {
+    if ([classArray containsObject:NSStringFromClass(UIScrollView.class)]) {
         return NO;
     }
     
     return YES;
+}
+
+
+- (UIButton *)toolBoxButtonWithSelector:(SEL)selector
+                                 startX:(CGFloat)startX
+                                  title:(NSString*)buttonTitle {
+    CGFloat height = 50;
+    UIButton *button = [UIButton buttonWithType:(UIButtonTypeCustom)];
+    [button setTitle:buttonTitle forState:UIControlStateNormal];
+    [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    button.titleLabel.font = [UIFont systemFontOfSize:16];
+    [button sizeToFit];
+    button.frame = CGRectMake(startX, 0, button.bounds.size.width, height);
+    [button addTarget:self action:selector forControlEvents:UIControlEventTouchUpInside];
+    
+    [self.buttonScrollView addSubview:button];
+    
+    return button;
 }
 
 - (void)setupEditToolboxView {
@@ -531,241 +561,128 @@ PLSClipMovieViewDelegate
     self.editToolboxView.backgroundColor = PLS_RGBCOLOR(25, 24, 36);
     [self.view addSubview:self.editToolboxView];
     
-    UIScrollView *buttonScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, self.editToolboxView.frame.size.width, height)];
-    buttonScrollView.backgroundColor = PLS_RGBCOLOR(25, 24, 36);
-    buttonScrollView.contentSize = CGSizeMake(startX + space * 15, buttonScrollView.frame.size.height);
-    buttonScrollView.contentOffset = CGPointMake(0, 0);
-    buttonScrollView.bounces = YES;
-    buttonScrollView.showsHorizontalScrollIndicator = NO;
-    buttonScrollView.showsVerticalScrollIndicator = NO;
-    [self.editToolboxView addSubview:buttonScrollView];
+    self.buttonScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, self.editToolboxView.frame.size.width, height)];
+    self.buttonScrollView.backgroundColor = PLS_RGBCOLOR(25, 24, 36);
+    self.buttonScrollView.contentSize = CGSizeMake(startX + space * 15, self.buttonScrollView.frame.size.height);
+    self.buttonScrollView.contentOffset = CGPointMake(0, 0);
+    self.buttonScrollView.bounces = YES;
+    self.buttonScrollView.showsHorizontalScrollIndicator = NO;
+    self.buttonScrollView.showsVerticalScrollIndicator = NO;
+    [self.editToolboxView addSubview:self.buttonScrollView];
     
     UILabel *hintLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, 0, 162, height)];
     hintLabel.font = [UIFont systemFontOfSize:13];
     hintLabel.textAlignment = NSTextAlignmentLeft;
     hintLabel.textColor = [UIColor redColor];
     hintLabel.text = @"左右滑动体验更多功能按钮";
-    [buttonScrollView addSubview:hintLabel];
-    
-    NSInteger index = 0;
+    [self.buttonScrollView addSubview:hintLabel];
     
     // 水印
-    UIButton *watermarkButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    watermarkButton.frame = CGRectMake(startX + space * index, 0, width, height);
-    [watermarkButton setTitle:@"水印" forState:UIControlStateNormal];
-    [watermarkButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    watermarkButton.titleLabel.font = [UIFont systemFontOfSize:fontSize];
-    [watermarkButton addTarget:self action:@selector(watermarkButtonClick:) forControlEvents:UIControlEventTouchUpInside];
-    [buttonScrollView addSubview:watermarkButton];
-    watermarkButton.selected = YES;
-    self.waterMarkButton = watermarkButton;
-    
-    index++;
+    UIButton *button = [self toolBoxButtonWithSelector:@selector(watermarkButtonClick:)
+                                                startX:startX
+                                                 title:@"水印"];
+    button.selected = YES;
+    self.waterMarkButton = button;
     
     // gif 水印
-    UIButton *gifWatermarkButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    gifWatermarkButton.frame = CGRectMake(startX + space * index, 0, width + 10, height);
-    [gifWatermarkButton setTitle:@"gif水印" forState:UIControlStateNormal];
-    [gifWatermarkButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    gifWatermarkButton.titleLabel.font = [UIFont systemFontOfSize:fontSize];
-    [gifWatermarkButton addTarget:self action:@selector(gifWatermarkButtonClick:) forControlEvents:UIControlEventTouchUpInside];
-    [buttonScrollView addSubview:gifWatermarkButton];
-    self.gifWaterMarkButton = gifWatermarkButton;
+    button = [self toolBoxButtonWithSelector:@selector(gifWatermarkButtonClick:)
+                                      startX:button.frame.origin.x + button.frame.size.width + 20
+                                       title:@"GIF水印"];
+    self.gifWaterMarkButton = button;
     
-    index++;
-
-    // 旋转 水印
-    UIButton *rotateWatermarkButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    rotateWatermarkButton.frame = CGRectMake(startX + space * index, 0, width + 10, height);
-    [rotateWatermarkButton setTitle:@"旋转水印" forState:UIControlStateNormal];
-    rotateWatermarkButton.titleLabel.adjustsFontSizeToFitWidth = YES;
-    [rotateWatermarkButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    rotateWatermarkButton.titleLabel.font = [UIFont systemFontOfSize:fontSize - 2];
-    [rotateWatermarkButton addTarget:self action:@selector(rotateWatermarkButtonClick:) forControlEvents:UIControlEventTouchUpInside];
-    [buttonScrollView addSubview:rotateWatermarkButton];
     
-    index++;
-
+    // 旋转水印
+    button = [self toolBoxButtonWithSelector:@selector(rotateWatermarkButtonClick:)
+                                      startX:button.frame.origin.x + button.frame.size.width + 20
+                                       title:@"旋转水印"];
+    
     // 剪视频
-    UIButton *clipVideoButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    clipVideoButton.frame = CGRectMake(startX + space * index, 0, width, height);
-    [clipVideoButton setTitle:@"剪视频" forState:UIControlStateNormal];
-    [clipVideoButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    clipVideoButton.titleLabel.font = [UIFont systemFontOfSize:fontSize];
-    [clipVideoButton addTarget:self action:@selector(clipVideoButtonClick:) forControlEvents:UIControlEventTouchUpInside];
-    [buttonScrollView addSubview:clipVideoButton];
-    
-    index++;
+    button = [self toolBoxButtonWithSelector:@selector(clipVideoButtonClick:)
+                                      startX:button.frame.origin.x + button.frame.size.width + 20
+                                       title:@"剪视频"];
     
     // 滤镜
-    UIButton *filterButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    filterButton.frame = CGRectMake(startX + space * index, 0, width, height);
-    [filterButton setTitle:@"滤镜" forState:UIControlStateNormal];
-    [filterButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    filterButton.titleLabel.font = [UIFont systemFontOfSize:fontSize];
-    [filterButton addTarget:self action:@selector(filterButtonClick:) forControlEvents:UIControlEventTouchUpInside];
-    [buttonScrollView addSubview:filterButton];
-    
-    index++;
+    button = [self toolBoxButtonWithSelector:@selector(filterButtonClick:)
+                                      startX:button.frame.origin.x + button.frame.size.width + 20
+                                       title:@"滤镜"];
     
     // 多音效
-    UIButton *multiMusicButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    multiMusicButton.frame = CGRectMake(startX + space * index, 0, width, height);
-    [multiMusicButton setTitle:@"多音效" forState:UIControlStateNormal];
-    [multiMusicButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    multiMusicButton.titleLabel.font = [UIFont systemFontOfSize:fontSize];
-    [multiMusicButton addTarget:self action:@selector(multiMusicButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
-    [buttonScrollView addSubview:multiMusicButton];
+    button = [self toolBoxButtonWithSelector:@selector(multiMusicButtonEvent:)
+                                      startX:button.frame.origin.x + button.frame.size.width + 20
+                                       title:@"多音效"];
     
-    index++;
-
     // 背景音乐
-    UIButton *musicButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    musicButton.frame = CGRectMake(startX + space * index, 0, width, height);
-    [musicButton setTitle:@"音乐" forState:UIControlStateNormal];
-    [musicButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    musicButton.titleLabel.font = [UIFont systemFontOfSize:fontSize];
-    [musicButton addTarget:self action:@selector(musicButtonClick:) forControlEvents:UIControlEventTouchUpInside];
-    [buttonScrollView addSubview:musicButton];
+    button = [self toolBoxButtonWithSelector:@selector(musicButtonClick:)
+                                      startX:button.frame.origin.x + button.frame.size.width + 20
+                                       title:@"音乐"];
     
-    index++;
-
     // 裁剪背景音乐
-    UIButton *clipMusicButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    clipMusicButton.frame = CGRectMake(startX + space * index, 0, width, height);
-    [clipMusicButton setTitle:@"剪音乐" forState:UIControlStateNormal];
-    [clipMusicButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    clipMusicButton.titleLabel.font = [UIFont systemFontOfSize:fontSize];
-    [clipMusicButton addTarget:self action:@selector(clipMusicButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
-    [buttonScrollView addSubview:clipMusicButton];
+    button = [self toolBoxButtonWithSelector:@selector(clipMusicButtonEvent:)
+                                      startX:button.frame.origin.x + button.frame.size.width + 20
+                                       title:@"剪音乐"];
     
-    index++;
-
     // 音量调节
-    UIButton *volumeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    volumeButton.frame = CGRectMake(startX + space * index, 0, width, height);
-    [volumeButton setTitle:@"音量" forState:UIControlStateNormal];
-    [volumeButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    volumeButton.titleLabel.font = [UIFont systemFontOfSize:fontSize];
-    [volumeButton addTarget:self action:@selector(volumeChangeEvent:) forControlEvents:UIControlEventTouchUpInside];
-    [buttonScrollView addSubview:volumeButton];
+    button = [self toolBoxButtonWithSelector:@selector(volumeChangeEvent:)
+                                      startX:button.frame.origin.x + button.frame.size.width + 20
+                                       title:@"音量"];
     
-    index++;
-
     // 关闭原声
-    UIButton *closeSoundButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    closeSoundButton.frame = CGRectMake(startX + space * index, 0, width, height);
-    [closeSoundButton setTitle:@"静音" forState:UIControlStateNormal];
-    [closeSoundButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    closeSoundButton.titleLabel.font = [UIFont systemFontOfSize:fontSize];
-    [closeSoundButton addTarget:self action:@selector(closeSoundButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
-    [buttonScrollView addSubview:closeSoundButton];
+    button = [self toolBoxButtonWithSelector:@selector(closeSoundButtonEvent:)
+                                      startX:button.frame.origin.x + button.frame.size.width + 20
+                                       title:@"静音"];
     
-    index++;
-
     // 添加文字
-    UIButton *addTextButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    addTextButton.frame = CGRectMake(startX + space * index, 0, width, height);
-    [addTextButton setTitle:@"文字" forState:UIControlStateNormal];
-    [addTextButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    addTextButton.titleLabel.font = [UIFont systemFontOfSize:fontSize];
-    [addTextButton addTarget:self action:@selector(addTextButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
-    [buttonScrollView addSubview:addTextButton];
+    button = [self toolBoxButtonWithSelector:@selector(addTextButtonEvent:)
+                                      startX:button.frame.origin.x + button.frame.size.width + 20
+                                       title:@"文字"];
     
-    index++;
-
     // 添加图片
-    UIButton *addImageButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    addImageButton.frame = CGRectMake(startX + space * index, 0, width, height);
-    [addImageButton setTitle:@"图片" forState:UIControlStateNormal];
-    [addImageButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    addImageButton.titleLabel.font = [UIFont systemFontOfSize:fontSize];
-    [addImageButton addTarget:self action:@selector(addImageButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
-    [buttonScrollView addSubview:addImageButton];
+    button = [self toolBoxButtonWithSelector:@selector(addImageButtonEvent:)
+                                      startX:button.frame.origin.x + button.frame.size.width + 20
+                                       title:@"图片"];
     
-    index++;
-
     // 制作Gif图
-    UIButton *formGifButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    formGifButton.frame = CGRectMake(startX + space * index, 0, width, height);
-    [formGifButton setTitle:@"GIF图" forState:UIControlStateNormal];
-    [formGifButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    formGifButton.titleLabel.font = [UIFont systemFontOfSize:fontSize];
-    [formGifButton addTarget:self action:@selector(formatGifButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
-    [buttonScrollView addSubview:formGifButton];
+    button = [self toolBoxButtonWithSelector:@selector(formatGifButtonEvent:)
+                                      startX:button.frame.origin.x + button.frame.size.width + 20
+                                       title:@"GIF图"];
     
-    index++;
-
+    // 制作Gif封面
+    button = [self toolBoxButtonWithSelector:@selector(formatGifThumbEvent:)
+                                      startX:button.frame.origin.x + button.frame.size.width + 20
+                                       title:@"封面动图"];
+    
     // 配音
-    UIButton *audioDubButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    audioDubButton.frame = CGRectMake(startX + space * index, 0, width, height);
-    [audioDubButton setTitle:@"配音" forState:UIControlStateNormal];
-    [audioDubButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    audioDubButton.titleLabel.font = [UIFont systemFontOfSize:fontSize];
-    [audioDubButton addTarget:self action:@selector(dubAudioButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
-    [buttonScrollView addSubview:audioDubButton];
+    button = [self toolBoxButtonWithSelector:@selector(dubAudioButtonEvent:)
+                                      startX:button.frame.origin.x + button.frame.size.width + 20
+                                       title:@"配音图"];
     
-    index++;
-
     // 视频倍速
-    UIButton *videoSpeedButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    videoSpeedButton.frame = CGRectMake(startX + space * index, 0, width, height);
-    [videoSpeedButton setTitle:@"倍速" forState:UIControlStateNormal];
-    [videoSpeedButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    videoSpeedButton.titleLabel.font = [UIFont systemFontOfSize:fontSize];
-    [videoSpeedButton addTarget:self action:@selector(videoSpeedButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
-    [buttonScrollView addSubview:videoSpeedButton];
+    button = [self toolBoxButtonWithSelector:@selector(videoSpeedButtonEvent:)
+                                      startX:button.frame.origin.x + button.frame.size.width + 20
+                                       title:@"倍速"];
     
-    index++;
-
     // 时光倒流
-    self.reverserButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.reverserButton.frame = CGRectMake(startX + space * index, 0, width, height);
-    [self.reverserButton setTitle:@"倒序" forState:UIControlStateNormal];
-    [self.reverserButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    self.reverserButton.titleLabel.font = [UIFont systemFontOfSize:fontSize];
-    self.reverserButton.selected = NO;
-    [self.reverserButton addTarget:self action:@selector(reverserButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
-    [buttonScrollView addSubview:_reverserButton];
+    button = [self toolBoxButtonWithSelector:@selector(reverserButtonEvent:)
+                                      startX:button.frame.origin.x + button.frame.size.width + 20
+                                       title:@"倒序"];
+    self.reverserButton = button;
     
-    index++;
-
     // 视频旋转
-    UIButton *rotateVideoButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    rotateVideoButton.frame = CGRectMake(startX + space * index, 0, width, height);
-    [rotateVideoButton setTitle:@"旋转" forState:UIControlStateNormal];
-    [rotateVideoButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    rotateVideoButton.titleLabel.font = [UIFont systemFontOfSize:fontSize];
-    [rotateVideoButton addTarget:self action:@selector(rotateVideoButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
-    [buttonScrollView addSubview:rotateVideoButton];
-
-    index++;
-
+    button = [self toolBoxButtonWithSelector:@selector(rotateVideoButtonEvent:)
+                                      startX:button.frame.origin.x + button.frame.size.width + 20
+                                       title:@"旋转"];
     // MV 特效
-    UIButton *mvButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    mvButton.frame = CGRectMake(startX + space * index, 0, width, height);
-    [mvButton setTitle:@"MV" forState:UIControlStateNormal];
-    [mvButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    mvButton.titleLabel.font = [UIFont systemFontOfSize:fontSize];
-    [mvButton addTarget:self action:@selector(mvButtonClick:) forControlEvents:UIControlEventTouchUpInside];
-    [buttonScrollView addSubview:mvButton];
+    button = [self toolBoxButtonWithSelector:@selector(mvButtonClick:)
+                                      startX:button.frame.origin.x + button.frame.size.width + 20
+                                       title:@"MV"];
     
-    index++;
-
     // 视频列表
-    UIButton *videoListButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    videoListButton.frame = CGRectMake(startX + space * index, 0, width, height);
-    videoListButton.selected = NO;
-    [videoListButton setTitle:@"列表" forState:UIControlStateNormal];
-    [videoListButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    videoListButton.titleLabel.font = [UIFont systemFontOfSize:fontSize];
-    [videoListButton addTarget:self action:@selector(videoListButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
-    [buttonScrollView addSubview:videoListButton];
-    
-    index++;
+    button = [self toolBoxButtonWithSelector:@selector(videoListButtonEvent:)
+                                      startX:button.frame.origin.x + button.frame.size.width + 20
+                                       title:@"列表"];
     
     // 更新 buttonScrollView 的 contentSize
-    buttonScrollView.contentSize = CGSizeMake(startX + space * index, buttonScrollView.frame.size.height);
+    self.buttonScrollView.contentSize = CGSizeMake(button.frame.origin.x + button.frame.size.width + 20, self.buttonScrollView.frame.size.height);
 }
 
 - (void)setupMergeToolboxView {
@@ -1228,10 +1145,12 @@ PLSClipMovieViewDelegate
             CGSize naturalSize = videoTrack.naturalSize;
             self.videoSize = CGSizeMake(naturalSize.width, naturalSize.height);
             self.shortVideoEditor.videoSize = self.videoSize;
+            [self updateStickerOverlayView:asset];
         }
     } else {
         self.videoSize = CGSizeZero;
         self.shortVideoEditor.videoSize = self.videoSize;
+        [self updateStickerOverlayView:self.movieSettings[PLSAssetKey]];
     }
     
     [self.shortVideoEditor addMVLayerWithColor:self.colorURL alpha:self.alphaURL timeRange:kCMTimeRangeZero loopEnable:YES];
@@ -1384,6 +1303,9 @@ PLSClipMovieViewDelegate
 
 #pragma mark - 显示滤镜、音乐、MV 的 CollectionView
 - (void)showSourceCollectionView {
+    
+    [self hideAllBottomViews];
+
     if (!self.editCollectionView) {
         // 展示滤镜、音乐、MV列表效果的 UICollectionView
         UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
@@ -1502,6 +1424,9 @@ PLSClipMovieViewDelegate
 }
 
 - (void)showClipMovieView {
+    
+    [self hideAllBottomViews];
+
     if (!self.clipMovieView) {
         AVAsset *asset = self.movieSettings[PLSAssetKey];
         CGFloat duration = CMTimeGetSeconds(asset.duration);
@@ -1647,6 +1572,53 @@ PLSClipMovieViewDelegate
 #pragma mark - 制作Gif图
 - (void)formatGifButtonEvent:(id)sender {
     [self joinGifFormatViewController];
+}
+
+#pragma mark - 制作封面动图
+- (void)formatGifThumbEvent:(id)sender {
+    AVAsset *asset = self.movieSettings[PLSAssetKey];
+    [self loadActivityIndicatorView];
+
+    __weak typeof(self) weakSelf = self;
+    CGSize size = [asset pls_videoSize];
+    float startTime = [self.movieSettings[PLSStartTimeKey] floatValue];
+    float duration = MIN(2.0, [self.movieSettings[PLSDurationKey] floatValue]);
+    
+    [PLSGifComposer getImagesWithAsset:asset startTime:startTime endTime:startTime + duration imageCount:duration * 10 imageSize:size completionBlock:^(NSError *error, NSArray *images) {
+        if (error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [weakSelf removeActivityIndicatorView];
+                AlertViewShow(error.localizedDescription);
+            });
+            return;
+        }
+        
+        PLSGifComposer *gifComposer = [[PLSGifComposer alloc] initWithImagesArray:images];
+        gifComposer.gifName = nil; // 为 nil 时，SDK 内部会生成相应的唯一名称。gifComposer.gifName = @"myGif"
+        gifComposer.interval = duration / 20;
+        
+        [gifComposer setCompletionBlock:^(NSURL *url){
+            NSLog(@"compose Gif successed");
+            [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+                [PHAssetChangeRequest creationRequestForAssetFromImageAtFileURL:url];
+            } completionHandler:^(BOOL success, NSError * _Nullable error) {
+                NSLog(@"save GIF to album: %d", success);
+            }];
+            
+            [weakSelf removeActivityIndicatorView];
+            PlayViewController *playViewController = [[PlayViewController alloc]init];
+            playViewController.actionType = PLSActionTypeGif;
+            playViewController.url = url;
+            [weakSelf presentViewController:playViewController animated:YES completion:nil];
+        }];
+        
+        [gifComposer setFailureBlock:^(NSError *error){
+            NSLog(@"compose Gif failed: %@", error);
+            [weakSelf removeActivityIndicatorView];
+        }];
+        
+        [gifComposer composeGif];
+    }]; 
 }
 
 #pragma mark - 时光倒流
@@ -1808,6 +1780,9 @@ PLSClipMovieViewDelegate
 }
 
 - (void)showTextbar {
+    
+    [self hideAllBottomViews];
+    
     [self.shortVideoEditor stopEditing];
     
     self.playButton.selected = YES;
@@ -1866,6 +1841,9 @@ PLSClipMovieViewDelegate
 }
 
 - (void)showStickerbar {
+    
+    [self hideAllBottomViews];
+
     if (!self.stickerBar) {
         self.stickerBar = [[PLSStickerBar alloc] initWithFrame:CGRectMake(0, PLS_SCREEN_HEIGHT - PLS_EditToolboxView_HEIGHT - 175 - [self bottomFixSpace], PLS_SCREEN_WIDTH, 175) resourcePath:self.stickerPath];
         self.stickerBar.backgroundColor = PLS_RGBCOLOR(25, 24, 36);
@@ -2281,6 +2259,8 @@ PLSClipMovieViewDelegate
     exportSession.outputSettings = self.outputSettings;
     exportSession.delegate = self;
     exportSession.isExportMovieToPhotosAlbum = YES;
+    exportSession.audioChannel = 2;
+    exportSession.audioBitrate = PLSAudioBitRate_128Kbps;
     exportSession.outputVideoFrameRate = MIN(60, asset.pls_normalFrameRate);
 //    // 设置视频的码率
 //    exportSession.bitrate = 3000*1000;
@@ -2335,6 +2315,7 @@ PLSClipMovieViewDelegate
 
     GifFormatViewController *gifFormatViewController = [[GifFormatViewController alloc] init];
     gifFormatViewController.asset = asset;
+    gifFormatViewController.videoURL = self.movieSettings[PLSURLKey];
     [self presentViewController:gifFormatViewController animated:YES completion:nil];
 }
 

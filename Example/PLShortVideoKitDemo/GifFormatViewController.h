@@ -14,4 +14,5 @@
     
 @property (strong, nonatomic) AVAsset *asset;
 
+@property (strong, nonatomic) NSURL *videoURL;
 @end

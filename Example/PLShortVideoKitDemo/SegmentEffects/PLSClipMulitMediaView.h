@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
+#import "PLShortVideoKit/PLShortVideoKit.h"
 
 @class PLSRangeMedia;
 @class PLSClipMulitMediaView;
@@ -35,6 +36,9 @@ NSObject
 @property (nonatomic, weak) id<PLSClipMulitMediaViewDelegate> delegate;
 
 @property (nonatomic, strong) NSArray<AVAsset *> *assetArray;
+
+@property (assign, nonatomic) PLSVideoFillModeType fillMode;
+
 
 // 设置播放进度
 - (void)setPlayPosition:(CMTime)playPositon;

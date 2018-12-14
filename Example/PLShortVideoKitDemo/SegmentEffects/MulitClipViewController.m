@@ -48,6 +48,8 @@ TransitionViewControllerDelegate
 @property (strong, nonatomic) NSMutableArray <PLSRangeMedia *> *transcodingArray;
 
 @property (strong, nonatomic) PLSRangeMovieExport *movieExport;
+
+@property (assign, nonatomic) PLSVideoFillModeType fillMode;
 @end
 
 @implementation MulitClipViewController
@@ -67,7 +69,8 @@ TransitionViewControllerDelegate
     self.view.backgroundColor = [UIColor blackColor];
     self.nextButton.hidden = YES;
     self.titleLabel.text = @"单击屏幕播放/暂停";
-    
+    self.fillMode = PLSVideoFillModePreserveAspectRatioAndFill;
+
     [self setupClipView];
     
     [self setupPlayerView];
@@ -89,12 +92,32 @@ TransitionViewControllerDelegate
     [self.playerView addGestureRecognizer:singleTap];
     self.playerView.player = self.player;
     
+    UIButton *fillModeButton = [UIButton buttonWithType:(UIButtonTypeSystem)];
+    [fillModeButton setTitle:@"fillMode" forState:(UIControlStateNormal)];
+    [fillModeButton sizeToFit];
+    fillModeButton.center = CGPointMake(self.view.center.x, self.titleLabel.center.y + 40);
+    [self.view addSubview:fillModeButton];
+    
+    [fillModeButton addTarget:self action:@selector(clickFillMode:) forControlEvents:(UIControlEventTouchUpInside)];
+    
     [self addObserver];
+}
+
+- (void)clickFillMode:(UIButton *)button {
+    if (PLSVideoFillModePreserveAspectRatioAndFill == self.fillMode) {
+        self.fillMode = PLSVideoFillModePreserveAspectRatio;
+        [button setTitle:@"fitMode" forState:(UIControlStateNormal)];
+    } else {
+        self.fillMode = PLSVideoFillModePreserveAspectRatioAndFill;
+        [button setTitle:@"fillMode" forState:(UIControlStateNormal)];
+    }
+    self.clipView.fillMode = self.fillMode;
 }
 
 - (void)setupClipView {
     self.clipView = [[PLSClipMulitMediaView alloc] init];
     self.clipView.delegate = self;
+    self.clipView.fillMode = self.fillMode;
     [self.view addSubview:self.clipView];
     
     [self.clipView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -223,17 +246,19 @@ static int KVOcontext = 0;
     [self removeTimeObserver];
     
 //    if (nil == _timeObserverToken) {
-        __weak typeof(self) wself = self;
+        __weak typeof(self) weakSelf = self;
         _timeObserverToken = [self.player addPeriodicTimeObserverForInterval:CMTimeMake(1, 10) queue:dispatch_get_main_queue() usingBlock:^(CMTime time) {
-            [wself.clipView setPlayPosition:time];
+            [weakSelf.clipView setPlayPosition:time];
         }];
 //    }
 }
 
 - (void)removeTimeObserver {
-    if (_timeObserverToken) {
-        [self.player removeTimeObserver:_timeObserverToken];
-        _timeObserverToken = nil;
+    @synchronized (self) {
+        if (_timeObserverToken) {
+            [self.player removeTimeObserver:_timeObserverToken];
+            _timeObserverToken = nil;
+        }
     }
 }
 
@@ -342,14 +367,17 @@ static int KVOcontext = 0;
     
     self.movieExport = [[PLSRangeMovieExport alloc] initWithRangeMedia:mediaArray];
     self.movieExport.outURL = [self editVideoURL];
-    self.movieExport.outputFilePreset = PLSFilePreset960x540;
+//    self.movieExport.outputFilePreset = PLSFilePresetHighestQuality;
+    self.movieExport.outputVideoSize = CGSizeMake(540, 960);
+    self.movieExport.fillMode = PLSVideoFillModePreserveAspectRatio;
+    self.movieExport.bitrate = 1500 * 1000;
     
     [self showWating];
     
-    __weak typeof(self) wself = self;
+    __weak typeof(self) weakSelf = self;
     if (nil == self.movieExport.completionBlock) {
         self.movieExport.completionBlock = ^(NSURL *url) {
-            [wself hideWating];
+            [weakSelf hideWating];
             // 设置音视频、水印等编辑信息
             NSMutableDictionary *outputSettings = [[NSMutableDictionary alloc] init];
             // 待编辑的原始视频素材
@@ -365,15 +393,15 @@ static int KVOcontext = 0;
             EditViewController *videoEditViewController = [[EditViewController alloc] init];
             videoEditViewController.settings = outputSettings;
             videoEditViewController.filesURLArray = @[url];
-            [wself presentViewController:videoEditViewController animated:YES completion:nil];
+            [weakSelf presentViewController:videoEditViewController animated:YES completion:nil];
         };
         self.movieExport.failureBlock = ^(NSError *error) {
-            [wself hideWating];
+            [weakSelf hideWating];
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:error.localizedDescription delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
             [alert show];
         };
         self.movieExport.processingBlock = ^(float progress) {
-            [wself setProgress:progress];
+            [weakSelf setProgress:progress];
         };
     }
     

@@ -108,11 +108,11 @@
     
     self.mulitVideoMixer.outputURL = [self getFileURL];
     
-    __weak typeof(self) wself = self;
+    __weak typeof(self) weakSelf = self;
     if (nil == self.mulitVideoMixer.completionBlock) {
         self.mulitVideoMixer.completionBlock = ^(NSURL *url) {
             
-            [wself hideWating];
+            [weakSelf hideWating];
             
             // 设置音视频、水印等编辑信息
             NSMutableDictionary *outputSettings = [[NSMutableDictionary alloc] init];
@@ -129,15 +129,15 @@
             EditViewController *videoEditViewController = [[EditViewController alloc] init];
             videoEditViewController.settings = outputSettings;
             videoEditViewController.filesURLArray = @[url];
-            [wself presentViewController:videoEditViewController animated:YES completion:nil];
+            [weakSelf presentViewController:videoEditViewController animated:YES completion:nil];
         };
         self.mulitVideoMixer.failureBlock = ^(NSError *error) {
-            [wself hideWating];
+            [weakSelf hideWating];
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:error.localizedDescription delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
             [alert show];
         };
         self.mulitVideoMixer.processingBlock = ^(float progress) {
-            [wself setProgress:progress];
+            [weakSelf setProgress:progress];
         };
     }
     
@@ -226,10 +226,10 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerToEnd:) name:AVPlayerItemDidPlayToEndTimeNotification object:self.player.currentItem];
     
-    __weak typeof(self) wself = self;
+    __weak typeof(self) weakSelf = self;
     _timeObserver = [self.player addPeriodicTimeObserverForInterval:CMTimeMake(1, 1) queue:dispatch_get_main_queue() usingBlock:^(CMTime time) {
         float process = CMTimeGetSeconds(time) / CMTimeGetSeconds(self.player.currentItem.duration);
-        wself.processView.progress = process;
+        weakSelf.processView.progress = process;
     }];
 }
 

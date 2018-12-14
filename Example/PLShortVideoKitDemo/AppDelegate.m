@@ -28,6 +28,8 @@
     // crash 收集
     [Fabric with:@[[Crashlytics class]]];
     
+    [[AVAudioSession sharedInstance] setCategory:(AVAudioSessionCategoryPlayback) error:nil];
+    
     return YES;
 }
 

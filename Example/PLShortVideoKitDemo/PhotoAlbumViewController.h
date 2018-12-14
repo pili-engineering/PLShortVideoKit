@@ -15,6 +15,7 @@
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
 #import <Photos/Photos.h>
+#import "PLSRateButtonView.h"
 
 @interface PLSScrollView : UIView
 
@@ -37,6 +38,12 @@
 
 - (NSURL *)movieURL;
 
+- (UIImage *)imageURL:(PHAsset *)phAsset targetSize:(CGSize)targetSize;
+
+- (NSURL *)getImageURL:(PHAsset *)phAsset;
+
+- (NSData *)getImageData:(PHAsset *)phAsset;
+
 @end
 
 
@@ -45,17 +52,23 @@
 @property (strong, nonatomic) PHAsset *asset;
 @property (strong, nonatomic) UIImageView *imageView;
 @property (assign, nonatomic) PHImageRequestID imageRequestID;
+@property (strong, nonatomic) UILabel *durationLabel;
 
 @end
 
 
 @interface PhotoAlbumViewController : UICollectionViewController
 
+@property (strong, nonatomic) NSArray *assets;
 @property (assign, nonatomic) NSInteger maxSelectCount;
 @property (assign, nonatomic) PHAssetMediaType mediaType;
+@property (strong, nonatomic) UIButton *nextButton;
+@property (strong, nonatomic) PLSRateButtonView *rateButtonView;
 
 @property (strong, nonatomic) PLSScrollView *dynamicScrollView;
 - (void)nextButtonClick:(UIButton *)sender;
+
+- (void)fetchAssetsWithMediaType:(PHAssetMediaType)mediaType;
 
 @end
 

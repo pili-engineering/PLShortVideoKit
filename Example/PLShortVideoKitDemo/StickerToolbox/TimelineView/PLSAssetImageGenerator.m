@@ -43,24 +43,24 @@
 - (void)generateWithCompleteHandler:(void(^)(UIImage *))handler {
     _shouldCancel = NO;
     _queue = dispatch_queue_create("com.pls.thumb.generator", NULL);
-    __weak typeof(self) wself = self;
+    __weak typeof(self) weakSelf = self;
     dispatch_async(_queue, ^{
-        CGFloat step = wself.duration / wself.imageCount;
+        CGFloat step = weakSelf.duration / weakSelf.imageCount;
         CGFloat currentDuration = 0;
         int index = 0;
-        for (PLSAssetInfo *info in wself.assets) {
+        for (PLSAssetInfo *info in weakSelf.assets) {
             CGFloat duration = [info realDuration];
             currentDuration += duration;
             int count = currentDuration / step;
             for (int i = index; i < count; i++) {
                 CGFloat time = i * step - (currentDuration - duration);
-                UIImage *image = [info captureImageAtTime:time outputSize:wself.outputSize];
+                UIImage *image = [info captureImageAtTime:time outputSize:weakSelf.outputSize];
                 handler(image);
-                if (wself.shouldCancel)
+                if (weakSelf.shouldCancel)
                     break;
             }
             index = count;
-            if (wself.shouldCancel)
+            if (weakSelf.shouldCancel)
                 break;
         }
     });

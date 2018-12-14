@@ -61,7 +61,8 @@
         self.clipMediaArray     = [[NSMutableArray alloc] init];
         self.thumbImageArray    = [[NSMutableArray alloc] init];
         self.thumbCountArray    = [[NSMutableArray alloc] init];
-
+        _fillMode = PLSVideoFillModePreserveAspectRatioAndFill;
+        
         [self initTopBar];
         
         [self initSwipControl];
@@ -283,6 +284,11 @@
     [controller presentViewController:alert animated:YES completion:nil];
 }
 
+- (void)setFillMode:(PLSVideoFillModeType)fillMode {
+    _fillMode = fillMode;
+    [self mediaArrayHasUpdate];
+}
+
 // 分段视频有更新,包括删除，插入转场视频，插入新视频，切割视频
 - (void)mediaArrayHasUpdate {
     
@@ -293,7 +299,7 @@
     
     [self refreshThumbImage:nil];
 
-    AVPlayerItem *playItem = [PLSRangeMediaTools playerItemWithRangeMedia:_clipMediaArray];
+    AVPlayerItem *playItem = [PLSRangeMediaTools playerItemWithRangeMedia:_clipMediaArray videoSize:CGSizeMake(540, 960) fillMode:self.fillMode];
     [self.delegate clipView:self refreshPlayItem:playItem];
 }
 
@@ -498,12 +504,12 @@ static NSString *keyPaths [] = {
         NSMutableArray *imageArray = [[NSMutableArray alloc] init];
         [self.thumbImageArray addObject:imageArray];
         
-        __weak typeof(self) wself = self;
+        __weak typeof(self) weakSelf = self;
         [imageGenerator generateCGImagesAsynchronouslyForTimes:timeArray completionHandler:^(CMTime requestedTime, CGImageRef  _Nullable image, CMTime actualTime, AVAssetImageGeneratorResult result, NSError * _Nullable error) {
             if (image && AVAssetImageGeneratorSucceeded == result) {
                 [imageArray addObject:[UIImage imageWithCGImage:image]];
                 dispatch_main_async_safe(^{
-                    [wself.collectionView reloadData];
+                    [weakSelf.collectionView reloadData];
                 });
             }
         }];

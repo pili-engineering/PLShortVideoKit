@@ -9,7 +9,6 @@
 #import "PhotoAlbumViewController.h"
 #import "MovieTransCodeViewController.h"
 #import "PLShortVideoKit/PLShortVideoKit.h"
-#import "PLSRateButtonView.h"
 #import "ViewRecordViewController.h"
 #import "EditViewController.h"
 
@@ -236,16 +235,31 @@
     
     PHImageManager *manager = [PHImageManager defaultManager];
     __block NSURL *url = nil;
-    __weak typeof(self) wself = self;
+    __weak typeof(self) weakSelf = self;
     [manager requestImageDataForAsset:phAsset options:options resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
         if (imageData) {
             // 这里需要重新将图片数据写到 App 可以访问的目录，不然直接使用 info 中的 url，可能会获取不到图片数据
-            url = [wself getImageFilePath];
+            url = [weakSelf getImageFilePath];
             [[NSFileManager defaultManager] createFileAtPath:url.path contents:imageData attributes:nil];
         }
     }];
     
     return url;
+}
+
+- (NSData *)getImageData:(PHAsset *)phAsset {
+    
+    PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
+    options.networkAccessAllowed = YES;
+    options.synchronous = YES;
+    
+    PHImageManager *manager = [PHImageManager defaultManager];
+    __block NSData *data = nil;
+    [manager requestImageDataForAsset:phAsset options:options resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
+        data = imageData;
+    }];
+    
+    return data;
 }
 
 @end
@@ -264,6 +278,18 @@
         self.imageView.clipsToBounds = YES;
         self.imageView.contentMode = UIViewContentModeScaleAspectFill;
         [self.contentView addSubview:self.imageView];
+        self.durationLabel = [[UILabel alloc] init];
+        self.durationLabel.text = @"00:00";
+        self.durationLabel.textColor = UIColor.whiteColor;
+        if ([UIFont respondsToSelector:@selector(monospacedDigitSystemFontOfSize:weight:)]) {
+            self.durationLabel.font = [UIFont monospacedDigitSystemFontOfSize:12 weight:(UIFontWeightRegular)];
+        } else {
+            self.durationLabel.font = [UIFont systemFontOfSize:12];
+        }
+        [self.durationLabel sizeToFit];
+        self.durationLabel.frame = CGRectMake(3, frame.size.height - self.durationLabel.bounds.size.height - 3, self.durationLabel.bounds.size.width, self.durationLabel.bounds.size.height);
+        [self.contentView addSubview:self.durationLabel];
+        self.durationLabel.hidden = YES;
     }
     return self;
 }
@@ -294,6 +320,15 @@
         [self cancelImageRequest];
         
         if (_asset) {
+            
+            if (PHAssetMediaTypeVideo == _asset.mediaType) {
+                self.durationLabel.hidden = NO;
+                int duration = round(_asset.duration);
+                self.durationLabel.text = [NSString stringWithFormat:@"%02d:%02d", duration / 60, duration % 60];
+            } else {
+                self.durationLabel.hidden = YES;
+            }
+            
             PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
             CGFloat scale = [UIScreen mainScreen].scale;
             CGSize size = CGSizeMake(self.bounds.size.width * scale, self.bounds.size.height * scale);
@@ -318,14 +353,11 @@
 
 @interface PhotoAlbumViewController () <UIAlertViewDelegate, PLSRateButtonViewDelegate>
 
-@property (strong, nonatomic) NSArray *assets;
 @property (strong, nonatomic) UIImageView *previewImageView;
 
 @property (strong, nonatomic) NSMutableArray *urls;
 @property (strong, nonatomic) UIView *baseToolboxView;
 @property (strong, nonatomic) UIView *editToolboxView;
-@property (strong, nonatomic) UIButton *nextButton;
-@property (strong, nonatomic) PLSRateButtonView *rateButtonView;
 @property (assign, nonatomic) BOOL isMovieLandscapeOrientation;
 
 @property (strong, nonatomic) PLSImageToMovieComposer *imageToMovieComposer;
@@ -725,8 +757,8 @@ static NSString * const reuseIdentifier = @"Cell";
     } else if (10003 == alertView.tag) {
         if (1 == buttonIndex) {
             
-            NSString *message = @"同步优先：优先考虑拼接之后音视频的同步性，但是可能造个各个视频的拼接处播放的时候出现音频或者视频卡顿\n\n流畅优先：优先考虑拼接之后播放的流畅性，各个视频的拼接处不会出现音视频卡顿现象，但是可能造成音视频不同步";
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:message delegate:self cancelButtonTitle:nil otherButtonTitles:@"同步优先", @"流畅优先", nil];
+            NSString *message = @"同步优先：优先考虑拼接之后音视频的同步性，但是可能造个各个视频的拼接处播放的时候出现音频或者视频卡顿\n流畅优先：优先考虑拼接之后播放的流畅性，各个视频的拼接处不会出现音视频卡顿现象，但是可能造成音视频不同步\n视频优先：以每一段视频数据长度来决定每一段音频数据长度\n 音频优先：以每一段音频数据长度来决定每一段视频数据长度";
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:message delegate:self cancelButtonTitle:nil otherButtonTitles:@"同步优先", @"流畅优先",@"视频优先", @"音频优先", nil];
             alert.tag = 10004;
             
             [alert show];
@@ -735,8 +767,12 @@ static NSString * const reuseIdentifier = @"Cell";
         // 多个视频拼接 或者 单个视频转码 都可以用 PLSMovieComposer
         if (0 == buttonIndex) {
             [self movieComposerEvent:PLSComposerPriorityTypeSync];
-        } else {
+        } else if (1 == buttonIndex ) {
             [self movieComposerEvent:PLSComposerPriorityTypeSmooth];
+        } else if (2 == buttonIndex) {
+            [self movieComposerEvent:PLSComposerPriorityTypeVideo];
+        } else {
+            [self movieComposerEvent:PLSComposerPriorityTypeAudio];
         }
     }
 }
@@ -845,9 +881,9 @@ static NSString * const reuseIdentifier = @"Cell";
     self.movieComposer.composerPriorityType = type;
 #if 1
     if (self.isMovieLandscapeOrientation) {
-        self.movieComposer.videoSize = CGSizeMake(960, 544);
+        self.movieComposer.videoSize = CGSizeMake(960, 540);
     } else {
-        self.movieComposer.videoSize = CGSizeMake(544, 960);
+        self.movieComposer.videoSize = CGSizeMake(540, 960);
     }
 #else
     // 不设置 videoSize 的情形下，以第1个视频的分辨率为参照进行拼接

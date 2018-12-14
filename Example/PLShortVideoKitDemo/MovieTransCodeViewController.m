@@ -539,7 +539,7 @@ PLShortVideoEditorDelegate
                                           self.scopeView.frame.size.height * scale
                                           );
         self.shortVideoTranscoder.videoSelectedRect = cutPixelFrame;
-        self.shortVideoTranscoder.destVideoSize = CGSizeMake(cutPixelFrame.size.width / 1.5, cutPixelFrame.size.height / 1.5);
+        self.shortVideoTranscoder.destVideoSize = CGSizeMake(cutPixelFrame.size.width, cutPixelFrame.size.height);
         self.shortVideoTranscoder.videoFrameRate = 25;
         
         NSLog(@"设置剪裁区域:%@", NSStringFromCGRect(cutPixelFrame));
