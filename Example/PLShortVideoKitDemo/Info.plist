@@ -15,9 +15,9 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.16.0</string>
+	<string>1.16.1</string>
 	<key>CFBundleVersion</key>
-	<string>1.16.0.git-2018-12-14-9cc7ee0</string>
+	<string>1.16.1.git-2019-01-28-eac39a6</string>
 	<key>Fabric</key>
 	<dict>
 		<key>APIKey</key>

@@ -154,8 +154,15 @@ PLSRateButtonViewDelegate
 
 // 短视频录制核心类设置
 - (void)setupShortVideoRecorder {
+
     // SDK 的版本信息
     NSLog(@"PLShortVideoRecorder versionInfo: %@", [PLShortVideoRecorder versionInfo]);
+    
+    // SDK 授权信息查询
+    [PLShortVideoRecorder checkAuthentication:^(PLSAuthenticationResult result) {
+        NSString *authResult[] = {@"NotDetermined", @"Denied", @"Authorized"};
+        NSLog(@"PLShortVideoRecorder auth status: %@", authResult[result]);
+    }];
     
     self.videoConfiguration = [PLSVideoConfiguration defaultConfiguration];
     self.videoConfiguration.position = AVCaptureDevicePositionFront;

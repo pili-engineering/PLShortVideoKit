@@ -228,7 +228,7 @@
     
     __weak typeof(self) weakSelf = self;
     _timeObserver = [self.player addPeriodicTimeObserverForInterval:CMTimeMake(1, 1) queue:dispatch_get_main_queue() usingBlock:^(CMTime time) {
-        float process = CMTimeGetSeconds(time) / CMTimeGetSeconds(self.player.currentItem.duration);
+        float process = CMTimeGetSeconds(time) / CMTimeGetSeconds(weakSelf.player.currentItem.duration);
         weakSelf.processView.progress = process;
     }];
 }
