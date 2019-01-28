@@ -28,7 +28,6 @@
 #import <Photos/Photos.h>
 
 #define AlertViewShow(msg) [[[UIAlertView alloc] initWithTitle:@"warning" message:[NSString stringWithFormat:@"%@", msg] delegate:nil cancelButtonTitle:@"ok" otherButtonTitles:nil] show]
-#define iPhoneX ([UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(1125, 2436), [[UIScreen mainScreen] currentMode].size) : NO)
 #define PLS_RGBCOLOR(r,g,b) [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:1]
 #define PLS_RGBCOLOR_ALPHA(r,g,b,a) [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:(a)]
 #define PLS_SCREEN_WIDTH CGRectGetWidth([UIScreen mainScreen].bounds)
@@ -253,7 +252,7 @@ PLSClipMovieViewDelegate
 }
 
 - (CGFloat)bottomFixSpace {
-    return iPhoneX ? 30 : 0;
+    return iPhoneX_SERIES ? 30 : 0;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -387,7 +386,7 @@ PLSClipMovieViewDelegate
     
     // 标题
     UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(100, 0, 100, 64)];
-    if (iPhoneX) {
+    if (iPhoneX_SERIES) {
         titleLabel.center = CGPointMake(PLS_SCREEN_WIDTH / 2, 48);
     } else {
         titleLabel.center = CGPointMake(PLS_SCREEN_WIDTH / 2, 32);
@@ -654,7 +653,7 @@ PLSClipMovieViewDelegate
     // 配音
     button = [self toolBoxButtonWithSelector:@selector(dubAudioButtonEvent:)
                                       startX:button.frame.origin.x + button.frame.size.width + 20
-                                       title:@"配音图"];
+                                       title:@"配音"];
     
     // 视频倍速
     button = [self toolBoxButtonWithSelector:@selector(videoSpeedButtonEvent:)

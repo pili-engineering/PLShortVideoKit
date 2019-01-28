@@ -8,5 +8,4 @@ target 'PLShortVideoKitDemo' do
    pod 'Crashlytics', '3.8.4'
    pod 'Masonry', '1.0.2'
    pod 'FLAnimatedImage', '1.0.12'
-   pod 'PLPlayerKit', '3.3.1'
 end

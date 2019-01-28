@@ -17,6 +17,8 @@
 
 @protocol PLSAVAssetExportSessionDelegate <NSObject>
 
+@optional
+
 /**
  @abstract 输出视频文件的视频数据，用来做滤镜处理
  

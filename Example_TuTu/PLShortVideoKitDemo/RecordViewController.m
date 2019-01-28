@@ -234,6 +234,12 @@ TuSDKAudioPitchEngineDelegate
     // SDK 的版本信息
     NSLog(@"PLShortVideoRecorder versionInfo: %@", [PLShortVideoRecorder versionInfo]);
     
+    // SDK 授权信息查询
+    [PLShortVideoRecorder checkAuthentication:^(PLSAuthenticationResult result) {
+        NSString *authResult[] = {@"NotDetermined", @"Denied", @"Authorized"};
+        NSLog(@"PLShortVideoRecorder auth status: %@", authResult[result]);
+    }];
+    
     self.videoConfiguration = [PLSVideoConfiguration defaultConfiguration];
     self.videoConfiguration.position = AVCaptureDevicePositionFront;
     self.videoConfiguration.videoFrameRate = 25;
@@ -1350,7 +1356,20 @@ TuSDKAudioPitchEngineDelegate
 }
 
 -(BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
-    return (_filterView.hidden && _stickerView.hidden && _facePanelView.hidden && _cartoonView.hidden);
+    BOOL result = YES;
+    if (_filterView) {
+        result = result && _filterView.hidden;
+    }
+    if (_stickerView) {
+        result = result && _stickerView.hidden;
+    }
+    if (_facePanelView) {
+        result = result && _facePanelView.hidden;
+    }
+    if (_cartoonView) {
+        result = result && _cartoonView.hidden;
+    }
+    return result;
 }
 
 // 添加手势的响应事件
