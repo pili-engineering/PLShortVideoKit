@@ -120,7 +120,7 @@ typedef NS_ENUM(NSInteger, PLSVideoRecoderRateType) {
             |================================================================|
             |     采样率 Hz      |  推荐码率（单声道）bps |   推荐码率 (双声道) bps |
             |================================================================|
-            |       48000       |        96*1000      |      192*1000        |
+            |       48000       |        64*1000      |      128*1000        |
             |----------------------------------------------------------------|
             |       44100       |        64*1000      |      128*1000        |
             |----------------------------------------------------------------|
@@ -349,6 +349,21 @@ typedef NS_ENUM(NSUInteger, PLShortVideoLogLevel){
     PLShortVideoLogLevelDebug,
     // Error, warning, info, debug and verbose logs
     PLShortVideoLogLevelVerbose,
+};
+
+
+/*!
+ @typedef    PLSAuthenticationResult
+ @abstract   SDK 授权状态查询。
+ @since      v1.16.1
+ */
+typedef NS_ENUM(NSUInteger, PLSAuthenticationResult) {
+    // 还没有确定是否授权
+    PLSAuthenticationResultNotDetermined = 0,
+    // 未授权
+    PLSAuthenticationResultDenied,
+    // 已成功
+    PLSAuthenticationResultAuthorized
 };
 
 #endif

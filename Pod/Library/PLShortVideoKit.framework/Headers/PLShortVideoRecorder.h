@@ -361,11 +361,11 @@
 - (CGFloat)getTotalDuration;
 
 /**
- @brief 实时截图, 异步返回截图结果image
+ @brief 实时截图, 异步返回截图结果 image. 在 handler 内部调用 self，请使用 __weak typeof(self) weakSelf = self, 避免循环引用, 因为 SDK 内部对 handle 执行了 copy 操作
  
  @since      v1.9.0
  */
-- (void)getScreenShotWithCompletionHandler:(void(^_Nullable)(UIImage * _Nullable image))handle;
+- (void)getScreenShotWithCompletionHandler:(void(^_Nullable)(UIImage * _Nullable image))handler;
 
 @end
 
@@ -457,6 +457,14 @@
  @since      v1.0.0
  */
 + (NSString *__nonnull)versionInfo;
+
+/*!
+ @method     check authentication
+ @abstract   SDK 授权状态查询
+ 
+ @since      v1.16.1
+ */
++ (void)checkAuthentication:(void(^ __nonnull)(PLSAuthenticationResult result))resultBlock;;
 
 @end
 
