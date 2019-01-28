@@ -8,8 +8,8 @@
 
 #import "BaseViewController.h"
 #import <Masonry.h>
+#import <sys/utsname.h>
 
-#define iPhoneX ([UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(1125, 2436), [[UIScreen mainScreen] currentMode].size) : NO)
 #define PLS_RGBCOLOR(r,g,b) [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:1]
 #define PLS_BaseToolboxView_HEIGHT 64
 #define PLS_SCREEN_WIDTH CGRectGetWidth([UIScreen mainScreen].bounds)
@@ -52,7 +52,7 @@
     
     // 标题
     self.titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(100, 0, 100, 64)];
-    if (iPhoneX) {
+    if (iPhoneX_SERIES) {
         self.titleLabel.center = CGPointMake(PLS_SCREEN_WIDTH / 2, 48);
     } else {
         self.titleLabel.center = CGPointMake(PLS_SCREEN_WIDTH / 2, 32);
@@ -81,7 +81,7 @@
     
     [self.baseToolboxView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.right.top.equalTo(self.view);
-        if (iPhoneX) {
+        if (iPhoneX_SERIES) {
             make.height.equalTo(@(84));
         } else {
             make.height.equalTo(@(PLS_BaseToolboxView_HEIGHT));
@@ -204,4 +204,62 @@
     return assetPortrait;
 }
 
++ (EnumDeviceType)deviceType {
+    
+//    https://stackoverflow.com/questions/26028918/how-to-determine-the-current-iphone-device-model/40091083
+    
+    struct utsname info = {0};
+    uname(&info);
+    NSString *modelName = [NSString stringWithUTF8String:info.machine];
+    if ([modelName isEqualToString:@"iPhone3,1"] ||
+        [modelName isEqualToString:@"iPhone3,2"] ||
+        [modelName isEqualToString:@"iPhone3,3"]) {
+        return enumDeviceTypeIPhone4;
+    } else if ([modelName isEqualToString:@"iPhone4,1"]) {
+        return enumDeviceTypeIPhone4s;
+    } else if ([modelName isEqualToString:@"iPhone5,1"] ||
+               [modelName isEqualToString:@"iPhone5,2"]) {
+        return enumDeviceTypeIPhone5;
+    } else if ([modelName isEqualToString:@"iPhone5,3"] ||
+               [modelName isEqualToString:@"iPhone5,4"]) {
+        return enumDeviceTypeIPhone5c;
+    } else if ([modelName isEqualToString:@"iPhone6,1"] ||
+               [modelName isEqualToString:@"iPhone6,2"]) {
+        return enumDeviceTypeIPhone5s;
+    } else if ([modelName isEqualToString:@"iPhone7,2"]) {
+        return enumDeviceTypeIPhone6;
+    } else if ([modelName isEqualToString:@"iPhone7,1"]) {
+        return enumDeviceTypeIPhone6Plus;
+    } else if ([modelName isEqualToString:@"iPhone8,1"]) {
+        return enumDeviceTypeIPhone6s;
+    } else if ([modelName isEqualToString:@"iPhone8,2"]) {
+        return enumDeviceTypeIPhone6sPlus;
+    } else if ([modelName isEqualToString:@"iPhone9,1"] ||
+               [modelName isEqualToString:@"iPhone9,3"]) {
+        return enumDeviceTypeIPhone7;
+    } else if ([modelName isEqualToString:@"iPhone9,2"] ||
+               [modelName isEqualToString:@"iPhone9,4"]) {
+        return enumDeviceTypeIPhone7Plus;
+    } else if ([modelName isEqualToString:@"iPhone8,4"]) {
+        return enumDeviceTypeIPhoneSE;
+    } else if ([modelName isEqualToString:@"iPhone10,1"] ||
+               [modelName isEqualToString:@"iPhone10,4"]) {
+        return enumDeviceTypeIPhone8;
+    } else if ([modelName isEqualToString:@"iPhone10,2"] ||
+               [modelName isEqualToString:@"iPhone10,5"]) {
+        return enumDeviceTypeIPhone8Plus;
+    } else if ([modelName isEqualToString:@"iPhone10,3"] ||
+               [modelName isEqualToString:@"iPhone10,6"]) {
+        return enumDeviceTypeIPhoneX;
+    } else if ([modelName isEqualToString:@"iPhone11,2"]) {
+        return enumDeviceTypeIPhoneXS;
+    } else if ([modelName isEqualToString:@"iPhone11,4"] ||
+               [modelName isEqualToString:@"iPhone11,6"]) {
+        return enumDeviceTypeIPhoneXSMax;
+    } else if ([modelName isEqualToString:@"iPhone11,8"]) {
+        return enumDeviceTypeIPhoneXR;
+    }
+    
+    return enumDeviceTypeIPhone8;
+}
 @end

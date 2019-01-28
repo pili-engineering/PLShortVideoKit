@@ -9,8 +9,8 @@
 #import "PlayViewController.h"
 #import <AVFoundation/AVFoundation.h>
 #import "PLShortVideoKit/PLShortVideoKit.h"
-#import <PLPlayerKit/PLPlayerKit.h>
 #import "FLAnimatedImage.h"
+#import "PLSPlayerView.h"
 
 #define PLS_SCREEN_WIDTH CGRectGetWidth([UIScreen mainScreen].bounds)
 #define PLS_SCREEN_HEIGHT CGRectGetHeight([UIScreen mainScreen].bounds)
@@ -24,9 +24,11 @@ static NSString *const kURLPrefix = @"http://panm32w98.bkt.clouddn.com";
 @interface PlayViewController ()
 <
 PLShortVideoUploaderDelegate,
-PLPlayerDelegate,
 UIGestureRecognizerDelegate
 >
+{
+    id _timeObserver;
+}
 
 // 工具视图
 @property (strong, nonatomic) UIView *baseToolboxView;
@@ -38,7 +40,9 @@ UIGestureRecognizerDelegate
 @property (strong, nonatomic) UILabel * duration;
 
 // 视频播放
-@property (strong, nonatomic) PLPlayer *player;
+@property (strong, nonatomic) AVPlayer *player;
+@property (strong, nonatomic) PLSPlayerView *playerView;
+@property (strong, nonatomic) UIProgressView *processView;
 
 // gif 图预览
 @property (strong, nonatomic) FLAnimatedImageView *gifView;
@@ -98,16 +102,49 @@ UIGestureRecognizerDelegate
         FLAnimatedImage *image = [FLAnimatedImage animatedImageWithGIFData:[NSData dataWithContentsOfURL:self.url]];
         self.gifView.animatedImage = image;
     }
+    
+    [self addObserver];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     
     if (self.actionType == PLSActionTypePlayer) {
-        [self.player stop];
+        [self.player pause];
     }
     if (self.actionType == PLSActionTypeGif) {
         self.gifView.animatedImage = nil;
+    }
+    
+    [self removeTimeObserver];
+}
+
+-(void)addObserver {
+    if (_timeObserver) return;
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerToEnd:) name:AVPlayerItemDidPlayToEndTimeNotification object:self.player.currentItem];
+    
+    __weak typeof(self) weakSelf = self;
+    _timeObserver = [self.player addPeriodicTimeObserverForInterval:CMTimeMake(1, 1) queue:dispatch_get_main_queue() usingBlock:^(CMTime time) {
+        float process = CMTimeGetSeconds(time) / CMTimeGetSeconds(weakSelf.player.currentItem.duration);
+        weakSelf.playSlider.value = process;
+        weakSelf.currentTime.text = [NSString stringWithFormat:@"%.2fs", CMTimeGetSeconds(time)];
+        weakSelf.duration.text = [NSString stringWithFormat:@"%.2f", CMTimeGetSeconds(weakSelf.player.currentItem.duration)];
+    }];
+}
+
+- (void)removeTimeObserver {
+    if (_timeObserver) {
+        [self.player removeTimeObserver:_timeObserver];
+        _timeObserver = nil;
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:self.player.currentItem];
+    }
+}
+
+- (void)playerToEnd:(NSNotification *)info {
+    if (info.object == self.player.currentItem) {
+        [self.player seekToTime:kCMTimeZero];
+        [self.player play];
     }
 }
 
@@ -143,14 +180,21 @@ UIGestureRecognizerDelegate
 }
 
 - (void)setupPlayerUI {
+    
+    UIFont *font = [UIFont systemFontOfSize:18];
+    if (@available(iOS 9.0, *)) {
+        font = [UIFont monospacedDigitSystemFontOfSize:18 weight:(UIFontWeightRegular)];
+    }
     self.currentTime = [[UILabel alloc] initWithFrame:CGRectMake(20, PLS_SCREEN_HEIGHT - 130, 130, 30)];
     self.currentTime.text = @"0.00s";
     self.currentTime.textColor = [UIColor blueColor];
+    self.currentTime.font = font;
     [self.view addSubview:self.currentTime];
     
     self.duration = [[UILabel alloc] initWithFrame:CGRectMake(PLS_SCREEN_WIDTH - 80, PLS_SCREEN_HEIGHT - 130, 130, 30)];
-    self.duration.text = @"0.00s";
+    self.duration.text = [NSString stringWithFormat:@"%.2f", CMTimeGetSeconds(self.player.currentItem.duration)];
     self.duration.textColor = [UIColor blueColor];
+    self.duration.font = font;
     [self.view addSubview:self.duration];
     
     self.playSlider = [[UISlider alloc] initWithFrame:CGRectMake(20, PLS_SCREEN_HEIGHT - 100, PLS_SCREEN_WIDTH - 40, 30)];
@@ -166,49 +210,10 @@ UIGestureRecognizerDelegate
         return;
     }
     
-    // 初始化 PLPlayerOption 对象
-    PLPlayerOption *option = [PLPlayerOption defaultOption];
-    
-    // 更改需要修改的 option 属性键所对应的值
-    [option setOptionValue:@15 forKey:PLPlayerOptionKeyTimeoutIntervalForMediaPackets];
-    [option setOptionValue:@2000 forKey:PLPlayerOptionKeyMaxL1BufferDuration];
-    [option setOptionValue:@1000 forKey:PLPlayerOptionKeyMaxL2BufferDuration];
-    [option setOptionValue:@(NO) forKey:PLPlayerOptionKeyVideoToolbox];
-    [option setOptionValue:@(kPLLogInfo) forKey:PLPlayerOptionKeyLogLevel];
-    
-    // 初始化 PLPlayer
-    self.player = [PLPlayer playerWithURL:self.url option:option];
-    self.player.loopPlay = YES;
-    
-    // 设定代理 (optional)
-    self.player.delegate = self;
-    
-    //获取视频输出视图并添加为到当前 UIView 对象的 Subview
-    self.player.playerView.frame = CGRectMake(0, PLS_BaseToolboxView_HEIGHT + PLS_SCREEN_WIDTH / 8, PLS_SCREEN_WIDTH, PLS_SCREEN_HEIGHT - PLS_BaseToolboxView_HEIGHT - PLS_SCREEN_WIDTH / 8 - PLS_EditToolboxView_HEIGHT);
-    self.player.playerView.contentMode = UIViewContentModeScaleAspectFit;
-    [self.view addSubview:self.player.playerView];
-}
-
-#pragma mark -- 添加定时器
-- (void)addDurationTimer {
-    if (self.timer) {
-        [self.timer invalidate];
-        self.timer = nil;
-    }
-    
-    self.timer = [NSTimer scheduledTimerWithTimeInterval:0.5
-                                                      target:self
-                                                    selector:@selector(onDurationTimer)
-                                                    userInfo:nil
-                                                     repeats:YES];
-}
-
-#pragma mark -- 移除定时器
-- (void)removeDurationTimer {
-    if (self.timer) {
-        [self.timer invalidate];
-        self.timer = nil;
-    }
+    self.player = [[AVPlayer alloc] initWithURL:self.url];
+    self.playerView = [[PLSPlayerView alloc] initWithFrame:CGRectMake(0, PLS_BaseToolboxView_HEIGHT + PLS_SCREEN_WIDTH / 8, PLS_SCREEN_WIDTH, PLS_SCREEN_HEIGHT - PLS_BaseToolboxView_HEIGHT - PLS_SCREEN_WIDTH / 8 - PLS_EditToolboxView_HEIGHT)];
+    self.playerView.player = self.player;
+    [self.view addSubview:self.playerView];
 }
 
 #pragma mark -- 视频上传准备
@@ -222,18 +227,6 @@ UIGestureRecognizerDelegate
     [self.view addSubview:self.progressView];
     
     [self prepareUpload];
-}
-
-- (void)onDurationTimer {
-    double elapsed = CMTimeGetSeconds(self.player.currentTime);
-    double duration = CMTimeGetSeconds(self.player.totalDuration);
-    self.playSlider.value = elapsed / duration;
-    if (isnan(elapsed)) {
-        self.currentTime.text = self.duration.text;
-    } else {
-       self.currentTime.text = [NSString stringWithFormat:@"%.2fs", elapsed];
-        self.duration.text = [NSString stringWithFormat:@"%.2fs", duration];
-    }
 }
 
 - (void)prepareUpload {
@@ -262,10 +255,10 @@ UIGestureRecognizerDelegate
 
 #pragma mark -- 播放
 - (void)handleSingleFingerToPlayVideoEvent:(id)sender {
-    if ([self.player isPlaying]) {
+    if (1.0 == [self.player rate]) {
         [self.player pause];
     } else {
-        [self.player resume];
+        [self.player play];
     }
 }
 
@@ -286,9 +279,13 @@ UIGestureRecognizerDelegate
 #pragma mark -- seekTo
 - (void)playSeekTo:(id)sender {
     UISlider * slider = (UISlider *)sender;
-    CMTime time = CMTimeMake(slider.value * CMTimeGetSeconds(self.player.totalDuration), 1);
-    self.currentTime.text = [NSString stringWithFormat:@"%.2fs",slider.value];
-    [self.player seekTo:time];
+    slider.enabled = NO;
+    CMTime time = CMTimeMake(slider.value * CMTimeGetSeconds(self.player.currentItem.duration), 1);
+    self.currentTime.text = [NSString stringWithFormat:@"%.2fs", CMTimeGetSeconds(time)];
+    __weak typeof(self) weakSelf = self;
+    [self.player seekToTime:time completionHandler:^(BOOL finished) {
+        weakSelf.playSlider.enabled = YES;
+    }];
 }
 
 #pragma mark -- 提示框
@@ -324,44 +321,6 @@ UIGestureRecognizerDelegate
     NSLog(@"uploadPercent: %.2f",uploadPercent);
 }
 
-#pragma mark -- PLPlayerDelegate 播放器状态获取
-// 实现 <PLPlayerDelegate> 来控制流状态的变更
-- (void)player:(nonnull PLPlayer *)player statusDidChange:(PLPlayerStatus)state {
-    // 这里会返回流的各种状态，你可以根据状态做 UI 定制及各类其他业务操作
-    // 除了 Error 状态，其他状态都会回调这个方法
-    // 开始播放，当连接成功后，将收到第一个 PLPlayerStatusCaching 状态
-    // 第一帧渲染后，将收到第一个 PLPlayerStatusPlaying 状态
-    // 播放过程中出现卡顿时，将收到 PLPlayerStatusCaching 状态
-    // 卡顿结束后，将收到 PLPlayerStatusPlaying 状态
-    if (state == PLPlayerStatusReady) {
-        [self addDurationTimer];
-    }
-    if (state == PLPlayerStatusPlaying) {
-        NSString *stateInfo = [NSString stringWithFormat:@"connect:%.2f/first:%.2f", _player.connectTime, _player.firstVideoTime];
-        NSLog(@"stateInfo: %@", stateInfo);
-    }
-    if (state == PLPlayerStatusStopped/* || state == PLPlayerStatusPaused*/) {
-        self.currentTime.text = self.duration.text;
-        self.playSlider.value = 1;
-        [self removeDurationTimer];
-    }
-    
-    NSLog(@"status: %ld", (long)state);
-}
-
-- (void)player:(nonnull PLPlayer *)player stoppedWithError:(nullable NSError *)error {
-    // 当发生错误，停止播放时，会回调这个方法
-    [self showAlertWithMessage:[NSString stringWithFormat:@"播放出错，error = %@", error]];
-}
-
-- (void)player:(nonnull PLPlayer *)player codecError:(nonnull NSError *)error {
-    // 当解码器发生错误时，会回调这个方法
-    // 当 videotoolbox 硬解初始化或解码出错时
-    // error.code 值为 PLPlayerErrorHWCodecInitFailed/PLPlayerErrorHWDecodeFailed
-    // 播发器也将自动切换成软解，继续播放
-}
-
-
 #pragma mark -- 隐藏状态栏
 - (BOOL)prefersStatusBarHidden {
     return YES;
@@ -373,9 +332,6 @@ UIGestureRecognizerDelegate
 }
 
 - (void)dealloc {
-    [self removeDurationTimer];
-
-    self.player.delegate = nil;
     self.player = nil;
     
     self.gifView = nil;
