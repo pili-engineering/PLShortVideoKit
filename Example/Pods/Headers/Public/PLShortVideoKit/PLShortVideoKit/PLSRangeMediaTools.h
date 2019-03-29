@@ -1,1 +1,1 @@
-../../../../../../Pod/Library/PLShortVideoKit.framework/Headers/PLSRangeMediaTools.h
+../../../../../../Pod/Library/Profession/PLShortVideoKit.framework/Headers/PLSRangeMediaTools.h

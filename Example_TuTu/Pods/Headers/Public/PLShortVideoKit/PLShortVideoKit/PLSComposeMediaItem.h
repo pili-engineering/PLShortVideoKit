@@ -1,1 +1,1 @@
-../../../../../../Pod/Library/PLShortVideoKit.framework/Headers/PLSComposeMediaItem.h
+../../../../../../Pod/Library/Profession/PLShortVideoKit.framework/Headers/PLSComposeMediaItem.h

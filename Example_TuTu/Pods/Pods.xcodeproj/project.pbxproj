@@ -183,16 +183,13 @@
 		02FB104A8CB8C3F643379FD3C1C1727B /* QNPHAssetResource.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = QNPHAssetResource.h; path = QiniuSDK/Common/QNPHAssetResource.h; sourceTree = "<group>"; };
 		05D176AE37DBE76577F68AC64A2523A4 /* HappyDNS-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "HappyDNS-dummy.m"; sourceTree = "<group>"; };
 		07FF1E3901A122C74CEFB21D17D4A99B /* QNAssessment.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = QNAssessment.m; path = HappyDNS/Assessment/QNAssessment.m; sourceTree = "<group>"; };
-		082942A4DBDDDC0D2E8A8D8DF99A4A7E /* libMuseProcessor.a */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = archive.ar; name = libMuseProcessor.a; path = Pod/Library/libMuseProcessor.a; sourceTree = "<group>"; };
 		0869A48DAE27D06F7DF24D788C64BE4B /* Pods-PLShortVideoKitDemo-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-PLShortVideoKitDemo-dummy.m"; sourceTree = "<group>"; };
-		0C113B350843FEBA088012B67BAEBDE9 /* PLShortVideoKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PLShortVideoKit.framework; path = Pod/Library/PLShortVideoKit.framework; sourceTree = "<group>"; };
 		0D0F098BD729B1EAC261DF11B14F6A73 /* MASConstraint.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MASConstraint.h; path = Masonry/MASConstraint.h; sourceTree = "<group>"; };
 		0D2F1071DEF6B48EB093F6D7D9ACCD69 /* FLAnimatedImage-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "FLAnimatedImage-dummy.m"; sourceTree = "<group>"; };
 		0D75AC56D47DF78EB80A6E2C8579FCAE /* CLSAttributes.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = CLSAttributes.h; path = iOS/Crashlytics.framework/Headers/CLSAttributes.h; sourceTree = "<group>"; };
 		0DFE945289987FA560F4C55282F80A4F /* MASConstraint+Private.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "MASConstraint+Private.h"; path = "Masonry/MASConstraint+Private.h"; sourceTree = "<group>"; };
 		0E6079BD190E3C67CED9A36639469D0C /* QNDnsManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = QNDnsManager.h; path = HappyDNS/Common/QNDnsManager.h; sourceTree = "<group>"; };
 		0EAF5B005FA1A5ABECC63ACA08CCC264 /* QNUserAgent.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = QNUserAgent.m; path = QiniuSDK/Http/QNUserAgent.m; sourceTree = "<group>"; };
-		10A9146753D3A7E91C2F1BE6486F66E2 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
 		151B6ACB34C0E35DCCA9F80D470F0520 /* QNPHAssetFile.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = QNPHAssetFile.m; path = QiniuSDK/Common/QNPHAssetFile.m; sourceTree = "<group>"; };
 		17653E88F912E9E23F969F5D1F2A47E4 /* MASLayoutConstraint.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MASLayoutConstraint.m; path = Masonry/MASLayoutConstraint.m; sourceTree = "<group>"; };
 		177BC682D0BEB2FC17F5840C730A4224 /* QN_GTM_Base64.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = QN_GTM_Base64.h; path = QiniuSDK/Common/QN_GTM_Base64.h; sourceTree = "<group>"; };
@@ -239,11 +236,11 @@
 		553ECB0DB0D3B61EFCC0A8DA0EC97C61 /* QNIpModel.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = QNIpModel.h; path = HappyDNS/Assessment/QNIpModel.h; sourceTree = "<group>"; };
 		565D99E1EFF1D1AF888A143839705DAE /* Pods-PLShortVideoKitDemo-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-PLShortVideoKitDemo-acknowledgements.markdown"; sourceTree = "<group>"; };
 		59AF2181EA02011F146367C67F624B5F /* MASViewAttribute.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MASViewAttribute.h; path = Masonry/MASViewAttribute.h; sourceTree = "<group>"; };
-		5A16161D246ACB5C4C2DDC66B568CA79 /* PLShortVideoKit.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; lastKnownFileType = text; path = PLShortVideoKit.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		5A165F01E4E0EDCF729AE9656C1D90A8 /* QNUploadOption.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = QNUploadOption.h; path = QiniuSDK/Storage/QNUploadOption.h; sourceTree = "<group>"; };
 		5B500D6AB230F27BAAF6C88E63885F09 /* QNSessionManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = QNSessionManager.m; path = QiniuSDK/Http/QNSessionManager.m; sourceTree = "<group>"; };
 		5BB27B69AB8C7283EDDA1B92428995A8 /* QNFileRecorder.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = QNFileRecorder.m; path = QiniuSDK/Recorder/QNFileRecorder.m; sourceTree = "<group>"; };
 		5F8B2946022455300C6F270F10B82860 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.0.sdk/System/Library/Frameworks/QuartzCore.framework; sourceTree = DEVELOPER_DIR; };
+		60D0924A874DD8CE78FBFC0212F67369 /* PLShortVideoKit.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; lastKnownFileType = text; path = PLShortVideoKit.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		621E5BC1B21D569FEFBDB39AF6D2D8EC /* MASConstraintMaker.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MASConstraintMaker.h; path = Masonry/MASConstraintMaker.h; sourceTree = "<group>"; };
 		630337F493AA175B302B92F8BF671F18 /* View+MASAdditions.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "View+MASAdditions.h"; path = "Masonry/View+MASAdditions.h"; sourceTree = "<group>"; };
 		63C2A276D28472EAAFB8A0C665E148FB /* FLAnimatedImage-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "FLAnimatedImage-prefix.pch"; sourceTree = "<group>"; };
@@ -275,6 +272,7 @@
 		943E8DB192B27700E2F110BF27F67BF7 /* Qiniu-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Qiniu-prefix.pch"; sourceTree = "<group>"; };
 		94F5116CF8A7715B90BBE23B6AA60C48 /* FLAnimatedImage.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = FLAnimatedImage.m; path = FLAnimatedImage/FLAnimatedImage.m; sourceTree = "<group>"; };
 		973D8A36495AECBD481B60DEAD378726 /* QNAsyncRun.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = QNAsyncRun.m; path = QiniuSDK/Common/QNAsyncRun.m; sourceTree = "<group>"; };
+		98DBE29B081A107AB73570E5E00E09C2 /* libMuseProcessor.a */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = archive.ar; name = libMuseProcessor.a; path = Pod/Library/Profession/libMuseProcessor.a; sourceTree = "<group>"; };
 		9953C1298216DB4132424AC20A9CE4C6 /* QNFormUpload.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = QNFormUpload.h; path = QiniuSDK/Storage/QNFormUpload.h; sourceTree = "<group>"; };
 		9B6A48BE9095A182A04783676924B4CD /* QNResolver.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = QNResolver.m; path = HappyDNS/Local/QNResolver.m; sourceTree = "<group>"; };
 		9CBF51300C897CBEB49439713BE35F4E /* QNDes.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = QNDes.m; path = HappyDNS/Util/QNDes.m; sourceTree = "<group>"; };
@@ -295,7 +293,6 @@
 		B3CD4797BBAE52557DA2AD4AC0CE5F70 /* QNPipeline.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = QNPipeline.h; path = QiniuSDK/BigData/QNPipeline.h; sourceTree = "<group>"; };
 		BAF2EE45F811DA5E39976103C2CBE7B9 /* QNMD5.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = QNMD5.m; path = HappyDNS/Util/QNMD5.m; sourceTree = "<group>"; };
 		BAF6C7F95C7F59017083490E3DC1B6DE /* QNMD5.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = QNMD5.h; path = HappyDNS/Util/QNMD5.h; sourceTree = "<group>"; };
-		BB985C8EB70C15B125D3AA515DCC9AD6 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
 		BDAAC74D3FACEA0A525EB5AD38C4ECA5 /* Qiniu-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Qiniu-dummy.m"; sourceTree = "<group>"; };
 		C117D4ABC2F2BFBAFC6FE81A27157A94 /* ViewController+MASAdditions.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "ViewController+MASAdditions.m"; path = "Masonry/ViewController+MASAdditions.m"; sourceTree = "<group>"; };
 		C2EC21B84D17094135223A5AD5965067 /* QNAssessment.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = QNAssessment.h; path = HappyDNS/Assessment/QNAssessment.h; sourceTree = "<group>"; };
@@ -331,6 +328,7 @@
 		E5A588A32127ACCF50D2B9EB58A04815 /* Pods-PLShortVideoKitDemo-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-PLShortVideoKitDemo-resources.sh"; sourceTree = "<group>"; };
 		E62ECC028B52A1AAD8D766686EF9AE27 /* QNSystem.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = QNSystem.m; path = QiniuSDK/Common/QNSystem.m; sourceTree = "<group>"; };
 		E6A7D978E9D778B3E58A60E89A2C7D89 /* QNGetAddrInfo.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = QNGetAddrInfo.m; path = HappyDNS/Util/QNGetAddrInfo.m; sourceTree = "<group>"; };
+		E756431FF16568A7DBD52F67E17B3B89 /* PLShortVideoKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PLShortVideoKit.framework; path = Pod/Library/Profession/PLShortVideoKit.framework; sourceTree = "<group>"; };
 		E802F7E2CE7A4D6D546EDDFF9B2450CF /* MASConstraintMaker.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MASConstraintMaker.m; path = Masonry/MASConstraintMaker.m; sourceTree = "<group>"; };
 		EBFB9661553669AFEB6DBAD39E50097E /* QNAsyncRun.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = QNAsyncRun.h; path = QiniuSDK/Common/QNAsyncRun.h; sourceTree = "<group>"; };
 		EEBBAB169837402F509CF8E7DCBC7AAA /* QNCrc32.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = QNCrc32.h; path = QiniuSDK/Common/QNCrc32.h; sourceTree = "<group>"; };
@@ -395,16 +393,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		023B2EF8DB9D5107BB136CDFF1C4209D /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				BB985C8EB70C15B125D3AA515DCC9AD6 /* LICENSE */,
-				5A16161D246ACB5C4C2DDC66B568CA79 /* PLShortVideoKit.podspec */,
-				10A9146753D3A7E91C2F1BE6486F66E2 /* README.md */,
-			);
-			name = Pod;
-			sourceTree = "<group>";
-		};
 		0F75DF6C7C5F002280EC53F48E80B587 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -518,7 +506,7 @@
 		56AAF8433E98189615B2345C3972DB3C /* Development Pods */ = {
 			isa = PBXGroup;
 			children = (
-				E545F49C91B27E6956164C6F2F9DB88E /* PLShortVideoKit */,
+				D39CC67E4153F0EA5AB6F644E84C94E7 /* PLShortVideoKit */,
 			);
 			name = "Development Pods";
 			sourceTree = "<group>";
@@ -534,10 +522,10 @@
 			path = "../Target Support Files/FLAnimatedImage";
 			sourceTree = "<group>";
 		};
-		63931BDF741A0CF6226BB1752332D745 /* libMuseProcessor */ = {
+		67E0AA350D8C02083F2653AAA6D4ED99 /* libMuseProcessor */ = {
 			isa = PBXGroup;
 			children = (
-				C2340B897011D80A1A425A11074477FB /* Frameworks */,
+				86F29E0B646F8F3214CDEF62E2741B3D /* Frameworks */,
 			);
 			name = libMuseProcessor;
 			sourceTree = "<group>";
@@ -620,6 +608,14 @@
 			);
 			name = Qiniu;
 			path = Qiniu;
+			sourceTree = "<group>";
+		};
+		86F29E0B646F8F3214CDEF62E2741B3D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				98DBE29B081A107AB73570E5E00E09C2 /* libMuseProcessor.a */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		9AAEC43466D23484E851B15F74A20612 /* Support Files */ = {
@@ -709,14 +705,6 @@
 			path = HappyDNS;
 			sourceTree = "<group>";
 		};
-		B71EE3AC0DFAA31F12CE2DE64E8C3E31 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				0C113B350843FEBA088012B67BAEBDE9 /* PLShortVideoKit.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		BD1C4CE75170BEB42C2D10B3778C5839 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -746,23 +734,39 @@
 			path = Crashlytics;
 			sourceTree = "<group>";
 		};
-		C2340B897011D80A1A425A11074477FB /* Frameworks */ = {
+		D39CC67E4153F0EA5AB6F644E84C94E7 /* PLShortVideoKit */ = {
 			isa = PBXGroup;
 			children = (
-				082942A4DBDDDC0D2E8A8D8DF99A4A7E /* libMuseProcessor.a */,
+				E8C7C813C198B3700DC12F5108DEB535 /* ex-libMuseProcessor */,
+				67E0AA350D8C02083F2653AAA6D4ED99 /* libMuseProcessor */,
+				E288F74ED75F903F8B3B882F16CD27EC /* Pod */,
+			);
+			name = PLShortVideoKit;
+			path = ../..;
+			sourceTree = "<group>";
+		};
+		E277B4121503FCFF273E5AA8F9B13265 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E756431FF16568A7DBD52F67E17B3B89 /* PLShortVideoKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		E545F49C91B27E6956164C6F2F9DB88E /* PLShortVideoKit */ = {
+		E288F74ED75F903F8B3B882F16CD27EC /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				F0EBA6A9C4CC2529564133C8AB83A648 /* ex-libMuseProcessor */,
-				63931BDF741A0CF6226BB1752332D745 /* libMuseProcessor */,
-				023B2EF8DB9D5107BB136CDFF1C4209D /* Pod */,
+				60D0924A874DD8CE78FBFC0212F67369 /* PLShortVideoKit.podspec */,
 			);
-			name = PLShortVideoKit;
-			path = ../..;
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		E8C7C813C198B3700DC12F5108DEB535 /* ex-libMuseProcessor */ = {
+			isa = PBXGroup;
+			children = (
+				E277B4121503FCFF273E5AA8F9B13265 /* Frameworks */,
+			);
+			name = "ex-libMuseProcessor";
 			sourceTree = "<group>";
 		};
 		F064143FD0A060ACAFCCD86224C201D2 /* Frameworks */ = {
@@ -771,14 +775,6 @@
 				82F6A9B14C326E2504B27122A838E69E /* Fabric.framework */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		F0EBA6A9C4CC2529564133C8AB83A648 /* ex-libMuseProcessor */ = {
-			isa = PBXGroup;
-			children = (
-				B71EE3AC0DFAA31F12CE2DE64E8C3E31 /* Frameworks */,
-			);
-			name = "ex-libMuseProcessor";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

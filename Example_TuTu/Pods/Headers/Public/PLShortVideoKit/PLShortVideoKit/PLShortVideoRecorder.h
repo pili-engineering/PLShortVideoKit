@@ -1,1 +1,1 @@
-../../../../../../Pod/Library/PLShortVideoKit.framework/Headers/PLShortVideoRecorder.h
+../../../../../../Pod/Library/Profession/PLShortVideoKit.framework/Headers/PLShortVideoRecorder.h

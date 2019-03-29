@@ -1,1 +1,1 @@
-../../../../../../Pod/Library/PLShortVideoKit.framework/Headers/PLSUploaderConfiguration.h
+../../../../../../Pod/Library/Profession/PLShortVideoKit.framework/Headers/PLSUploaderConfiguration.h

@@ -1,1 +1,1 @@
-../../../../../../Pod/Library/PLShortVideoKit.framework/Headers/PLSAudioConfiguration.h
+../../../../../../Pod/Library/Profession/PLShortVideoKit.framework/Headers/PLSAudioConfiguration.h

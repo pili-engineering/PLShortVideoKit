@@ -1,1 +1,1 @@
-../../../../../../Pod/Library/PLShortVideoKit.framework/Headers/PLSImageSetting.h
+../../../../../../Pod/Library/Profession/PLShortVideoKit.framework/Headers/PLSImageSetting.h

@@ -1,1 +1,1 @@
-../../../../../../Pod/Library/PLShortVideoKit.framework/Headers/PLSEditPlayer.h
+../../../../../../Pod/Library/Profession/PLShortVideoKit.framework/Headers/PLSEditPlayer.h
