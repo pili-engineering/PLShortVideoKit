@@ -1,1 +1,1 @@
-../../../../../../Pod/Library/PLShortVideoKit.framework/Headers/PLSRotateTransition.h
+../../../../../../Pod/Library/Profession/PLShortVideoKit.framework/Headers/PLSRotateTransition.h

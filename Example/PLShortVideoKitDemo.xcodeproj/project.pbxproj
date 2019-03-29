@@ -204,6 +204,7 @@
 		76F41C52219D77B40099E668 /* mulitRate.png in Resources */ = {isa = PBXBuildFile; fileRef = 76F41C51219D77B40099E668 /* mulitRate.png */; };
 		9343A8C01F66763A007213BD /* Time_Machine_No_Reverser.png in Resources */ = {isa = PBXBuildFile; fileRef = 9343A8BE1F66763A007213BD /* Time_Machine_No_Reverser.png */; };
 		9343A8C11F66763A007213BD /* Time_Machine_Reverser.png in Resources */ = {isa = PBXBuildFile; fileRef = 9343A8BF1F66763A007213BD /* Time_Machine_Reverser.png */; };
+		BC8DD6BA224E320200E05B26 /* PLScreenRecorderManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BC8DD6B9224E320200E05B26 /* PLScreenRecorderManager.m */; };
 		BCCF75E121C3884500BF9BA2 /* ImageVideoMixViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BCCF75DF21C3884500BF9BA2 /* ImageVideoMixViewController.m */; };
 		C35043641FB3152600F9633D /* draft_video.png in Resources */ = {isa = PBXBuildFile; fileRef = C35043631FB3121E00F9633D /* draft_video.png */; };
 		C35043971FBED6B900F9633D /* music_no_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = C35043941FBED11C00F9633D /* music_no_selected.png */; };
@@ -488,6 +489,8 @@
 		85B60FAE619932ED649E6840 /* Pods-PLShortVideoKitDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PLShortVideoKitDemo.release.xcconfig"; path = "Pods/Target Support Files/Pods-PLShortVideoKitDemo/Pods-PLShortVideoKitDemo.release.xcconfig"; sourceTree = "<group>"; };
 		9343A8BE1F66763A007213BD /* Time_Machine_No_Reverser.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Time_Machine_No_Reverser.png; path = images/Time_Machine_No_Reverser.png; sourceTree = "<group>"; };
 		9343A8BF1F66763A007213BD /* Time_Machine_Reverser.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Time_Machine_Reverser.png; path = images/Time_Machine_Reverser.png; sourceTree = "<group>"; };
+		BC8DD6B8224E320200E05B26 /* PLScreenRecorderManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLScreenRecorderManager.h; sourceTree = "<group>"; };
+		BC8DD6B9224E320200E05B26 /* PLScreenRecorderManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLScreenRecorderManager.m; sourceTree = "<group>"; };
 		BCCF75DF21C3884500BF9BA2 /* ImageVideoMixViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageVideoMixViewController.m; sourceTree = "<group>"; };
 		BCCF75E021C3884500BF9BA2 /* ImageVideoMixViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageVideoMixViewController.h; sourceTree = "<group>"; };
 		C35043631FB3121E00F9633D /* draft_video.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = draft_video.png; path = images/draft_video.png; sourceTree = "<group>"; };
@@ -875,6 +878,8 @@
 				0A6340301F15E8CC005ADF6C /* PLSSelectionView.m */,
 				0A534EA8200E27F00032A981 /* PLSViewRecorderManager.h */,
 				0A534EAA200E27F10032A981 /* PLSViewRecorderManager.m */,
+				BC8DD6B8224E320200E05B26 /* PLScreenRecorderManager.h */,
+				BC8DD6B9224E320200E05B26 /* PLScreenRecorderManager.m */,
 			);
 			path = "UI+Tools";
 			sourceTree = "<group>";
@@ -1236,6 +1241,7 @@
 				0AD98DC4203173F5006551EC /* H265MovieViewController.m in Sources */,
 				760AE4F820B014FD00DA4EC3 /* VideoSelectViewController.m in Sources */,
 				760F7706202AF92A0052F513 /* BaseViewController.m in Sources */,
+				BC8DD6BA224E320200E05B26 /* PLScreenRecorderManager.m in Sources */,
 				0A398F6C1ED6259000996229 /* PhotoAlbumViewController.m in Sources */,
 				0AE8AC951F063E3E006166E2 /* PLSClipAudioView.m in Sources */,
 				C39EA3D71F4E753D0007D1C3 /* PLSRateButtonView.m in Sources */,

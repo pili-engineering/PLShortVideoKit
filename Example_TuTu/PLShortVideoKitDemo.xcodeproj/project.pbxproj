@@ -228,6 +228,7 @@
 		9343A8C01F66763A007213BD /* Time_Machine_No_Reverser.png in Resources */ = {isa = PBXBuildFile; fileRef = 9343A8BE1F66763A007213BD /* Time_Machine_No_Reverser.png */; };
 		9343A8C11F66763A007213BD /* Time_Machine_Reverser.png in Resources */ = {isa = PBXBuildFile; fileRef = 9343A8BF1F66763A007213BD /* Time_Machine_Reverser.png */; };
 		BC490FDD21B161B700959C8A /* ImageVideoMixViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BC490FDC21B161B700959C8A /* ImageVideoMixViewController.m */; };
+		BC8DD6C6224E340400E05B26 /* PLScreenRecorderManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BC8DD6C4224E340400E05B26 /* PLScreenRecorderManager.m */; };
 		BCA3CEC221B16C8F009F25B5 /* mulitRate.png in Resources */ = {isa = PBXBuildFile; fileRef = BCA3CEC021B16C8F009F25B5 /* mulitRate.png */; };
 		BCA3CEC421B16D06009F25B5 /* watermark.gif in Resources */ = {isa = PBXBuildFile; fileRef = BCA3CEC321B16D06009F25B5 /* watermark.gif */; };
 		BCA3CF5A21B22154009F25B5 /* TuSDK.bundle in Resources */ = {isa = PBXBuildFile; fileRef = BCA3CEC821B22153009F25B5 /* TuSDK.bundle */; };
@@ -662,6 +663,8 @@
 		9343A8BF1F66763A007213BD /* Time_Machine_Reverser.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Time_Machine_Reverser.png; path = images/Time_Machine_Reverser.png; sourceTree = "<group>"; };
 		BC490FDA21B161B700959C8A /* ImageVideoMixViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageVideoMixViewController.h; sourceTree = "<group>"; };
 		BC490FDC21B161B700959C8A /* ImageVideoMixViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageVideoMixViewController.m; sourceTree = "<group>"; };
+		BC8DD6C4224E340400E05B26 /* PLScreenRecorderManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLScreenRecorderManager.m; sourceTree = "<group>"; };
+		BC8DD6C5224E340400E05B26 /* PLScreenRecorderManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLScreenRecorderManager.h; sourceTree = "<group>"; };
 		BCA3CEC021B16C8F009F25B5 /* mulitRate.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = mulitRate.png; path = images/mulitRate.png; sourceTree = "<group>"; };
 		BCA3CEC321B16D06009F25B5 /* watermark.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = watermark.gif; sourceTree = "<group>"; };
 		BCA3CEC821B22153009F25B5 /* TuSDK.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = TuSDK.bundle; sourceTree = "<group>"; };
@@ -1207,6 +1210,8 @@
 				0A6340301F15E8CC005ADF6C /* PLSSelectionView.m */,
 				0A534EA8200E27F00032A981 /* PLSViewRecorderManager.h */,
 				0A534EAA200E27F10032A981 /* PLSViewRecorderManager.m */,
+				BC8DD6C5224E340400E05B26 /* PLScreenRecorderManager.h */,
+				BC8DD6C4224E340400E05B26 /* PLScreenRecorderManager.m */,
 			);
 			path = "UI+Tools";
 			sourceTree = "<group>";
@@ -1997,6 +2002,7 @@
 				764FD4302112CE8B00CF1F0C /* SPARUtil.m in Sources */,
 				BCA3CFBB21B22154009F25B5 /* EffectsView.m in Sources */,
 				BCA3CFAC21B22154009F25B5 /* StickerPanelView.m in Sources */,
+				BC8DD6C6224E340400E05B26 /* PLScreenRecorderManager.m in Sources */,
 				0A928BE31EE75703007D2250 /* PLSAudioVolumeView.m in Sources */,
 				7697482C202835D2001AC847 /* TransitionViewController.m in Sources */,
 				BCA3CFB921B22154009F25B5 /* OnlineStickerGroup.m in Sources */,

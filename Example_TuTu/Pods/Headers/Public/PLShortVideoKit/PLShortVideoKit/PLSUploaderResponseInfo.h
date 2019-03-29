@@ -1,1 +1,1 @@
-../../../../../../Pod/Library/PLShortVideoKit.framework/Headers/PLSUploaderResponseInfo.h
+../../../../../../Pod/Library/Profession/PLShortVideoKit.framework/Headers/PLSUploaderResponseInfo.h

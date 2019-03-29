@@ -1,1 +1,1 @@
-../../../../../../Pod/Library/PLShortVideoKit.framework/Headers/PLSImageRotateRecorder.h
+../../../../../../Pod/Library/Profession/PLShortVideoKit.framework/Headers/PLSImageRotateRecorder.h

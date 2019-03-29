@@ -1,0 +1,6 @@
+framework module PLShortVideoKit {
+  umbrella header "PLShortVideoKit.h"
+
+  export *
+  module * { export * }
+}

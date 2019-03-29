@@ -369,7 +369,7 @@ static int KVOcontext = 0;
     self.movieExport.outURL = [self editVideoURL];
 //    self.movieExport.outputFilePreset = PLSFilePresetHighestQuality;
     self.movieExport.outputVideoSize = CGSizeMake(540, 960);
-    self.movieExport.fillMode = PLSVideoFillModePreserveAspectRatio;
+    self.movieExport.fillMode = self.fillMode;
     self.movieExport.bitrate = 1500 * 1000;
     
     [self showWating];

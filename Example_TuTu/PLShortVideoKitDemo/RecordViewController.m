@@ -17,6 +17,7 @@
 #import "PLSFilterGroup.h"
 #import "PLSViewRecorderManager.h"
 #import "PLSRateButtonView.h"
+#import "PLScreenRecorderManager.h"
 
 // AR
 #import "EasyarARViewController.h"
@@ -57,6 +58,7 @@ UICollectionViewDataSource,
 UICollectionViewDelegateFlowLayout,
 PLSViewRecorderManagerDelegate,
 PLSRateButtonViewDelegate,
+PLScreenRecorderManagerDelegate,
 // TuSDK mark - delegate
 TuSDKFilterProcessorDelegate,
 TuSDKFilterProcessorMediaEffectDelegate,
@@ -85,6 +87,7 @@ TuSDKAudioPitchEngineDelegate
 @property (strong, nonatomic) PLSAudioConfiguration *audioConfiguration;
 @property (strong, nonatomic) PLShortVideoRecorder *shortVideoRecorder;
 @property (strong, nonatomic) PLSViewRecorderManager *viewRecorderManager;
+@property (strong, nonatomic) PLScreenRecorderManager *screenRecorderManager;
 @property (strong, nonatomic) PLSProgressBar *progressBar;
 @property (strong, nonatomic) UIButton *recordButton;
 @property (strong, nonatomic) UIButton *viewRecordButton;
@@ -129,6 +132,8 @@ TuSDKAudioPitchEngineDelegate
 @property (strong, nonatomic) UIButton *monitorButton;
 // 实时截图按钮
 @property (strong, nonatomic) UIButton *snapshotButton;
+// 帧率切换按钮
+@property (strong, nonatomic) UIButton *frameRateButton;
 
 // 录制前是否开启自动检测设备方向调整视频拍摄的角度（竖屏、横屏）
 @property (assign, nonatomic) BOOL isUseAutoCheckDeviceOrientationBeforeRecording;
@@ -183,7 +188,8 @@ TuSDKAudioPitchEngineDelegate
         
         _audioSampleArray = CFArrayCreateMutable(kCFAllocatorDefault, 0, NULL);
         _audioTimeStampArray = [[NSMutableArray alloc] init];
-        NSLog(@"TuSDK version: %@", lsqVideoVersion);
+        NSLog(@"TuSDK version: %@", lsqSDKVersion);
+        NSLog(@"TuSDK video version: %@", lsqVideoVersion);
     }
     return self;
 }
@@ -242,10 +248,11 @@ TuSDKAudioPitchEngineDelegate
     
     self.videoConfiguration = [PLSVideoConfiguration defaultConfiguration];
     self.videoConfiguration.position = AVCaptureDevicePositionFront;
-    self.videoConfiguration.videoFrameRate = 25;
-    self.videoConfiguration.averageVideoBitRate = 1024*1000;
-    self.videoConfiguration.videoSize = CGSizeMake(544, 960);
+    self.videoConfiguration.videoFrameRate = 30;
+    self.videoConfiguration.averageVideoBitRate = 1000*2500;
+    self.videoConfiguration.videoSize = CGSizeMake(720, 1280);
     self.videoConfiguration.videoOrientation = AVCaptureVideoOrientationPortrait;
+    self.videoConfiguration.sessionPreset = AVCaptureSessionPreset1280x720;
 
     self.audioConfiguration = [PLSAudioConfiguration defaultConfiguration];
     
@@ -487,6 +494,17 @@ TuSDKAudioPitchEngineDelegate
     [self.rightScrollView addSubview:self.musicButton];
     
     index ++;
+    // 30FPS/60FPS
+    self.frameRateButton = [[UIButton alloc] initWithFrame:CGRectMake(0, index * 60 + 10, 46, 46)];
+    self.frameRateButton.layer.cornerRadius = 23;
+    self.frameRateButton.backgroundColor = backgroundColor;
+    [self.frameRateButton setTitle:@"30帧" forState:(UIControlStateNormal)];
+    self.frameRateButton.titleLabel.font = [UIFont systemFontOfSize:14];
+    [self.frameRateButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [self.frameRateButton addTarget:self action:@selector(frameRateButtonOnClick:) forControlEvents:UIControlEventTouchUpInside];
+    [self.rightScrollView addSubview:self.frameRateButton];
+
+    index ++;
     // AR
     UIButton *ARButton = [[UIButton alloc] initWithFrame:CGRectMake(0, index * 60 + 10, 46, 46)];
     ARButton.layer.cornerRadius = 23;
@@ -497,17 +515,6 @@ TuSDKAudioPitchEngineDelegate
     [self.rightScrollView addSubview:ARButton];
     
     index ++;
-    // 外部滤镜
-//    UIButton *externalFilterButton = [[UIButton alloc] initWithFrame:CGRectMake(0, index * 60 + 10, 46, 46)];
-//    externalFilterButton.layer.cornerRadius = 23;
-//    externalFilterButton.backgroundColor = backgroundColor;
-//    [externalFilterButton setTitle:@"美化" forState:UIControlStateNormal];
-//    [externalFilterButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-//    externalFilterButton.titleLabel.font = [UIFont systemFontOfSize:13];
-//    [externalFilterButton addTarget:self action:@selector(externalFilterButtonOnClick:) forControlEvents:UIControlEventTouchUpInside];
-//    [self.rightScrollView addSubview:externalFilterButton];
-//
-//    index ++;
     // 滤镜按钮
     _filterBtn = [[UIButton alloc]initWithFrame:CGRectMake(0, index * 60 + 10, 46, 46)];
     _filterBtn.layer.cornerRadius = 23;
@@ -693,6 +700,7 @@ TuSDKAudioPitchEngineDelegate
 - (void)backButtonEvent:(id)sender {
     if (self.viewRecordButton.isSelected) {
         [self.viewRecorderManager cancelRecording];
+        [self.screenRecorderManager cancelRecording];
     }
     if ([self.shortVideoRecorder getFilesCount] > 0) {
         self.alertView = [[UIAlertView alloc] initWithTitle:@"提醒" message:[NSString stringWithFormat:@"放弃这个视频(共%ld个视频段)?", (long)[self.shortVideoRecorder getFilesCount]] delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
@@ -708,7 +716,7 @@ TuSDKAudioPitchEngineDelegate
     UIButton *button = (UIButton *)sender;
     button.selected = !button.selected;
     if (button.selected) {
-        self.videoConfiguration.videoSize = CGSizeMake(480, 480);
+        self.videoConfiguration.videoSize = CGSizeMake(720, 720);
         [self.shortVideoRecorder reloadvideoConfiguration:self.videoConfiguration];
         
         self.shortVideoRecorder.maxDuration = 10.0f;
@@ -720,7 +728,7 @@ TuSDKAudioPitchEngineDelegate
         });
         
     } else {
-        self.videoConfiguration.videoSize = CGSizeMake(544, 960);
+        self.videoConfiguration.videoSize = CGSizeMake(720, 1280);
         [self.shortVideoRecorder reloadvideoConfiguration:self.videoConfiguration];
         
         self.shortVideoRecorder.maxDuration = 10.0f;
@@ -734,26 +742,39 @@ TuSDKAudioPitchEngineDelegate
 
 //录制 self.view
 - (void)viewRecorderButtonClick:(id)sender {
-    if (!self.viewRecorderManager) {
-        self.viewRecorderManager = [[PLSViewRecorderManager alloc] initWithRecordedView:self.view];
-        self.viewRecorderManager.delegate = self;
-    }
-    
-    if (self.viewRecordButton.isSelected) {
-        self.viewRecordButton.selected = NO;
-        [self.viewRecorderManager stopRecording];
+    if (@available(iOS 11.0, *)) {
+        if (!self.screenRecorderManager) {
+            self.screenRecorderManager = [[PLScreenRecorderManager alloc] init];
+            self.screenRecorderManager.delegate = self;
+        }
+        if (self.viewRecordButton.isSelected) {
+            self.viewRecordButton.selected = NO;
+            [self.screenRecorderManager stopRecording];
+        } else {
+            self.viewRecordButton.selected = YES;
+            [self.screenRecorderManager startRecording];
+        }
+    } else {
+        if (!self.viewRecorderManager) {
+            self.viewRecorderManager = [[PLSViewRecorderManager alloc] initWithRecordedView:self.shortVideoRecorder.previewView];
+            self.viewRecorderManager.delegate = self;
+        }
         
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillResignActiveNotification object:nil];
-    }
-    else {
-        self.viewRecordButton.selected = YES;
-        [self  clearAudioPitchBuffer];
-        [self.viewRecorderManager startRecording];
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(applicationWillResignActive:)
-                                                     name:UIApplicationWillResignActiveNotification
-                                                   object:nil];
+        if (self.viewRecordButton.isSelected) {
+            self.viewRecordButton.selected = NO;
+            [self.viewRecorderManager stopRecording];
+            
+            [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillResignActiveNotification object:nil];
+        }
+        else {
+            self.viewRecordButton.selected = YES;
+            [self.viewRecorderManager startRecording];
+            
+            [[NSNotificationCenter defaultCenter] addObserver:self
+                                                     selector:@selector(applicationWillResignActive:)
+                                                         name:UIApplicationWillResignActiveNotification
+                                                       object:nil];
+        }
     }
 }
 
@@ -776,8 +797,22 @@ TuSDKAudioPitchEngineDelegate
 }
 
 // 切换前后置摄像头
-- (void)toggleCameraButtonEvent:(id)sender {
-    [self.shortVideoRecorder toggleCamera];
+- (void)toggleCameraButtonEvent:(UIButton *)sender {
+    // 采集帧率不大于 30 帧的时候，使用 [self.shortVideoRecorder toggleCamera] 和 [self.shortVideoRecorder toggleCamera:block] 都可以。当采集大于 30 帧的时候，为确保切换成功，需要先停止采集，再切换相机，切换完成再启动采集。如果不先停止采集，部分机型上采集 60 帧的时候，切换摄像头可能会耗时几秒钟
+    if (self.videoConfiguration.videoFrameRate > 30) {
+        sender.enabled = NO;
+        __weak typeof(self) weakself = self;
+        [self.shortVideoRecorder stopCaptureSession];
+        [self.shortVideoRecorder toggleCamera:^(BOOL isFinish) {
+            [weakself checkActiveFormat];// 默认的 active 可能最大只支持采集 30 帧，这里手动设置一下
+            [weakself.shortVideoRecorder startCaptureSession];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                sender.enabled = YES;
+            });
+        }];
+    } else {
+        [self.shortVideoRecorder toggleCamera];
+    }
 }
 
 // 七牛滤镜
@@ -818,6 +853,23 @@ TuSDKAudioPitchEngineDelegate
         [self.shortVideoRecorder mixAudio:audioURL];
     } else{
         [self.shortVideoRecorder mixAudio:nil];
+    }
+}
+
+- (void)frameRateButtonOnClick:(UIButton *)button {
+    if (60 == self.videoConfiguration.videoFrameRate) {
+        self.videoConfiguration.videoFrameRate = 30;
+        self.videoConfiguration.averageVideoBitRate = 1000 * 2500;
+        self.videoConfiguration.sessionPreset = AVCaptureSessionPreset1280x720;
+        [button setTitle:@"30帧" forState:(UIControlStateNormal)];
+        [self.shortVideoRecorder reloadvideoConfiguration:self.videoConfiguration];
+    } else {
+        self.videoConfiguration.videoFrameRate = 60;
+        self.videoConfiguration.averageVideoBitRate = 1000 * 3500;
+        self.videoConfiguration.sessionPreset = AVCaptureSessionPresetInputPriority;
+        [button setTitle:@"60帧" forState:(UIControlStateNormal)];
+        [self.shortVideoRecorder reloadvideoConfiguration:self.videoConfiguration];
+        [self checkActiveFormat];
     }
 }
 
@@ -917,6 +969,7 @@ TuSDKAudioPitchEngineDelegate
     AVAsset *asset = self.shortVideoRecorder.assetRepresentingAllFiles;
     [self playEvent:asset];
     [self.viewRecorderManager cancelRecording];
+    [self.screenRecorderManager cancelRecording];
     self.viewRecordButton.selected = NO;
 }
 
@@ -1005,6 +1058,31 @@ TuSDKAudioPitchEngineDelegate
     EditViewController *videoEditViewController = [[EditViewController alloc] init];
     videoEditViewController.settings = outputSettings;
     [self presentViewController:videoEditViewController animated:YES completion:nil];
+}
+
+#pragma mark - PLScreenRecorderManagerDelegate
+- (void)screenRecorderManager:(PLScreenRecorderManager *)manager didFinishRecordingToAsset:(AVAsset *)asset totalDuration:(CGFloat)totalDuration {
+    self.viewRecordButton.selected = NO;
+    // 设置音视频、水印等编辑信息
+    NSMutableDictionary *outputSettings = [[NSMutableDictionary alloc] init];
+    // 待编辑的原始视频素材
+    NSMutableDictionary *plsMovieSettings = [[NSMutableDictionary alloc] init];
+    plsMovieSettings[PLSAssetKey] = asset;
+    plsMovieSettings[PLSStartTimeKey] = [NSNumber numberWithFloat:0.f];
+    plsMovieSettings[PLSDurationKey] = [NSNumber numberWithFloat:totalDuration];
+    plsMovieSettings[PLSVolumeKey] = [NSNumber numberWithFloat:1.0f];
+    outputSettings[PLSMovieSettingsKey] = plsMovieSettings;
+    
+    EditViewController *videoEditViewController = [[EditViewController alloc] init];
+    videoEditViewController.settings = outputSettings;
+    [self presentViewController:videoEditViewController animated:YES completion:nil];
+}
+
+- (void)screenRecorderManager:(PLScreenRecorderManager *)manager errorOccur:(NSError *)error {
+    NSString *message = [NSString stringWithFormat:@"%@", error];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"错误" message:message delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+    [alert show];
+    self.viewRecordButton.selected = NO;
 }
 
 #pragma mark -- PLShortVideoRecorderDelegate 摄像头／麦克风鉴权的回调
@@ -1105,6 +1183,7 @@ TuSDKAudioPitchEngineDelegate
     self.importMovieView.hidden = YES;
     self.musicButton.hidden = YES;
     self.filePathButton.hidden = YES;
+    self.frameRateButton.hidden = YES;
     
     self.durationLabel.text = [NSString stringWithFormat:@"%.2fs", totalDuration];
 }
@@ -1122,6 +1201,7 @@ TuSDKAudioPitchEngineDelegate
         self.importMovieView.hidden = NO;
         self.musicButton.hidden = NO;
         self.filePathButton.hidden = NO;
+        self.frameRateButton.hidden = NO;
     }
     
     AVAsset *asset = [AVAsset assetWithURL:_URL];
@@ -1334,58 +1414,22 @@ TuSDKAudioPitchEngineDelegate
 - (void)setupGestureRecognizer {
     UISwipeGestureRecognizer *recognizer;
     // 添加右滑手势
-    recognizer = [[UISwipeGestureRecognizer alloc]initWithTarget:self action:@selector(handleSwipeFrom:)];
+    recognizer = [[UISwipeGestureRecognizer alloc]initWithTarget:self action:@selector(handleFilterSwipeFrom:)];
     [recognizer setDirection:(UISwipeGestureRecognizerDirectionRight)];
     [self.view addGestureRecognizer:recognizer];
-    recognizer.delegate = self;
     // 添加左滑手势
-    recognizer = [[UISwipeGestureRecognizer alloc]initWithTarget:self action:@selector(handleSwipeFrom:)];
+    recognizer = [[UISwipeGestureRecognizer alloc]initWithTarget:self action:@selector(handleFilterSwipeFrom:)];
     [recognizer setDirection:(UISwipeGestureRecognizerDirectionLeft)];
     [self.view addGestureRecognizer:recognizer];
-    recognizer.delegate = self;
-    // 添加上滑手势
-    recognizer = [[UISwipeGestureRecognizer alloc]initWithTarget:self action:@selector(handleSwipeFrom:)];
-    [recognizer setDirection:(UISwipeGestureRecognizerDirectionUp)];
-    [self.view addGestureRecognizer:recognizer];
-    recognizer.delegate = self;
     // 添加下滑手势
-    recognizer = [[UISwipeGestureRecognizer alloc]initWithTarget:self action:@selector(handleSwipeFrom:)];
+    recognizer = [[UISwipeGestureRecognizer alloc]initWithTarget:self action:@selector(handleDownSwipeFrom:)];
     [recognizer setDirection:(UISwipeGestureRecognizerDirectionDown)];
     [self.view addGestureRecognizer:recognizer];
-    recognizer.delegate = self;
 }
 
--(BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
-    BOOL result = YES;
-    if (_filterView) {
-        result = result && _filterView.hidden;
-    }
-    if (_stickerView) {
-        result = result && _stickerView.hidden;
-    }
-    if (_facePanelView) {
-        result = result && _facePanelView.hidden;
-    }
-    if (_cartoonView) {
-        result = result && _cartoonView.hidden;
-    }
-    return result;
-}
 
 // 添加手势的响应事件
-- (void)handleSwipeFrom:(UISwipeGestureRecognizer *)recognizer{
-    if(recognizer.direction == UISwipeGestureRecognizerDirectionDown) {
-        NSLog(@"swipe down");
-        self.filterIndex++;
-        self.filterIndex %= self.filterGroup.filtersInfo.count;
-    }
-    if(recognizer.direction == UISwipeGestureRecognizerDirectionUp) {
-        NSLog(@"swipe up");
-        self.filterIndex--;
-        if (self.filterIndex < 0) {
-            self.filterIndex = self.filterGroup.filtersInfo.count - 1;
-        }
-    }
+- (void)handleFilterSwipeFrom:(UISwipeGestureRecognizer *)recognizer{
     if(recognizer.direction == UISwipeGestureRecognizerDirectionLeft) {
         NSLog(@"swipe left");
         self.filterIndex--;
@@ -1401,6 +1445,45 @@ TuSDKAudioPitchEngineDelegate
     
     // 滤镜
     self.filterGroup.filterIndex = self.filterIndex;
+}
+
+- (void)handleDownSwipeFrom:(UISwipeGestureRecognizer *)recognizer{
+    if(recognizer.direction == UISwipeGestureRecognizerDirectionDown) {
+        NSLog(@"swipe down");
+        if ([self isViewShow:_filterView]) {
+            [self hideView:_filterView];
+        }
+        if ([self isViewShow:_cartoonView]) {
+            [self hideView:_cartoonView];
+        }
+        if ([self isViewShow:_stickerView]) {
+            [self hideView:_stickerView];
+        }
+        if ([self isViewShow:_facePanelView]) {
+            [self hideView:_facePanelView];
+        }
+    }
+}
+
+- (void)showView:(UIView *)view {
+    CGRect rect = view.frame;
+    rect.origin.y = self.view.bounds.size.height - view.frame.size.height;
+    [UIView animateWithDuration:.3 animations:^{
+        view.frame = rect;
+    }];
+}
+
+- (void)hideView:(UIView *)view {
+    CGRect rect = view.frame;
+    rect.origin.y = self.view.bounds.size.height;
+    [UIView animateWithDuration:.3 animations:^{
+        view.frame = rect;
+    }];
+}
+
+- (BOOL)isViewShow:(UIView *)view {
+    if (!view) return NO;
+    return fabs(self.view.bounds.size.height - view.frame.origin.y) > FLT_EPSILON;
 }
 
 #pragma mark - addObserverEvent
@@ -1423,6 +1506,41 @@ TuSDKAudioPitchEngineDelegate
     NSLog(@"%s, %d, applicationDidBecomeActive:", __func__, __LINE__);
 }
 
+- (void)checkActiveFormat {
+    
+    CGSize needCaptureSize = self.videoConfiguration.videoSize;
+    
+    if (AVCaptureVideoOrientationPortrait == self.videoConfiguration.videoOrientation ||
+        AVCaptureVideoOrientationPortraitUpsideDown == self.videoConfiguration.videoOrientation) {
+        needCaptureSize = CGSizeMake(self.videoConfiguration.videoSize.height, self.videoConfiguration.videoSize.width);
+    }
+    
+    AVCaptureDeviceFormat *activeFormat = self.shortVideoRecorder.videoActiveFormat;
+    AVFrameRateRange *frameRateRange = [activeFormat.videoSupportedFrameRateRanges firstObject];
+    
+    CMVideoDimensions captureSize = CMVideoFormatDescriptionGetDimensions(activeFormat.formatDescription);
+    if (frameRateRange.maxFrameRate < self.videoConfiguration.videoFrameRate ||
+        frameRateRange.minFrameRate > self.videoConfiguration.videoFrameRate ||
+        needCaptureSize.width > captureSize.width ||
+        needCaptureSize.height > captureSize.height) {
+        
+        NSArray *videoFormats = self.shortVideoRecorder.videoFormats;
+        for (AVCaptureDeviceFormat *format in videoFormats) {
+            frameRateRange = [format.videoSupportedFrameRateRanges firstObject];
+            captureSize = CMVideoFormatDescriptionGetDimensions(format.formatDescription);
+            
+            if (frameRateRange.maxFrameRate >= self.videoConfiguration.videoFrameRate &&
+                frameRateRange.minFrameRate <= self.videoConfiguration.videoFrameRate &&
+                captureSize.width >= needCaptureSize.width &&
+                captureSize.height >= needCaptureSize.height) {
+                NSLog(@"size = {%d x %d}, fps = %f ~ %f", captureSize.width, captureSize.height, frameRateRange.minFrameRate, frameRateRange.maxFrameRate);
+                self.shortVideoRecorder.videoActiveFormat = format;
+                break;
+            }
+        }
+    }
+}
+
 #pragma mark - EasyarSDK AR 入口
 - (void)ARButtonOnClick:(id)sender {
     EasyarARViewController *easyerARViewController = [[EasyarARViewController alloc]init];
@@ -1437,32 +1555,6 @@ TuSDKAudioPitchEngineDelegate
     // 获取到对应包名的资源之后，设置 self.isUseExternalFilterWhenRecording = YES; 即可使用
     if ( !self.isUseExternalFilterWhenRecording ) {
         AlertViewShow(@"使用高级滤镜和人脸贴纸特效，请联系七牛销售！");
-    }
-}
-
-- (void)externalFilterButtonOnClick:(UIButton *)button {
-    [self checkBundleId];
-    
-    if (!_filterView) {
-//        [self initFilterView];
-    }
-    
-    _filterView.hidden = !_filterView.hidden;
-    if (!_filterView.hidden) {
-        _stickerView.hidden = YES;
-    }
-}
-
-- (void)externalStickerButtonOnClick:(UIButton *)button {
-    [self checkBundleId];
-    
-    if (!_stickerView) {
-//        [self initStickerView];
-    }
-    
-    _stickerView.hidden = !_stickerView.hidden;
-    if (!_stickerView.hidden) {
-        _filterView.hidden = YES;
     }
 }
 
@@ -1567,12 +1659,30 @@ TuSDKAudioPitchEngineDelegate
         _stickerView.delegate = (id<StickerPanelViewDelegate>)self;
         CGSize size = self.view.bounds.size;
         const CGFloat stickerPanelHeight = 200;
-        _stickerView.frame = CGRectMake(0, size.height - stickerPanelHeight, size.width, stickerPanelHeight);
+        _stickerView.frame = CGRectMake(0, size.height, size.width, stickerPanelHeight);
         [self.view addSubview:_stickerView];
-    }else{
-        _stickerView.hidden = !_stickerView.hidden;
+        
+        UIVisualEffect *effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+        UIVisualEffectView *effectView = [[UIVisualEffectView alloc] initWithEffect:effect];
+        effectView.frame = _stickerView.bounds;
+        [_stickerView insertSubview:effectView atIndex:0];
     }
-    _cartoonView.hidden =_facePanelView.hidden = _filterView.hidden = YES;
+    
+    if ([self isViewShow:_cartoonView]) {
+        [self hideView:_cartoonView];
+    }
+    if ([self isViewShow:_facePanelView]) {
+        [self hideView:_facePanelView];
+    }
+    if ([self isViewShow:_filterView]) {
+        [self hideView:_filterView];
+    }
+    
+    if ([self isViewShow:_stickerView]) {
+        [self hideView:_stickerView];
+    } else {
+        [self showView:_stickerView];
+    }
 }
 
 - (void)clickFilterBtn;
@@ -1583,16 +1693,29 @@ TuSDKAudioPitchEngineDelegate
         CGFloat filterPanelHeight = 276;
         
         // 滤镜视图
-        _filterView = [[FilterPanelView alloc] initWithFrame:CGRectMake(0, size.height - filterPanelHeight, size.width, filterPanelHeight)];
+        _filterView = [[FilterPanelView alloc] initWithFrame:CGRectMake(0, size.height, size.width, filterPanelHeight)];
         _filterView.delegate = (id<FilterPanelDelegate>)self;
         _filterView.dataSource = (id<CameraFilterPanelDataSource>)self;
         _filterView.codes = @[kCameraFilterCodes];
         
         [self.view addSubview:_filterView];
-    }else{
-        _filterView.hidden = !_filterView.hidden;
     }
-    _cartoonView.hidden = _facePanelView.hidden = _stickerView.hidden = YES;
+    
+    if ([self isViewShow:_cartoonView]) {
+        [self hideView:_cartoonView];
+    }
+    if ([self isViewShow:_facePanelView]) {
+        [self hideView:_facePanelView];
+    }
+    if ([self isViewShow:_stickerView]) {
+        [self hideView:_stickerView];
+    }
+    
+    if ([self isViewShow:_filterView]) {
+        [self hideView:_filterView];
+    } else {
+        [self showView:_filterView];
+    }
 }
 
 - (void)clickFaceBtn;
@@ -1604,12 +1727,25 @@ TuSDKAudioPitchEngineDelegate
         _facePanelView.dataSource = (id<CameraFilterPanelDataSource>)self;
         CGSize size = self.view.bounds.size;
         const CGFloat filterPanelHeight = 276;
-        _facePanelView.frame = CGRectMake(0, size.height - filterPanelHeight, size.width, filterPanelHeight);
+        _facePanelView.frame = CGRectMake(0, size.height, size.width, filterPanelHeight);
         [self.view addSubview:_facePanelView];
-    }else{
-        _facePanelView.hidden = !_facePanelView.hidden;
     }
-    _cartoonView.hidden = _stickerView.hidden = _filterView.hidden = YES;
+    
+    if ([self isViewShow:_cartoonView]) {
+        [self hideView:_cartoonView];
+    }
+    if ([self isViewShow:_filterView]) {
+        [self hideView:_filterView];
+    }
+    if ([self isViewShow:_stickerView]) {
+        [self hideView:_stickerView];
+    }
+    
+    if ([self isViewShow:_facePanelView]) {
+        [self hideView:_facePanelView];
+    } else {
+        [self showView:_facePanelView];
+    }
 }
 
 - (void)clickCartoonBtn;
@@ -1620,15 +1756,27 @@ TuSDKAudioPitchEngineDelegate
         CGFloat filterPanelHeight = 276;
         
         // 滤镜视图
-        _cartoonView = [[CartoonPanelView alloc] initWithFrame:CGRectMake(0, size.height - filterPanelHeight, size.width, filterPanelHeight)];
+        _cartoonView = [[CartoonPanelView alloc] initWithFrame:CGRectMake(0, size.height, size.width, filterPanelHeight)];
         _cartoonView.delegate = self;
         
         [self.view addSubview:_cartoonView];
-    }else{
-        _cartoonView.hidden = !_cartoonView.hidden;
     }
     
-    _filterView.hidden = _facePanelView.hidden = _stickerView.hidden = YES;
+    if ([self isViewShow:_facePanelView]) {
+        [self hideView:_facePanelView];
+    }
+    if ([self isViewShow:_filterView]) {
+        [self hideView:_filterView];
+    }
+    if ([self isViewShow:_stickerView]) {
+        [self hideView:_stickerView];
+    }
+    
+    if ([self isViewShow:_cartoonView]) {
+        [self hideView:_cartoonView];
+    } else {
+        [self showView:_cartoonView];
+    }
 }
 
 /**

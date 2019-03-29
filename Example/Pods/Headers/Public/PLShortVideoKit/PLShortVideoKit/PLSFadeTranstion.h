@@ -1,1 +1,1 @@
-../../../../../../Pod/Library/PLShortVideoKit.framework/Headers/PLSFadeTranstion.h
+../../../../../../Pod/Library/Profession/PLShortVideoKit.framework/Headers/PLSFadeTranstion.h

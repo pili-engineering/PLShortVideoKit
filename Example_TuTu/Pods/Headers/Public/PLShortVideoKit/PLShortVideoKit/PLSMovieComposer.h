@@ -1,1 +1,1 @@
-../../../../../../Pod/Library/PLShortVideoKit.framework/Headers/PLSMovieComposer.h
+../../../../../../Pod/Library/Profession/PLShortVideoKit.framework/Headers/PLSMovieComposer.h
