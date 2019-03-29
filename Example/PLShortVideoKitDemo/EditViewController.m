@@ -1153,6 +1153,9 @@ PLSClipMovieViewDelegate
     }
     
     [self.shortVideoEditor addMVLayerWithColor:self.colorURL alpha:self.alphaURL timeRange:kCMTimeRangeZero loopEnable:YES];
+    if (![self.shortVideoEditor isEditing]) {
+        [self.shortVideoEditor startEditing];
+    }
 }
 
 - (void)addFilter:(NSString *)colorImagePath {
@@ -2249,7 +2252,9 @@ PLSClipMovieViewDelegate
     }
     
     // 添加背景音乐信息
-    [self.audioSettingsArray insertObject:self.backgroundAudioSettings atIndex:0];
+    if (self.backgroundAudioSettings[PLSURLKey] && ![self.audioSettingsArray containsObject:self.backgroundAudioSettings]) {
+        [self.audioSettingsArray insertObject:self.backgroundAudioSettings atIndex:0];
+    }
     
     AVAsset *asset = self.movieSettings[PLSAssetKey];
     PLSAVAssetExportSession *exportSession = [[PLSAVAssetExportSession alloc] initWithAsset:asset];
@@ -2271,8 +2276,12 @@ PLSClipMovieViewDelegate
     
     // 旋转视频
     exportSession.videoLayerOrientation = self.videoLayerOrientation;
-    [exportSession addFilter:self.colorImagePath];
-    [exportSession addMVLayerWithColor:self.colorURL alpha:self.alphaURL timeRange:kCMTimeRangeZero loopEnable:YES];
+    if (self.colorImagePath) {
+        [exportSession addFilter:self.colorImagePath];
+    }
+    if (self.colorURL && self.alphaURL) {
+        [exportSession addMVLayerWithColor:self.colorURL alpha:self.alphaURL timeRange:kCMTimeRangeZero loopEnable:YES];
+    }
     
     __weak typeof(self) weakSelf = self;
     [exportSession setCompletionBlock:^(NSURL *url) {
@@ -2295,7 +2304,9 @@ PLSClipMovieViewDelegate
     [exportSession setProcessingBlock:^(float progress) {
         // 更新进度 UI
         NSLog(@"Asset Export Progress: %f", progress);
-        weakSelf.progressLabel.text = [NSString stringWithFormat:@"%d%%", (int)(progress * 100)];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            weakSelf.progressLabel.text = [NSString stringWithFormat:@"%d%%", (int)(progress * 100)];
+        });
     }];
     
     [exportSession exportAsynchronously];
