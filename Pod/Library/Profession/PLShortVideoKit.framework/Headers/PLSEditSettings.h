@@ -67,7 +67,7 @@ PLS_EXPORT NSString *const PLSWatermarkSettingsKey;
     存储的值的类型为 NSDictionary，包括
     PLSStickerKey,
     PLSSizeKey,
-    PLSPointKey
+    PLSPointKey,
     PLSRotationKey,
     PLSStartTimeKey,
     PLSDurationKey,

@@ -152,7 +152,7 @@
  
  @since      v1.16.0
  */
-@property (copy, nonatomic) NSMutableArray <PLSComposeMediaItem *> *_Nullable mediaArrays;
+@property (strong, nonatomic) NSMutableArray <PLSComposeMediaItem *> *_Nullable mediaArrays;
 
 /*!
  @method startComposing
