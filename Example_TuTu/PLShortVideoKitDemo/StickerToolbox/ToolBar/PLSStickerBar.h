@@ -25,7 +25,7 @@
 @class PLSStickerBar;
 @protocol PLSStickerBarDelegate <NSObject>
 
-- (void)stickerBar:(PLSStickerBar *)stickerBar didSelectImage:(UIImage *)image;
+- (void)stickerBar:(PLSStickerBar *)stickerBar didSelectImage:(NSURL *)url;
 
 @end
 

@@ -818,7 +818,7 @@ static NSString *PLSTimelineItemCellId = @"PLSTimelineItemCell";
         }
     }
     
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         if (self.delegate && [self.delegate respondsToSelector:@selector(timelineCurrentTime: duration:)]) {
             CGFloat currentTime = [self getCurrentTime];
             if (self.actualDuration == 0) {
@@ -828,7 +828,7 @@ static NSString *PLSTimelineItemCellId = @"PLSTimelineItemCell";
             
             [self.delegate timelineCurrentTime:currentTime duration:self.actualDuration];
         }
-    });
+//    });
 }
 
 - (CGFloat)timeWithOffset:(CGFloat)offset {

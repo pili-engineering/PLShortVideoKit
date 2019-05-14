@@ -149,6 +149,7 @@ UICollectionViewDelegateFlowLayout
     self.videoConfiguration.cameraVideoFrame = CGRectMake(0, 0, 360, 640);
     self.videoConfiguration.sampleVideoFrame = CGRectMake(360, 0, 360, 640);
     self.videoConfiguration.videoOrientation = AVCaptureVideoOrientationPortrait;
+    self.videoConfiguration.previewMirrorFrontFacing = NO;
     
     self.audioConfiguration = [PLSAudioMixConfiguration defaultConfiguration];
     self.audioConfiguration.sampleVolume = 0.5;

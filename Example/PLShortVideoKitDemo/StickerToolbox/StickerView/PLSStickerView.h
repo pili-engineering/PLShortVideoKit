@@ -22,6 +22,7 @@
 typedef NS_ENUM(NSInteger, StickerType){
     StickerType_SubTitle,     // 文字
     StickerType_Sticker,      // 图片
+    StickerType_GIFAnimation, // GIF
 };
 
 @interface PLSStickerView : UIImageView
@@ -30,6 +31,7 @@ typedef NS_ENUM(NSInteger, StickerType){
 @property (nonatomic) UIButton *closeBtn;
 @property (nonatomic) UIImageView *dragBtn;
 @property (nonatomic, assign) id <PLSStickerViewDelegate> delegate;
+@property (nonatomic, readonly) NSURL *stickerURL;
 
 #pragma mark -
 @property (nonatomic, assign) StickerType type;
@@ -38,12 +40,14 @@ typedef NS_ENUM(NSInteger, StickerType){
 
 #pragma mark - Functions
 
-/**
- 创建一中类型的贴纸
- @param image 贴图图片
- @param type 默认为贴图
- */
-- (instancetype)initWithImage:(UIImage *)image Type:(StickerType)type;
+// 创建文字贴纸
+- (instancetype)initSubTextSticker:(UIImage *)image;
+
+// 创建图片贴纸
+- (instancetype)initImageSticker:(NSURL *)imgURL;
+
+// 创建 GIF 贴纸
+- (instancetype)initGifSticker:(NSURL *)gifURL;
 
 /**
  根据气泡类型，设置字符显示区域

@@ -25,6 +25,7 @@
 #import "PLSClipMovieView.h"
 #import <Masonry/Masonry.h>
 #import "PLSTimeLineAudioItem.h"
+#import "PLSGifStickerBar.h"
 #import <Photos/Photos.h>
 
 // TuSDK mark
@@ -56,6 +57,7 @@ PLSAVAssetExportSessionDelegate,
 PLSTimelineViewDelegate,
 PLSStickerBarDelegate,
 PLSStickerViewDelegate,
+PLSGifStickerBarDelegate,
 UIGestureRecognizerDelegate,
 PLSClipMovieViewDelegate,
 TuSDKFilterProcessorDelegate,
@@ -73,7 +75,7 @@ TuSDKFilterProcessorMediaEffectDelegate
 @property (assign, nonatomic) CGPoint watermarkPosition1;
 @property (assign, nonatomic) CGPoint watermarkPosition2;
 @property (strong, nonatomic) UIButton *waterMarkButton;
-    
+
 @property (assign, nonatomic) CGSize gifWatermarkSize;
 @property (strong, nonatomic) NSURL *gifWatermarkURL;
 @property (strong, nonatomic) UIButton *gifWaterMarkButton;
@@ -164,7 +166,7 @@ TuSDKFilterProcessorMediaEffectDelegate
 // 所有 sticker 添加到该 view 上
 @property (strong, nonatomic) PLSStickerOverlayView *stickerOverlayView;
 // 当前选中的贴纸
-@property (strong, nonatomic) PLSStickerView *currentStickerView;
+@property (weak, nonatomic) PLSStickerView *currentStickerView;
 // 添加tap手势
 @property (nonatomic, strong) UITapGestureRecognizer *tapGes;
 // 贴纸 gesture 交互相关
@@ -174,6 +176,8 @@ TuSDKFilterProcessorMediaEffectDelegate
 
 // 贴图工具
 @property (strong, nonatomic) PLSStickerBar *stickerBar;
+// GIF 动图工具
+@property (strong, nonatomic) PLSGifStickerBar *gifStickerBar;
 // 自定义贴图资源
 @property (strong, nonatomic) NSString *stickerPath;
 ///--------------------------------------------
@@ -385,7 +389,7 @@ TuSDKFilterProcessorMediaEffectDelegate
     self.watermarkSetting1[PLSAlphaKey] = [NSNumber numberWithFloat:1.0];
     self.watermarkSetting1[PLSTypeKey] = [NSNumber numberWithInteger:PLSWaterMarkTypeStatic];
     self.watermarkSetting1[PLSRotationKey] = [NSNumber numberWithFloat:0];
-    
+
     self.watermarkSetting2 = [[NSMutableDictionary alloc] init];
     self.watermarkSetting2[PLSURLKey] = self.watermarkURL;
     self.watermarkSetting2[PLSSizeKey] = [NSValue valueWithCGSize:self.watermarkSize];
@@ -395,7 +399,7 @@ TuSDKFilterProcessorMediaEffectDelegate
     self.watermarkSetting2[PLSAlphaKey] = [NSNumber numberWithFloat:0.5];
     self.watermarkSetting2[PLSTypeKey] = [NSNumber numberWithInteger:PLSWaterMarkTypeStatic];
     self.watermarkSetting2[PLSRotationKey] = [NSNumber numberWithFloat:0];
-    
+
     [self.watermarkSettingsArray addObject:self.watermarkSetting1];
     [self.watermarkSettingsArray addObject:self.watermarkSetting2];
     
@@ -522,7 +526,6 @@ TuSDKFilterProcessorMediaEffectDelegate
 
 // self.tapGes 手势的响应事件
 - (void)onTouchBGView:(UITapGestureRecognizer *)touches {
-    
     // 取消贴纸、字幕的选中状态
     if (_currentStickerView) {
         _currentStickerView.select = NO;
@@ -538,6 +541,8 @@ TuSDKFilterProcessorMediaEffectDelegate
 - (void)hideAllBottomViews {
     // 隐藏显示功能面板
     [self hideStickerbar];
+    //  隐藏 GIF 动图选择视频
+    [self hideGIFBar];
     // 隐藏显示滤镜、音乐、MV 资源的视图
     [self hideSourceCollectionView];
     // 隐藏剪视频的视图
@@ -571,6 +576,11 @@ TuSDKFilterProcessorMediaEffectDelegate
         return NO;
     }
     
+    // 过滤掉 PLSGifStickerBar，让 PLSGifStickerBar 响应它自身的点击事件
+    if ([classArray containsObject:NSStringFromClass(PLSGifStickerBar.class)]) {
+        return NO;
+    }
+    
     // 过滤掉 UIScrollView，让 UIScrollView 响应它自身的点击事件，UIScrollView 用于展示了底部的功能按钮键
     if ([classArray containsObject:NSStringFromClass(UIScrollView.class)]) {
         return NO;
@@ -590,8 +600,8 @@ TuSDKFilterProcessorMediaEffectDelegate
 }
 
 - (UIButton *)toolBoxButtonWithSelector:(SEL)selector
-                                    startX:(CGFloat)startX
-                                     title:(NSString*)buttonTitle {
+                                 startX:(CGFloat)startX
+                                  title:(NSString*)buttonTitle {
     CGFloat height = 50;
     UIButton *button = [UIButton buttonWithType:(UIButtonTypeCustom)];
     [button setTitle:buttonTitle forState:UIControlStateNormal];
@@ -600,7 +610,7 @@ TuSDKFilterProcessorMediaEffectDelegate
     [button sizeToFit];
     button.frame = CGRectMake(startX, 0, button.bounds.size.width, height);
     [button addTarget:self action:selector forControlEvents:UIControlEventTouchUpInside];
-
+    
     [self.buttonScrollView addSubview:button];
     
     return button;
@@ -694,7 +704,12 @@ TuSDKFilterProcessorMediaEffectDelegate
     // 添加图片
     button = [self toolBoxButtonWithSelector:@selector(addImageButtonEvent:)
                                       startX:button.frame.origin.x + button.frame.size.width + 20
-                                       title:@"图片"];
+                                       title:@"贴纸"];
+    
+    // 添加 GIF 图片
+    button = [self toolBoxButtonWithSelector:@selector(addGIFImageButtonEvent:)
+                                      startX:button.frame.origin.x + button.frame.size.width + 20
+                                       title:@"GIF贴纸"];
 
     // 制作Gif图
     button = [self toolBoxButtonWithSelector:@selector(formatGifButtonEvent:)
@@ -1285,11 +1300,13 @@ TuSDKFilterProcessorMediaEffectDelegate
             CGFloat itemStartTime = item.startTime;
             CGFloat itemEndTime = item.endTime;
             
-            if (CMTimeGetSeconds(timestamp) < itemStartTime || CMTimeGetSeconds(timestamp) > itemEndTime) {
-                stickerView.hidden = YES;
-            } else {
-                stickerView.hidden = NO;
-            }
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (CMTimeGetSeconds(timestamp) < itemStartTime || CMTimeGetSeconds(timestamp) > itemEndTime) {
+                    stickerView.hidden = YES;
+                } else {
+                    stickerView.hidden = NO;
+                }
+            });
         }
     }
     
@@ -1352,7 +1369,9 @@ TuSDKFilterProcessorMediaEffectDelegate
     // TuSDK mark
     self.videoProgress = 0.0;
     
-    self.playButton.selected = NO;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.playButton.selected = NO;
+    });
 }
 
 - (void)shortVideoEditor:(PLShortVideoEditor *)editor didReachEndForAsset:(AVAsset *)asset timeRange:(CMTimeRange)timeRange {
@@ -1670,11 +1689,11 @@ TuSDKFilterProcessorMediaEffectDelegate
 - (void)formatGifThumbEvent:(id)sender {
     AVAsset *asset = self.movieSettings[PLSAssetKey];
     [self loadActivityIndicatorView];
-    
+
     __weak typeof(self) weakSelf = self;
     CGSize size = [asset pls_videoSize];
     float startTime = [self.movieSettings[PLSStartTimeKey] floatValue];
-    float duration = MIN(2.0, [self.movieSettings[PLSDurationKey] floatValue]);
+    float duration = MIN(1.0, [self.movieSettings[PLSDurationKey] floatValue]);
     
     [PLSGifComposer getImagesWithAsset:asset startTime:startTime endTime:startTime + duration imageCount:duration * 10 imageSize:size completionBlock:^(NSError *error, NSArray *images) {
         if (error) {
@@ -1684,10 +1703,13 @@ TuSDKFilterProcessorMediaEffectDelegate
             });
             return;
         }
-        
-        PLSGifComposer *gifComposer = [[PLSGifComposer alloc] initWithImagesArray:images];
+        NSMutableArray* array = [NSMutableArray arrayWithArray:images];
+        for (NSInteger i = images.count - 2; i >= 0; i --) {
+            [array addObject:images[i]];
+        }
+        PLSGifComposer *gifComposer = [[PLSGifComposer alloc] initWithImagesArray:array];
         gifComposer.gifName = nil; // 为 nil 时，SDK 内部会生成相应的唯一名称。gifComposer.gifName = @"myGif"
-        gifComposer.interval = duration / 20;
+        gifComposer.interval = 2 * duration / array.count;
         
         [gifComposer setCompletionBlock:^(NSURL *url){
             NSLog(@"compose Gif successed");
@@ -1871,6 +1893,15 @@ TuSDKFilterProcessorMediaEffectDelegate
     }
 }
 
+- (void)addGIFImageButtonEvent:(UIButton *)button {
+    button.selected = !button.selected;
+    if (button.selected) {
+        [self showGIFBar];
+    } else {
+        [self hideGIFBar];
+    }
+}
+
 - (void)showTextbar {
     
     [self hideAllBottomViews];
@@ -1882,7 +1913,7 @@ TuSDKFilterProcessorMediaEffectDelegate
     // 1. 创建贴纸
     NSString *imgName = @"sticker_t_0";
     UIImage *image = [UIImage imageNamed:imgName];
-    PLSStickerView *stickerView = [[PLSStickerView alloc] initWithImage:image Type:StickerType_SubTitle];
+    PLSStickerView *stickerView = [[PLSStickerView alloc] initSubTextSticker:image];
     stickerView.delegate = self;
     // 气泡字幕需要计算文字的输入范围，每个气泡的展示区域不一样
     [stickerView calcInputRectWithImgName:imgName];
@@ -1950,6 +1981,23 @@ TuSDKFilterProcessorMediaEffectDelegate
     [self.stickerBar removeFromSuperview];
 }
 
+- (void)showGIFBar {
+    [self hideAllBottomViews];
+    
+    if (!self.gifStickerBar) {
+        self.gifStickerBar = [[PLSGifStickerBar alloc] initWithFrame:CGRectMake(0, PLS_SCREEN_HEIGHT - PLS_EditToolboxView_HEIGHT - 175 - [self bottomFixSpace], PLS_SCREEN_WIDTH, 175) resourcePath:self.stickerPath];
+        self.gifStickerBar.backgroundColor = PLS_RGBCOLOR(25, 24, 36);
+        self.gifStickerBar.delegate = self;
+    }
+    if(!self.gifStickerBar.superview) {
+        [self.view addSubview:self.gifStickerBar];
+    }
+}
+
+- (void)hideGIFBar {
+    [self.gifStickerBar removeFromSuperview];
+}
+
 #pragma mark - PLSTimelineViewDelegate 时间线代理
 /**
  回调拖动的item对象（在手势结束时发生）
@@ -1990,12 +2038,13 @@ TuSDKFilterProcessorMediaEffectDelegate
 }
 
 #pragma mark - PLSStickerBarDelegate
-- (void)stickerBar:(PLSStickerBar *)stickerBar didSelectImage:(UIImage *)image {
+- (void)stickerBar:(PLSStickerBar *)stickerBar didSelectImage:(NSURL *)url {
     [self.shortVideoEditor stopEditing];
     self.playButton.selected = YES;
     
     // 1. 创建贴纸
-    PLSStickerView *stickerView = [[PLSStickerView alloc] initWithImage:image Type:StickerType_Sticker];
+    PLSStickerView *stickerView = [[PLSStickerView alloc] initImageSticker:url];
+    UIImage *image = [UIImage imageWithContentsOfFile:url.path];
     stickerView.delegate = self;
     
     _currentStickerView.select = NO;
@@ -2016,6 +2065,50 @@ TuSDKFilterProcessorMediaEffectDelegate
     [self.timelineView addTimelineItem:item];
     [self.timelineView editTimelineItem:item];
     
+    stickerView.frame = CGRectMake((self.stickerOverlayView.frame.size.width - image.size.width * 0.5) * 0.5,
+                                   (self.stickerOverlayView.frame.size.height - image.size.height * 0.5) * 0.5,
+                                   image.size.width * 0.5,
+                                   image.size.height * 0.5);
+    
+    UIPanGestureRecognizer *panGes = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(moveGestureRecognizerEvent:)];
+    [stickerView addGestureRecognizer:panGes];
+    UITapGestureRecognizer *tapGes = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapGestureRecognizerEvent:)];
+    [stickerView addGestureRecognizer:tapGes];
+    UIPinchGestureRecognizer *pinGes = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(pinchGestureRecognizerEvent:)];
+    [stickerView addGestureRecognizer:pinGes];
+    [stickerView.dragBtn addGestureRecognizer:[[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(scaleAndRotateGestureRecognizerEvent:)]];
+}
+
+- (void)gifStickerBar:(PLSGifStickerBar *)stickerBar didSelectImage:(NSURL *)url {
+    [self.shortVideoEditor stopEditing];
+    self.playButton.selected = YES;
+    
+    // 1. 创建贴纸
+    PLSStickerView *stickerView = [[PLSStickerView alloc] initGifSticker:url];
+    stickerView.delegate = self;
+    
+    _currentStickerView.select = NO;
+    stickerView.select = YES;
+    _currentStickerView = stickerView;
+    
+    // 2. 添加至stickerOverlayView上
+    [self.stickerOverlayView addSubview:stickerView];
+    
+    // 3. 添加 timeLineItem 模型
+    PLSTimeLineItem *item = [[PLSTimeLineItem alloc] init];
+    item.target = stickerView;
+    item.effectType = PLSTimeLineItemTypeGIFImage;
+    item.startTime = CMTimeGetSeconds([self.shortVideoEditor currentTime]);
+    CGFloat remainingTime = _mediaInfo.duration - item.startTime;
+    // GIF 播放一边的时长
+    float oneLoopDuration = stickerView.animationDuration;
+    CGFloat duration = MAX(2, oneLoopDuration);
+    item.endTime = remainingTime > duration ? item.startTime + duration : _mediaInfo.duration;
+    
+    [self.timelineView addTimelineItem:item];
+    [self.timelineView editTimelineItem:item];
+    
+    UIImage *image = [UIImage imageWithContentsOfFile:url.path];
     stickerView.frame = CGRectMake((self.stickerOverlayView.frame.size.width - image.size.width * 0.5) * 0.5,
                                    (self.stickerOverlayView.frame.size.height - image.size.height * 0.5) * 0.5,
                                    image.size.width * 0.5,
@@ -2295,6 +2388,15 @@ TuSDKFilterProcessorMediaEffectDelegate
     return scaleFloat;
 }
 
+- (UIImage *)convertViewToImage:(UIView *)view {
+    CGSize size = view.bounds.size;
+    UIGraphicsBeginImageContextWithOptions(size, NO, [UIScreen mainScreen].scale);
+    [view.layer renderInContext:UIGraphicsGetCurrentContext()];
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return image;
+}
+
 #pragma mark - 返回
 - (void)backButtonClick {
     [self dismissViewControllerAnimated:YES completion:nil];
@@ -2319,7 +2421,6 @@ TuSDKFilterProcessorMediaEffectDelegate
             
             NSMutableDictionary *stickerSettings = [[NSMutableDictionary alloc] init];
             PLSStickerView *stickerView = (PLSStickerView *)item.target;
-            stickerView.hidden = NO;
             
             CGAffineTransform transform = stickerView.transform;
             CGFloat widthScale = sqrt(transform.a * transform.a + transform.c * transform.c);
@@ -2328,7 +2429,6 @@ TuSDKFilterProcessorMediaEffectDelegate
             CGPoint viewCenter =  CGPointMake(stickerView.frame.origin.x + stickerView.frame.size.width / 2, stickerView.frame.origin.y + stickerView.frame.size.height / 2);
             CGPoint viewPoint = CGPointMake(viewCenter.x - viewSize.width / 2, viewCenter.y - viewSize.height / 2);
             
-            stickerSettings[PLSStickerKey] = stickerView;
             stickerSettings[PLSSizeKey] = [NSValue valueWithCGSize:viewSize];
             stickerSettings[PLSPointKey] = [NSValue valueWithCGPoint:viewPoint];
             
@@ -2341,6 +2441,52 @@ TuSDKFilterProcessorMediaEffectDelegate
             stickerSettings[PLSVideoPreviewSizeKey] = [NSValue valueWithCGSize:self.stickerOverlayView.frame.size];
             stickerSettings[PLSVideoOutputSizeKey] = [NSValue valueWithCGSize:self.videoSize];
             
+            if (StickerType_GIFAnimation == stickerView.type) {
+                
+                // 如果贴纸是 GIF 类型，PLSStickerKey 的 value 必须是下列三种中的某一种:
+                int type = arc4random() % 3;
+                if (0 == type) {
+                    // value = GIF URL
+                    stickerSettings[PLSStickerKey] = stickerView.stickerURL;
+                } else if (1 == type) {
+                    // value = GIF path
+                    stickerSettings[PLSStickerKey] = stickerView.stickerURL.path;
+                } else if (2 == type) {
+                    // value = GIF data
+                    stickerSettings[PLSStickerKey] = [NSData dataWithContentsOfFile:stickerView.stickerURL.path];
+                }
+                
+            } else {
+#if 0
+                // v2.0.0 及之前的版本添加静态贴纸的方式, 传入的是 stickerView。如果传入的是 stickerView，添加了滤镜或者特效，这些效果会作用到贴纸上。如果不希望贴纸被滤镜和特效作用，则需要使用新的添加贴纸的方式
+                stickerView.hidden = NO;
+                stickerSettings[PLSStickerKey] = stickerView;
+#else
+                //  ===== 新的静态贴纸添加方式，v2.1.0 之后生效，建议所有用户换成新的添加贴纸方式 ======
+                if (StickerType_Sticker == stickerView.type) {
+                    
+                    int type = arc4random() % 4;
+                    if (0 == type) {
+                        // value = image URL
+                        stickerSettings[PLSStickerKey] = stickerView.stickerURL;
+                    } else if (1 == type) {
+                        // value = image path
+                        stickerSettings[PLSStickerKey] = stickerView.stickerURL.path;
+                    } else if (2 == type) {
+                        // value = image data
+                        // 如果贴纸晗 alpha 通道，使用 UIImageJPEGRepresentation(stickerView.image, 1) 得到的是没有 alpha 的图片，建议使用 UIImagePNGRepresentation(stickerView.image) 来获取 data
+                        stickerSettings[PLSStickerKey] = UIImagePNGRepresentation(stickerView.image);
+                    } else {
+                        // value = image
+                        stickerSettings[PLSStickerKey] = stickerView.image;
+                    }
+                } else if (StickerType_SubTitle == stickerView.type) {
+                    // 文字
+                    stickerView.hidden = NO;
+                    stickerSettings[PLSStickerKey] = [self convertViewToImage:stickerView];
+                }
+#endif
+            }
             [self.stickerSettingsArray addObject:stickerSettings];
         }
     }

@@ -1,21 +1,20 @@
 //
-//  PLSStickerBar.m
+//  PLSGifStickerBar.m
 //  PLShortVideoKitDemo
 //
-//  Created by suntongmian on 2017/11/17.
-//  Copyright © 2017年 Pili Engineering, Qiniu Inc. All rights reserved.
+//  Created by hxiongan on 2019/4/3.
+//  Copyright © 2019年 Pili Engineering, Qiniu Inc. All rights reserved.
 //
 
-#import "PLSStickerBar.h"
+#import "PLSGifStickerBar.h"
 #import "UIView+PLSLightFrame.h"
 
-#define stickerRow 2
-#define stickerSize 60
-#define pageControlHeight 30
+/** 贴图资源路径 */
+#define kGIFBundlePath @"gifSticker.bundle"
+#define bundleGIFImageNamed(name) [UIImage imageNamed:[NSString stringWithFormat:@"%@/%@", kGIFBundlePath, name]]
 
-#define kImageExtensions @[@"png", @"jpg", @"jpeg", @"gif"]
 
-@interface PLSStickerBar () <UIScrollViewDelegate>
+@interface PLSGifStickerBar () <UIScrollViewDelegate>
 
 @property (nonatomic, strong) NSString *resourcePath;
 @property (nonatomic, strong) NSArray<NSString *> *files;
@@ -29,7 +28,7 @@
 
 @end
 
-@implementation PLSStickerBar
+@implementation PLSGifStickerBar
 
 - (instancetype)init {
     self = [super init];
@@ -50,7 +49,6 @@
 - (instancetype)initWithFrame:(CGRect)frame resourcePath:(NSString *)resourcePath {
     self = [super initWithFrame:frame];
     if (self) {
-        _resourcePath = resourcePath;
         [self customInit];
     }
     return self;
@@ -68,16 +66,16 @@
         NSArray *files = [fileManager contentsOfDirectoryAtPath:self.resourcePath error:nil];
         NSMutableArray *newFiles = [@[] mutableCopy];
         for (NSString *fileName in files) {
-            if ([kImageExtensions containsObject:[fileName.pathExtension lowercaseString]]) {
+            if ([[fileName.pathExtension lowercaseString] hasSuffix:@"gif"]) {
                 [newFiles addObject:fileName];
             }
         }
         self.files = [newFiles copy];
         self.external = YES;
     } else {
-        NSString *path = [[NSBundle mainBundle] pathForResource:kStickersPath ofType:nil];
-        self.files = [fileManager contentsOfDirectoryAtPath:path error:nil];
+        NSString *path = [[NSBundle mainBundle] pathForResource:kGIFBundlePath ofType:nil];
         self.resourcePath = path;
+        self.files = [fileManager contentsOfDirectoryAtPath:path error:nil];
     }
     
     NSInteger count = self.files.count;
@@ -90,7 +88,8 @@
     [scrollViewSticker setBackgroundColor:[UIColor clearColor]];
     NSInteger index = 0;
     
-    NSInteger row = stickerRow;
+    NSInteger row = 2;
+    NSInteger stickerSize = 60;
     NSInteger column = self.frame.size.width / (stickerSize + self.frame.size.width * 0.1);
     
     CGFloat size = stickerSize;
@@ -114,7 +113,7 @@
                 if (self.external) {
                     backImage = [UIImage imageWithContentsOfFile:[self.resourcePath stringByAppendingPathComponent:self.files[index]]];
                 } else {
-                    backImage = bundleStickerImageNamed(self.files[index]);
+                    backImage = bundleGIFImageNamed(self.files[index]);
                 }
                 [button setBackgroundImage:backImage forState:UIControlStateNormal];
                 button.tag = index;
@@ -145,6 +144,7 @@
     if (self.pageCount > 1) {
         CGFloat width = 150.0;
         CGFloat x = self.bounds.size.width / 2 - width / 2;
+        NSInteger pageControlHeight = 30;
         UIPageControl *pageControlSticker=[[UIPageControl alloc]initWithFrame:CGRectMake(x, self.height - pageControlHeight, width, pageControlHeight)];
         [pageControlSticker setCurrentPage:0];
         pageControlSticker.numberOfPages = self.pageCount;   //指定页面个数
@@ -158,9 +158,9 @@
 }
 
 - (void)stickerClicked:(UIButton *)button {
-    if ([self.delegate respondsToSelector:@selector(stickerBar:didSelectImage:)]) {
+    if ([self.delegate respondsToSelector:@selector(gifStickerBar:didSelectImage:)]) {
         NSURL *url = [NSURL fileURLWithPath:[[self resourcePath] stringByAppendingPathComponent:self.files[button.tag]]];
-        [self.delegate stickerBar:self didSelectImage:url];
+        [self.delegate gifStickerBar:self didSelectImage:url];
     }
 }
 
@@ -176,5 +176,6 @@
     NSInteger currentPage = self.scrollViewSticker.contentOffset.x / self.bounds.size.width;
     [self.pageControlSticker setCurrentPage:currentPage];
 }
+
 
 @end

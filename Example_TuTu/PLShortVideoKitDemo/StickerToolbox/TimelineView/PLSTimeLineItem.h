@@ -12,6 +12,7 @@
 typedef NS_ENUM(NSInteger, PLSTimeLineItemType){
     PLSTimeLineItemTypeDecal = 0,
     PLSTimeLineItemTypeDyImage,
+    PLSTimeLineItemTypeGIFImage,
 };
 
 /**

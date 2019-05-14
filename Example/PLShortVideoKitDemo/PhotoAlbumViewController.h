@@ -49,11 +49,12 @@
 
 @interface PLSAssetCell : UICollectionViewCell
 
-@property (strong, nonatomic) PHAsset *asset;
+@property (strong, nonatomic) PHAsset *phAsset;
 @property (strong, nonatomic) UIImageView *imageView;
 @property (assign, nonatomic) PHImageRequestID imageRequestID;
 @property (strong, nonatomic) UILabel *durationLabel;
-
+@property (strong, nonatomic) UILabel *infoLabel;
+@property (strong, nonatomic) NSString *localIdentifier;
 @end
 
 

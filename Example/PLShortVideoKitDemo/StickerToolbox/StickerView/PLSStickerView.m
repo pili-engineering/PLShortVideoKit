@@ -21,12 +21,19 @@ UITextViewDelegate
 // 写入范围
 @property (nonatomic, assign) CGRect inputRect;
 
+@property (nonatomic, strong, readwrite) NSURL *stickerURL;
+@property (nonatomic, strong) NSMutableArray *allImage;
 @end
 
 @implementation PLSStickerView
 
-- (instancetype)initWithImage:(UIImage *)image{
-    return [self initWithImage:image Type:StickerType_Sticker];
+- (instancetype)initSubTextSticker:(UIImage *)image {
+    return [self initWithImage:image Type:(StickerType_SubTitle)];
+}
+
+- (instancetype)initImageSticker:(NSURL *)imgURL {
+    _stickerURL = imgURL;
+    return [self initWithImage:[UIImage imageWithContentsOfFile:imgURL.path] Type:(StickerType_Sticker)];
 }
 
 - (instancetype)initWithImage:(UIImage *)image Type:(StickerType)type{
@@ -37,6 +44,21 @@ UITextViewDelegate
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textDidChange:) name:UITextViewTextDidChangeNotification object:nil];
         
         [self setupUI];
+    }
+    return self;
+}
+
+- (instancetype)initGifSticker:(NSURL *)gifURL {
+    self = [super init];
+    if (self) {
+        self.userInteractionEnabled = YES;
+        _type = StickerType_GIFAnimation;
+        _stickerURL = gifURL;
+        _oriScale = 1.0;
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textDidChange:) name:UITextViewTextDidChangeNotification object:nil];
+        
+        [self setupUI];
+        [self setupGIF];
     }
     return self;
 }
@@ -145,6 +167,8 @@ UITextViewDelegate
         [self deintegrateTextViews];
     }else if (type == StickerType_SubTitle){
         [self integrateTextViews];
+    } else if (type == StickerType_GIFAnimation) {
+        
     }
 }
 
@@ -234,6 +258,57 @@ UITextViewDelegate
     
     _inputRect = CGRectMake(x, y, w, h);
 }
+
+// =======  GIF =======
+- (void)setHidden:(BOOL)hidden {
+    [super setHidden:hidden];
+    
+    if (StickerType_GIFAnimation == self.type) {
+        if (hidden) {
+            [self stopAnimating];
+        } else {
+            [self startAnimating];
+        }
+    }
+}
+
+- (void) setupGIF {
+    
+    CGImageSourceRef imageSource = CGImageSourceCreateWithURL((CFURLRef)_stickerURL, nil);
+    CGFloat totalDuration = 0;
+    size_t imageCount = CGImageSourceGetCount(imageSource);
+    
+    NSMutableArray *allImage = [[NSMutableArray alloc] init];
+    for (int i = 0; i < imageCount; i ++) {
+        
+        CFDictionaryRef cfDic = CGImageSourceCopyPropertiesAtIndex(imageSource, i, nil);
+        NSDictionary *properties = (__bridge NSDictionary *)cfDic;
+        float frameDuration = [[[properties objectForKey:(__bridge NSString *)kCGImagePropertyGIFDictionary]
+                                objectForKey:(__bridge NSString *) kCGImagePropertyGIFUnclampedDelayTime] doubleValue];
+        if (frameDuration < (1e-6)) {
+            frameDuration = [[[properties objectForKey:(__bridge NSString *)kCGImagePropertyGIFDictionary]
+                              objectForKey:(__bridge NSString *) kCGImagePropertyGIFDelayTime] doubleValue];
+        }
+        if (frameDuration < (1e-6)) {
+            frameDuration = 0.1;//如果获取不到，就默认 frameDuration = 0.1s
+        }
+        
+        CGImageRef cgImage = CGImageSourceCreateImageAtIndex(imageSource, i, NULL);
+        UIImage *image = [UIImage imageWithCGImage:cgImage scale:UIScreen.mainScreen.scale orientation:(UIImageOrientationUp)];
+        [allImage addObject:image];
+        
+        CFRelease(cgImage);
+        CFRelease(cfDic);
+        totalDuration += frameDuration;
+    }
+    
+    self.animationImages = allImage;
+    self.animationDuration = totalDuration;
+    
+    [self startAnimating];
+    CFRelease(imageSource);
+}
+
 
 @end
 

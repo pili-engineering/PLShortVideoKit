@@ -228,6 +228,8 @@
 		9343A8C01F66763A007213BD /* Time_Machine_No_Reverser.png in Resources */ = {isa = PBXBuildFile; fileRef = 9343A8BE1F66763A007213BD /* Time_Machine_No_Reverser.png */; };
 		9343A8C11F66763A007213BD /* Time_Machine_Reverser.png in Resources */ = {isa = PBXBuildFile; fileRef = 9343A8BF1F66763A007213BD /* Time_Machine_Reverser.png */; };
 		BC490FDD21B161B700959C8A /* ImageVideoMixViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BC490FDC21B161B700959C8A /* ImageVideoMixViewController.m */; };
+		BC695AF9228A9661005240A7 /* PLSGifStickerBar.m in Sources */ = {isa = PBXBuildFile; fileRef = BC695AF7228A9661005240A7 /* PLSGifStickerBar.m */; };
+		BC695AFB228A966B005240A7 /* gifSticker.bundle in Resources */ = {isa = PBXBuildFile; fileRef = BC695AFA228A966A005240A7 /* gifSticker.bundle */; };
 		BC8DD6C6224E340400E05B26 /* PLScreenRecorderManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BC8DD6C4224E340400E05B26 /* PLScreenRecorderManager.m */; };
 		BCA3CEC221B16C8F009F25B5 /* mulitRate.png in Resources */ = {isa = PBXBuildFile; fileRef = BCA3CEC021B16C8F009F25B5 /* mulitRate.png */; };
 		BCA3CEC421B16D06009F25B5 /* watermark.gif in Resources */ = {isa = PBXBuildFile; fileRef = BCA3CEC321B16D06009F25B5 /* watermark.gif */; };
@@ -663,6 +665,9 @@
 		9343A8BF1F66763A007213BD /* Time_Machine_Reverser.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Time_Machine_Reverser.png; path = images/Time_Machine_Reverser.png; sourceTree = "<group>"; };
 		BC490FDA21B161B700959C8A /* ImageVideoMixViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageVideoMixViewController.h; sourceTree = "<group>"; };
 		BC490FDC21B161B700959C8A /* ImageVideoMixViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageVideoMixViewController.m; sourceTree = "<group>"; };
+		BC695AF7228A9661005240A7 /* PLSGifStickerBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLSGifStickerBar.m; sourceTree = "<group>"; };
+		BC695AF8228A9661005240A7 /* PLSGifStickerBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLSGifStickerBar.h; sourceTree = "<group>"; };
+		BC695AFA228A966A005240A7 /* gifSticker.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = gifSticker.bundle; sourceTree = "<group>"; };
 		BC8DD6C4224E340400E05B26 /* PLScreenRecorderManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLScreenRecorderManager.m; sourceTree = "<group>"; };
 		BC8DD6C5224E340400E05B26 /* PLScreenRecorderManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLScreenRecorderManager.h; sourceTree = "<group>"; };
 		BCA3CEC021B16C8F009F25B5 /* mulitRate.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = mulitRate.png; path = images/mulitRate.png; sourceTree = "<group>"; };
@@ -1155,6 +1160,8 @@
 		0A9B8A7420B6822800E7C8D7 /* ToolBar */ = {
 			isa = PBXGroup;
 			children = (
+				BC695AF8228A9661005240A7 /* PLSGifStickerBar.h */,
+				BC695AF7228A9661005240A7 /* PLSGifStickerBar.m */,
 				0A9B8A7620B6822800E7C8D7 /* PLSStickerBar.h */,
 				0A9B8A7820B6822800E7C8D7 /* PLSStickerBar.m */,
 				0A9B8A7720B6822800E7C8D7 /* UIView+PLSLightFrame.h */,
@@ -1166,6 +1173,7 @@
 		0A9B8A8120B6868200E7C8D7 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				BC695AFA228A966A005240A7 /* gifSticker.bundle */,
 				0A9B8A8920B6868200E7C8D7 /* sticker.bundle */,
 				0A9B8A8220B6868200E7C8D7 /* paster_time_edit_slider_bg@2x.png */,
 				0A9B8A8320B6868200E7C8D7 /* video_edit_trim_slider@3x.png */,
@@ -1742,6 +1750,7 @@
 				0A9B8A9620B6868200E7C8D7 /* sticker_t_0@3x.png in Resources */,
 				0A1E2CF41E8CAF8C002C9296 /* qiniu_logo.png in Resources */,
 				0A2731FF1E75E36B005D0CE1 /* progressbar_front.png in Resources */,
+				BC695AFB228A966B005240A7 /* gifSticker.bundle in Resources */,
 				0A20C1B81FBED24C00E98B07 /* btn_add_text.png in Resources */,
 				0A0692461E8A3B590035CB7B /* btn_bar_back_b@3x.png in Resources */,
 				0A1E2CE61E8CAF8C002C9296 /* btn_record_shine.png in Resources */,
@@ -1996,6 +2005,7 @@
 				BCA3CFB321B22154009F25B5 /* HorizontalListView.m in Sources */,
 				BCA3CFB621B22154009F25B5 /* CustomSlider.m in Sources */,
 				0A694C571FE3774B00E2BA60 /* PLSColumnListView.m in Sources */,
+				BC695AF9228A9661005240A7 /* PLSGifStickerBar.m in Sources */,
 				760F7704202AF92A0052F513 /* MulitPhotoAlbumViewController.m in Sources */,
 				764FD42A2112CE8B00CF1F0C /* Auth.m in Sources */,
 				BCA3CFAD21B22154009F25B5 /* StickerCategoryPageView.m in Sources */,
