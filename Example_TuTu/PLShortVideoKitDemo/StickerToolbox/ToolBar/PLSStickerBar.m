@@ -77,6 +77,7 @@
     } else {
         NSString *path = [[NSBundle mainBundle] pathForResource:kStickersPath ofType:nil];
         self.files = [fileManager contentsOfDirectoryAtPath:path error:nil];
+        self.resourcePath = path;
     }
     
     NSInteger count = self.files.count;
@@ -158,7 +159,8 @@
 
 - (void)stickerClicked:(UIButton *)button {
     if ([self.delegate respondsToSelector:@selector(stickerBar:didSelectImage:)]) {
-        [self.delegate stickerBar:self didSelectImage:[button backgroundImageForState:UIControlStateNormal]];
+        NSURL *url = [NSURL fileURLWithPath:[[self resourcePath] stringByAppendingPathComponent:self.files[button.tag]]];
+        [self.delegate stickerBar:self didSelectImage:url];
     }
 }
 
