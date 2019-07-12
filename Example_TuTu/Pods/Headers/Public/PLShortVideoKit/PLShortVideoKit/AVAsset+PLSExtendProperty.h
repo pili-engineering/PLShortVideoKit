@@ -1,1 +1,0 @@
-../../../../../../Pod/Library/Profession/PLShortVideoKit.framework/Headers/AVAsset+PLSExtendProperty.h

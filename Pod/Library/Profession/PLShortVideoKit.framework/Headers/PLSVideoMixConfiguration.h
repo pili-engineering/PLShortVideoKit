@@ -34,6 +34,28 @@
 @property (assign, nonatomic) CGRect sampleVideoFrame;
 
 /*!
+ @property   camermZIndex
+ @abstract   相机图像的层级， 默认: 0
+ 
+ @discussion camermZIndex 和 sampleZIndex 共同决定相机图像和素材图像在合并的时候层级关系，当 camermZIndex <= sampleZIndex, 相机图像
+    在素材图像下层， 当 camermZIndex > sampleZIndex 时，相机图像在素材图像的上层
+ 
+ 
+ @since      v2.2.0
+ */
+@property (assign, nonatomic) NSInteger camermZIndex;
+
+/*!
+ @property   sampleZIndex
+ @abstract   素材图像的层级, 默认：1
+ 
+ @see       camermZIndex
+ 
+ @since      v2.2.0
+ */
+@property (assign, nonatomic) NSInteger sampleZIndex;
+
+/*!
  @method defaultConfiguration
  @brief 创建一个默认配置的 PLSVideoMixConfiguration 实例.
  
