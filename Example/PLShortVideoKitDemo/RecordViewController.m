@@ -545,9 +545,9 @@ PLScreenRecorderManagerDelegate
                 // 设置的 options 可能会导致该回调调用两次，第一次返回你指定尺寸的图片，第二次将会返回原尺寸图片
                 if ([[info valueForKey:@"PHImageResultIsDegradedKey"] integerValue] == 0){
                     // Do something with the FULL SIZED image
-                    
-                    [self.importMovieButton setBackgroundImage:result forState:UIControlStateNormal];
-                    
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [self.importMovieButton setBackgroundImage:result forState:UIControlStateNormal];
+                    });
                 } else {
                     // Do something with the regraded image
                     

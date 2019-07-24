@@ -22,6 +22,8 @@
 #import "PLSStickerOverlayView.h"
 #import "PLSStickerView.h"
 #import "PLSStickerBar.h"
+#import "PLSDrawView.h"
+#import "PLSDrawBar.h"
 #import "PLSClipMovieView.h"
 #import <Masonry/Masonry.h>
 #import "PLSTimeLineAudioItem.h"
@@ -52,7 +54,8 @@ PLSStickerBarDelegate,
 PLSStickerViewDelegate,
 UIGestureRecognizerDelegate,
 PLSClipMovieViewDelegate,
-PLSGifStickerBarDelegate
+PLSGifStickerBarDelegate,
+PLSDrawBarDelegate
 >
 
 @property (strong, nonatomic) UIView *baseToolboxView;
@@ -167,6 +170,9 @@ PLSGifStickerBarDelegate
 
 // 贴图工具
 @property (strong, nonatomic) PLSStickerBar *stickerBar;
+// 涂鸦工具
+@property (strong, nonatomic) PLSDrawView *currnetDrawView;
+@property (strong, nonatomic) PLSDrawBar *drawBar;
 // GIF 动图工具
 @property (strong, nonatomic) PLSGifStickerBar *gifStickerBar;
 // 自定义贴图资源
@@ -498,6 +504,7 @@ PLSGifStickerBarDelegate
 }
 
 - (void)hideAllBottomViews {
+    [self hideDrawbar];
     // 隐藏显示功能面板
     [self hideStickerbar];
     //  隐藏 GIF 动图选择视频
@@ -521,6 +528,11 @@ PLSGifStickerBarDelegate
     
     // 过滤掉 PLSEditVideoCell，让 PLSEditVideoCell 响应它自身的点击事件
     if ([classArray containsObject:NSStringFromClass(PLSEditVideoCell.class)]) {
+        return NO;
+    }
+    
+    // 过滤掉 PLSDrawBar，让 PLSDrawBar 响应它自身的点击事件
+    if ([classArray containsObject:NSStringFromClass(PLSDrawBar.class)]) {
         return NO;
     }
     
@@ -645,6 +657,11 @@ PLSGifStickerBarDelegate
     button = [self toolBoxButtonWithSelector:@selector(addTextButtonEvent:)
                                       startX:button.frame.origin.x + button.frame.size.width + 20
                                        title:@"文字"];
+    
+    // 添加涂鸦
+    button = [self toolBoxButtonWithSelector:@selector(addTuyaButtonEvent:)
+                                      startX:button.frame.origin.x + button.frame.size.width + 20
+                                       title:@"涂鸦"];
     
     // 添加图片
     button = [self toolBoxButtonWithSelector:@selector(addImageButtonEvent:)
@@ -1793,6 +1810,15 @@ PLSGifStickerBarDelegate
     }
 }
 
+- (void)addTuyaButtonEvent:(UIButton *)button {
+    button.selected = !button.selected;
+    if (button.selected) {
+        [self showDrawbar];
+    } else {
+        [self hideDrawbar];
+    }
+}
+
 - (void)addImageButtonEvent:(UIButton *)button {
     button.selected = !button.selected;
     if (button.selected) {
@@ -1873,6 +1899,50 @@ PLSGifStickerBarDelegate
     [_currentStickerView becomeFirstResponder];
 }
 
+- (void)showDrawbar {
+    [self hideAllBottomViews];
+    
+    if (!self.drawBar) {
+        float duration = 0;
+        for (NSURL *url in self.filesURLArray) {
+            duration += [self getFileDuration:url];
+        }
+        NSLog(@"duration - %f", duration);
+        CMTime timeDuration = CMTimeMake(duration * 1e9, 1e9);
+        self.drawBar = [[PLSDrawBar alloc] initWithFrame:CGRectMake(0, PLS_SCREEN_HEIGHT - PLS_EditToolboxView_HEIGHT - 220 - [self bottomFixSpace], PLS_SCREEN_WIDTH, 220) videoDuration:timeDuration];
+        self.drawBar.backgroundColor = PLS_RGBCOLOR(25, 24, 36);
+        self.drawBar.delegate = self;
+        // 1. 创建涂鸦
+        if (!_currnetDrawView) {
+            PLSDrawModel *drawModel = [[PLSDrawModel alloc] init];
+            // 这里开始位置及结束位置，只是固定为整个音视频文件的时长，可调节配置
+            drawModel.startPositionTime = kCMTimeZero;
+            drawModel.endPositiontime = timeDuration;
+            drawModel.lineWidth = 5.0;
+            drawModel.lineColor = [UIColor whiteColor];
+            
+            PLSDrawView *drawView = [[PLSDrawView alloc] initWithFrame:self.stickerOverlayView.bounds duration:timeDuration];
+            drawView.lineWidth = drawModel.lineWidth;
+            drawView.lineColor = drawModel.lineColor;
+            _currnetDrawView = drawView;
+            _currnetDrawView.drawModel = drawModel;
+            // 2. 添加至stickerOverlayView上
+            [self.stickerOverlayView addSubview:_currnetDrawView];
+        }
+    }
+    if(!self.drawBar.superview) {
+        [self.view addSubview:self.drawBar];
+    }
+    if (!_currnetDrawView.userInteractionEnabled) {
+        _currnetDrawView.userInteractionEnabled = YES;
+    }
+}
+
+- (void)hideDrawbar {
+    [self.drawBar removeFromSuperview];
+    _currnetDrawView.userInteractionEnabled = NO;
+}
+
 - (void)showStickerbar {
     
     [self hideAllBottomViews];
@@ -1940,6 +2010,43 @@ PLSGifStickerBarDelegate
 
 - (void)timelineCurrentTime:(CGFloat)time duration:(CGFloat)duration {
     
+}
+
+#pragma mark - PLSDrawBarDelegate
+- (void)editorDrawViewDone:(PLSDrawBar *)editorDrawView {
+    [self hideDrawbar];
+    _currnetDrawView.userInteractionEnabled = NO;
+    if (!self.shortVideoEditor.isEditing) {
+        [self.shortVideoEditor startEditing];
+    }
+}
+
+- (void)editorDrawViewClear:(PLSDrawBar *)editorDrawView {
+    if ([_currnetDrawView canUndo]) {
+        [_currnetDrawView clear];
+    }
+}
+
+- (void)editorDrawViewCancel:(PLSDrawBar *)editorDrawView {
+    if ([_currnetDrawView canUndo]) {
+        [_currnetDrawView undo];
+    }
+}
+
+- (void)editorDrawView:(PLSDrawBar *)editorDrawView addDrawModel:(PLSDrawModel *)model {
+    // 1. 创建涂鸦
+    if (!_currnetDrawView) {
+        PLSDrawView *drawView = [[PLSDrawView alloc] initWithFrame:self.stickerOverlayView.bounds duration:self.playerItem.asset.duration];
+        drawView.lineWidth = model.lineWidth;
+        drawView.lineColor = model.lineColor;
+        _currnetDrawView = drawView;
+        // 2. 添加至stickerOverlayView上
+        [self.stickerOverlayView addSubview:_currnetDrawView];
+    } else{
+        _currnetDrawView.lineWidth = model.lineWidth;
+        _currnetDrawView.lineColor = model.lineColor;
+    }
+    _currnetDrawView.drawModel = model;
 }
 
 #pragma mark - PLSStickerViewDelegate
@@ -2322,6 +2429,27 @@ PLSGifStickerBarDelegate
 
     // 贴纸信息
     [self.stickerSettingsArray removeAllObjects];
+        
+        // 涂鸦
+        if (_currnetDrawView) {
+            float duration = 0;
+            for (NSURL *url in self.filesURLArray) {
+                duration += [self getFileDuration:url];
+            }
+
+            NSLog(@"duration - %f", duration);
+
+            NSMutableDictionary *stickerSettings = [[NSMutableDictionary alloc] init];
+            stickerSettings[PLSSizeKey] = [NSValue valueWithCGSize:_currnetDrawView.bounds.size];
+            stickerSettings[PLSPointKey] = [NSValue valueWithCGPoint:CGPointZero];
+            stickerSettings[PLSStartTimeKey] = [NSNumber numberWithFloat:CMTimeGetSeconds(kCMTimeZero)];
+            stickerSettings[PLSDurationKey] = [NSNumber numberWithFloat:duration];
+            stickerSettings[PLSVideoPreviewSizeKey] = [NSValue valueWithCGSize:self.stickerOverlayView.frame.size];
+            stickerSettings[PLSVideoOutputSizeKey] = [NSValue valueWithCGSize:self.videoSize];
+            stickerSettings[PLSStickerKey] = [self convertViewToImage:_currnetDrawView];
+            [self.stickerSettingsArray addObject:stickerSettings];
+        }
+        
     if ([self.timelineView getAllAddedItems].count != 0) {
         for (int i = 0; i < [self.timelineView getAllAddedItems].count; i++) {
             PLSTimeLineItem *item = [self.timelineView getAllAddedItems][i];
@@ -2381,7 +2509,7 @@ PLSGifStickerBarDelegate
                         stickerSettings[PLSStickerKey] = stickerView.stickerURL.path;
                     } else if (2 == type) {
                         // value = image data
-                        // 如果贴纸晗 alpha 通道，使用 UIImageJPEGRepresentation(stickerView.image, 1) 得到的是没有 alpha 的图片，建议使用 UIImagePNGRepresentation(stickerView.image) 来获取 data
+                        // 如果贴纸含 alpha 通道，使用 UIImageJPEGRepresentation(stickerView.image, 1) 得到的是没有 alpha 的图片，建议使用 UIImagePNGRepresentation(stickerView.image) 来获取 data
                         stickerSettings[PLSStickerKey] = UIImagePNGRepresentation(stickerView.image);
                     } else {
                         // value = image
