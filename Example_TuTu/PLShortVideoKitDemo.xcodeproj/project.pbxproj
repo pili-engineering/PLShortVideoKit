@@ -227,6 +227,15 @@
 		76DA9AC120CA31DB001D3002 /* MultiVideoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 76DA9AC020CA31DB001D3002 /* MultiVideoViewController.m */; };
 		9343A8C01F66763A007213BD /* Time_Machine_No_Reverser.png in Resources */ = {isa = PBXBuildFile; fileRef = 9343A8BE1F66763A007213BD /* Time_Machine_No_Reverser.png */; };
 		9343A8C11F66763A007213BD /* Time_Machine_Reverser.png in Resources */ = {isa = PBXBuildFile; fileRef = 9343A8BF1F66763A007213BD /* Time_Machine_Reverser.png */; };
+		AA09EB4D22E88AF8001BBA54 /* PLSDrawModel.m in Sources */ = {isa = PBXBuildFile; fileRef = AA09EB4922E88AF7001BBA54 /* PLSDrawModel.m */; };
+		AA09EB4E22E88AF8001BBA54 /* PLSDrawView.m in Sources */ = {isa = PBXBuildFile; fileRef = AA09EB4B22E88AF8001BBA54 /* PLSDrawView.m */; };
+		AA09EB5122E88B06001BBA54 /* PLSDrawBar.m in Sources */ = {isa = PBXBuildFile; fileRef = AA09EB5022E88B06001BBA54 /* PLSDrawBar.m */; };
+		AA09EB5822E88B99001BBA54 /* qn_revocation@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = AA09EB5222E88B99001BBA54 /* qn_revocation@2x.png */; };
+		AA09EB5922E88B99001BBA54 /* qn_done@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = AA09EB5322E88B99001BBA54 /* qn_done@3x.png */; };
+		AA09EB5A22E88B99001BBA54 /* qn_edit_delete@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = AA09EB5422E88B99001BBA54 /* qn_edit_delete@2x.png */; };
+		AA09EB5B22E88B99001BBA54 /* qn_edit_delete@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = AA09EB5522E88B99001BBA54 /* qn_edit_delete@3x.png */; };
+		AA09EB5C22E88B99001BBA54 /* qn_revocation@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = AA09EB5622E88B99001BBA54 /* qn_revocation@3x.png */; };
+		AA09EB5D22E88B99001BBA54 /* qn_done@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = AA09EB5722E88B99001BBA54 /* qn_done@2x.png */; };
 		BC490FDD21B161B700959C8A /* ImageVideoMixViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BC490FDC21B161B700959C8A /* ImageVideoMixViewController.m */; };
 		BC695AF9228A9661005240A7 /* PLSGifStickerBar.m in Sources */ = {isa = PBXBuildFile; fileRef = BC695AF7228A9661005240A7 /* PLSGifStickerBar.m */; };
 		BC695AFB228A966B005240A7 /* gifSticker.bundle in Resources */ = {isa = PBXBuildFile; fileRef = BC695AFA228A966A005240A7 /* gifSticker.bundle */; };
@@ -663,6 +672,18 @@
 		85B60FAE619932ED649E6840 /* Pods-PLShortVideoKitDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PLShortVideoKitDemo.release.xcconfig"; path = "Pods/Target Support Files/Pods-PLShortVideoKitDemo/Pods-PLShortVideoKitDemo.release.xcconfig"; sourceTree = "<group>"; };
 		9343A8BE1F66763A007213BD /* Time_Machine_No_Reverser.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Time_Machine_No_Reverser.png; path = images/Time_Machine_No_Reverser.png; sourceTree = "<group>"; };
 		9343A8BF1F66763A007213BD /* Time_Machine_Reverser.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Time_Machine_Reverser.png; path = images/Time_Machine_Reverser.png; sourceTree = "<group>"; };
+		AA09EB4922E88AF7001BBA54 /* PLSDrawModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PLSDrawModel.m; path = ../../../../Example/PLShortVideoKitDemo/StickerToolbox/StickerView/PLSDrawModel.m; sourceTree = "<group>"; };
+		AA09EB4A22E88AF7001BBA54 /* PLSDrawView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PLSDrawView.h; path = ../../../../Example/PLShortVideoKitDemo/StickerToolbox/StickerView/PLSDrawView.h; sourceTree = "<group>"; };
+		AA09EB4B22E88AF8001BBA54 /* PLSDrawView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PLSDrawView.m; path = ../../../../Example/PLShortVideoKitDemo/StickerToolbox/StickerView/PLSDrawView.m; sourceTree = "<group>"; };
+		AA09EB4C22E88AF8001BBA54 /* PLSDrawModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PLSDrawModel.h; path = ../../../../Example/PLShortVideoKitDemo/StickerToolbox/StickerView/PLSDrawModel.h; sourceTree = "<group>"; };
+		AA09EB4F22E88B06001BBA54 /* PLSDrawBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PLSDrawBar.h; path = ../../../../Example/PLShortVideoKitDemo/StickerToolbox/ToolBar/PLSDrawBar.h; sourceTree = "<group>"; };
+		AA09EB5022E88B06001BBA54 /* PLSDrawBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PLSDrawBar.m; path = ../../../../Example/PLShortVideoKitDemo/StickerToolbox/ToolBar/PLSDrawBar.m; sourceTree = "<group>"; };
+		AA09EB5222E88B99001BBA54 /* qn_revocation@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "qn_revocation@2x.png"; path = "../../Example/PLShortVideoKitDemo/qn_revocation@2x.png"; sourceTree = "<group>"; };
+		AA09EB5322E88B99001BBA54 /* qn_done@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "qn_done@3x.png"; path = "../../Example/PLShortVideoKitDemo/qn_done@3x.png"; sourceTree = "<group>"; };
+		AA09EB5422E88B99001BBA54 /* qn_edit_delete@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "qn_edit_delete@2x.png"; path = "../../Example/PLShortVideoKitDemo/qn_edit_delete@2x.png"; sourceTree = "<group>"; };
+		AA09EB5522E88B99001BBA54 /* qn_edit_delete@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "qn_edit_delete@3x.png"; path = "../../Example/PLShortVideoKitDemo/qn_edit_delete@3x.png"; sourceTree = "<group>"; };
+		AA09EB5622E88B99001BBA54 /* qn_revocation@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "qn_revocation@3x.png"; path = "../../Example/PLShortVideoKitDemo/qn_revocation@3x.png"; sourceTree = "<group>"; };
+		AA09EB5722E88B99001BBA54 /* qn_done@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "qn_done@2x.png"; path = "../../Example/PLShortVideoKitDemo/qn_done@2x.png"; sourceTree = "<group>"; };
 		BC490FDA21B161B700959C8A /* ImageVideoMixViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageVideoMixViewController.h; sourceTree = "<group>"; };
 		BC490FDC21B161B700959C8A /* ImageVideoMixViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageVideoMixViewController.m; sourceTree = "<group>"; };
 		BC695AF7228A9661005240A7 /* PLSGifStickerBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLSGifStickerBar.m; sourceTree = "<group>"; };
@@ -1035,6 +1056,12 @@
 				C3A7913F1FA076E000C3F2D6 /* back_white.png */,
 				0AE8AC971F06443A006166E2 /* icon_trim.png */,
 				C3FCBFD81F305B8A007EBB10 /* icon_gif.png */,
+				AA09EB5722E88B99001BBA54 /* qn_done@2x.png */,
+				AA09EB5322E88B99001BBA54 /* qn_done@3x.png */,
+				AA09EB5422E88B99001BBA54 /* qn_edit_delete@2x.png */,
+				AA09EB5522E88B99001BBA54 /* qn_edit_delete@3x.png */,
+				AA09EB5222E88B99001BBA54 /* qn_revocation@2x.png */,
+				AA09EB5622E88B99001BBA54 /* qn_revocation@3x.png */,
 				0A9CB4E81EF042FB00EABA76 /* btn_close_sound@2x.png */,
 				0A9CB4E91EF042FB00EABA76 /* btn_close_sound@3x.png */,
 				0A9CB4EA1EF042FB00EABA76 /* btn_sound@2x.png */,
@@ -1132,6 +1159,10 @@
 			children = (
 				0A9B8A6720B6822800E7C8D7 /* PLSStickerView.h */,
 				0A9B8A6A20B6822800E7C8D7 /* PLSStickerView.m */,
+				AA09EB4C22E88AF8001BBA54 /* PLSDrawModel.h */,
+				AA09EB4922E88AF7001BBA54 /* PLSDrawModel.m */,
+				AA09EB4A22E88AF7001BBA54 /* PLSDrawView.h */,
+				AA09EB4B22E88AF8001BBA54 /* PLSDrawView.m */,
 				0A9B8A6820B6822800E7C8D7 /* PLSStickerOverlayView.h */,
 				0A9B8A6920B6822800E7C8D7 /* PLSStickerOverlayView.m */,
 			);
@@ -1164,6 +1195,8 @@
 				BC695AF7228A9661005240A7 /* PLSGifStickerBar.m */,
 				0A9B8A7620B6822800E7C8D7 /* PLSStickerBar.h */,
 				0A9B8A7820B6822800E7C8D7 /* PLSStickerBar.m */,
+				AA09EB4F22E88B06001BBA54 /* PLSDrawBar.h */,
+				AA09EB5022E88B06001BBA54 /* PLSDrawBar.m */,
 				0A9B8A7720B6822800E7C8D7 /* UIView+PLSLightFrame.h */,
 				0A9B8A7520B6822800E7C8D7 /* UIView+PLSLightFrame.m */,
 			);
@@ -1682,6 +1715,7 @@
 				BCA3CF6621B22154009F25B5 /* lsq_filter_thumb_Lightcolor_Video.jpg in Resources */,
 				0A398F921ED6628500996229 /* cut_bar_left@2x.png in Resources */,
 				0A9B8A9120B6868200E7C8D7 /* video_edit_trim_slider@2x.png in Resources */,
+				AA09EB5822E88B99001BBA54 /* qn_revocation@2x.png in Resources */,
 				0AEE566020AD765D00FBA0D1 /* man.png in Resources */,
 				0A06924E1E8A3B590035CB7B /* btn_camera_cancel_b@3x.png in Resources */,
 				BCA3CFA421B22154009F25B5 /* lsq_filter_thumb_LiveXRay01.jpg in Resources */,
@@ -1768,6 +1802,7 @@
 				7635E40920CE8F5900E36027 /* select_pintu@2x.png in Resources */,
 				0A06925A1E8A3C720035CB7B /* btn_del_a@3x.png in Resources */,
 				0A5DF89220BE834B00F79CE0 /* pls_multi_musics.json in Resources */,
+				AA09EB5922E88B99001BBA54 /* qn_done@3x.png in Resources */,
 				BCA3CF7421B22154009F25B5 /* lsq_filter_thumb_Artistic_1.jpg in Resources */,
 				BCA3CF9721B22154009F25B5 /* lsq_filter_thumb_LiveOldTV01.jpg in Resources */,
 				BCA3CF8C21B22154009F25B5 /* face_ic_eyeAngle@3x.png in Resources */,
@@ -1857,6 +1892,7 @@
 				0A398FA01ED6698F00996229 /* cut_bar_progress@3x.png in Resources */,
 				0AEE565F20AD765D00FBA0D1 /* jikuai.png in Resources */,
 				0AD98DC6203188CE006551EC /* h265_video in Resources */,
+				AA09EB5C22E88B99001BBA54 /* qn_revocation@3x.png in Resources */,
 				0A2732311E75F99D005D0CE1 /* btn_play_bg_a.png in Resources */,
 				BCA3CF7C21B22154009F25B5 /* lsq_filter_thumb_Leica_1.jpg in Resources */,
 				BCA3CFA021B22154009F25B5 /* lsq_filter_thumb_LiveSlosh01.jpg in Resources */,
@@ -1869,6 +1905,7 @@
 				76425C9E210F48D000FB8200 /* scope_image.png in Resources */,
 				BCA3CF9221B22154009F25B5 /* face_ic_eyeAngle@2x.png in Resources */,
 				BCA3CF9321B22154009F25B5 /* face_ic_reset@2x.png in Resources */,
+				AA09EB5A22E88B99001BBA54 /* qn_edit_delete@2x.png in Resources */,
 				0AECA4F41E884CD200AF2931 /* btn_back.png in Resources */,
 				7635E40820CE8F5900E36027 /* select_meterial@2x.png in Resources */,
 				BCA3CFA121B22154009F25B5 /* face_ic_archEyebrow@2x.png in Resources */,
@@ -1877,9 +1914,11 @@
 				764FD4232112CE8B00CF1F0C /* Recorder.js in Resources */,
 				BCA3CF7A21B22154009F25B5 /* lsq_filter_thumb_LiveMegrim01.jpg in Resources */,
 				C3FCBFD71F305B70007EBB10 /* btn_selected_pic@3x.png in Resources */,
+				AA09EB5D22E88B99001BBA54 /* qn_done@2x.png in Resources */,
 				BCA3CF8021B22154009F25B5 /* face_ic_eyeDis@2x.png in Resources */,
 				7635E3E620CE494900E36027 /* 4video_template@3x.png in Resources */,
 				0AECA4F61E884D0900AF2931 /* video_play.png in Resources */,
+				AA09EB5B22E88B99001BBA54 /* qn_edit_delete@3x.png in Resources */,
 				0AF33C071F7180D200CCFB42 /* 芬迪轨迹.mp4 in Resources */,
 				BCA3CF9D21B22154009F25B5 /* lsq_filter_thumb_EdgeMagic01.jpg in Resources */,
 				0A0692451E8A3B590035CB7B /* btn_bar_back_b@2x.png in Resources */,
@@ -2002,9 +2041,11 @@
 				0A26041B1FA80BC900609411 /* DubViewController.m in Sources */,
 				0A63402A1F15C9C9005ADF6C /* MovieTransCodeViewController.m in Sources */,
 				0A41CD8920BD502900315902 /* PLSTimeLineItem.m in Sources */,
+				AA09EB5122E88B06001BBA54 /* PLSDrawBar.m in Sources */,
 				760F7707202AF92A0052F513 /* PLSPlayerView.m in Sources */,
 				BCA3CFB321B22154009F25B5 /* HorizontalListView.m in Sources */,
 				BCA3CFB621B22154009F25B5 /* CustomSlider.m in Sources */,
+				AA09EB4D22E88AF8001BBA54 /* PLSDrawModel.m in Sources */,
 				0A694C571FE3774B00E2BA60 /* PLSColumnListView.m in Sources */,
 				BC695AF9228A9661005240A7 /* PLSGifStickerBar.m in Sources */,
 				760F7704202AF92A0052F513 /* MulitPhotoAlbumViewController.m in Sources */,
@@ -2023,6 +2064,7 @@
 				BCA3CFC121B22154009F25B5 /* CameraBeautyFaceListView.m in Sources */,
 				BCA3CFB221B22154009F25B5 /* DemoAppearance.m in Sources */,
 				760F7703202AF92A0052F513 /* MulitClipViewController.m in Sources */,
+				AA09EB4E22E88AF8001BBA54 /* PLSDrawView.m in Sources */,
 				0A534EAB200E27F10032A981 /* PLSViewRecorderManager.m in Sources */,
 				0ACE7C371ED8B072002FF4C9 /* PLSDeleteButton.m in Sources */,
 				C3FCBFCF1F305B37007EBB10 /* PLSFormatGifView.m in Sources */,

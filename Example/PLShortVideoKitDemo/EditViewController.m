@@ -2430,25 +2430,23 @@ PLSDrawBarDelegate
     // 贴纸信息
     [self.stickerSettingsArray removeAllObjects];
         
-        // 涂鸦
-        if (_currnetDrawView) {
-            float duration = 0;
-            for (NSURL *url in self.filesURLArray) {
-                duration += [self getFileDuration:url];
-            }
-
-            NSLog(@"duration - %f", duration);
-
-            NSMutableDictionary *stickerSettings = [[NSMutableDictionary alloc] init];
-            stickerSettings[PLSSizeKey] = [NSValue valueWithCGSize:_currnetDrawView.bounds.size];
-            stickerSettings[PLSPointKey] = [NSValue valueWithCGPoint:CGPointZero];
-            stickerSettings[PLSStartTimeKey] = [NSNumber numberWithFloat:CMTimeGetSeconds(kCMTimeZero)];
-            stickerSettings[PLSDurationKey] = [NSNumber numberWithFloat:duration];
-            stickerSettings[PLSVideoPreviewSizeKey] = [NSValue valueWithCGSize:self.stickerOverlayView.frame.size];
-            stickerSettings[PLSVideoOutputSizeKey] = [NSValue valueWithCGSize:self.videoSize];
-            stickerSettings[PLSStickerKey] = [self convertViewToImage:_currnetDrawView];
-            [self.stickerSettingsArray addObject:stickerSettings];
+    // 涂鸦
+    if (_currnetDrawView) {
+        float duration = 0;
+        for (NSURL *url in self.filesURLArray) {
+            duration += [self getFileDuration:url];
         }
+        
+        NSMutableDictionary *stickerSettings = [[NSMutableDictionary alloc] init];
+        stickerSettings[PLSSizeKey] = [NSValue valueWithCGSize:_currnetDrawView.bounds.size];
+        stickerSettings[PLSPointKey] = [NSValue valueWithCGPoint:CGPointZero];
+        stickerSettings[PLSStartTimeKey] = [NSNumber numberWithFloat:CMTimeGetSeconds(kCMTimeZero)];
+        stickerSettings[PLSDurationKey] = [NSNumber numberWithFloat:duration];
+        stickerSettings[PLSVideoPreviewSizeKey] = [NSValue valueWithCGSize:self.stickerOverlayView.frame.size];
+        stickerSettings[PLSVideoOutputSizeKey] = [NSValue valueWithCGSize:self.videoSize];
+        stickerSettings[PLSStickerKey] = [self convertViewToImage:_currnetDrawView];
+        [self.stickerSettingsArray addObject:stickerSettings];
+    }
         
     if ([self.timelineView getAllAddedItems].count != 0) {
         for (int i = 0; i < [self.timelineView getAllAddedItems].count; i++) {
