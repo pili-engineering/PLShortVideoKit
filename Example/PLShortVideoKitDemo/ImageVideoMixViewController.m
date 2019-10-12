@@ -212,6 +212,7 @@
         EditViewController *videoEditViewController = [[EditViewController alloc] init];
         videoEditViewController.settings = outputSettings;
         videoEditViewController.filesURLArray = @[url];
+        videoEditViewController.modalPresentationStyle = UIModalPresentationFullScreen;
         [weakSelf presentViewController:videoEditViewController animated:YES completion:nil];
         
     }];

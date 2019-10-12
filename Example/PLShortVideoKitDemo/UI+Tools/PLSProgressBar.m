@@ -64,7 +64,7 @@
 
 - (UIView *)getProgressView {
     UIView *progressView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 1, _barHeight)];
-    progressView.backgroundColor = RGB_COLOR_ALPHA(229, 61, 146, 1);
+    progressView.backgroundColor = PLS_RGBCOLOR(65, 154, 208);
     progressView.autoresizesSubviews = YES;
     
     return progressView;

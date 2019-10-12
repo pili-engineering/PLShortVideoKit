@@ -59,19 +59,34 @@
             }
         } completionHandler:^(NSError * _Nullable error) {
             if (error) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if ([weakSelf.delegate respondsToSelector:@selector(screenRecorderManager:errorOccur:)]) {
-                        [weakSelf.delegate screenRecorderManager:weakSelf errorOccur:error];
-                    }
-                    [weakSelf cancelRecording];
-                });
-            } else {
-                dispatch_sync(dispatch_get_main_queue(), ^{
-                    // 注意： [shortVideoRecorder startRecording] 需要再主线程中执行，不然拍的时长会不正确
-                    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
+                if ([NSThread isMainThread]) {
+                     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
                     [weakSelf.shortVideoRecorder deleteAllFiles];
                     [weakSelf.shortVideoRecorder startRecording];
-                });
+                }else {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if ([weakSelf.delegate respondsToSelector:@selector(screenRecorderManager:errorOccur:)]) {
+                            [weakSelf.delegate screenRecorderManager:weakSelf errorOccur:error];
+                        }
+                        [weakSelf cancelRecording];
+                    });
+                }
+            } else {
+//                dispatch_sync(dispatch_get_main_queue(), ^{
+                    // 注意： [shortVideoRecorder startRecording] 需要再主线程中执行，不然拍的时长会不正确
+                if ([NSThread isMainThread]) {
+                     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
+                    [weakSelf.shortVideoRecorder deleteAllFiles];
+                    [weakSelf.shortVideoRecorder startRecording];
+                }else {
+                    dispatch_sync(dispatch_get_main_queue(), ^{
+                        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
+                        [weakSelf.shortVideoRecorder deleteAllFiles];
+                        [weakSelf.shortVideoRecorder startRecording];
+                    });
+                }
+                   
+//
             }
         }];
     } else {

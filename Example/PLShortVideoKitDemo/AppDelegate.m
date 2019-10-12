@@ -7,6 +7,8 @@
 //
 
 #import "AppDelegate.h"
+#import "ViewController.h"
+
 #import <Fabric/Fabric.h>
 #import <Crashlytics/Crashlytics.h>
 #import "PLShortVideoKit/PLShortVideoKit.h"
@@ -30,6 +32,14 @@
     
     [[AVAudioSession sharedInstance] setCategory:(AVAudioSessionCategoryPlayback) error:nil];
     
+    ViewController *viewController = [[ViewController alloc] init];
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:viewController];
+    navController.modalPresentationStyle = UIModalPresentationFullScreen;
+    
+    self.window.rootViewController = navController;
+    self.window.backgroundColor = [UIColor whiteColor];
+    
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
     return YES;
 }
 

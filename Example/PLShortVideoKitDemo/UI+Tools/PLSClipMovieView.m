@@ -15,13 +15,8 @@
 #define PLSLineW 4                // 线宽
 #define PLSMinImageCount 8     // 显示的图片个数
 
-#define PLS_SCREEN_WIDTH CGRectGetWidth([UIScreen mainScreen].bounds)
-#define PLS_SCREEN_HEIGHT CGRectGetHeight([UIScreen mainScreen].bounds)
-
 #define PLSImagesViewH 42  // 预览图高度
 #define PLSImagesVIewW (PLS_SCREEN_WIDTH / PLSMinImageCount) // 图片宽度
-
-#define PLS_RGBCOLOR(r,g,b) [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:1]
 
 @interface PLSClipMovieViewCell ()
 

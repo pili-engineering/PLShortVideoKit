@@ -9,5 +9,4 @@
 #import "BaseViewController.h"
 
 @interface MultiVideoViewController : BaseViewController
-
 @end

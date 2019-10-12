@@ -37,4 +37,29 @@
  */
 - (instancetype)initWithImage:(UIImage *)inputImage;
 
+
+/** =================== 以下属性和方法为切换滤镜的时候使用的 ==============
+ 使用方式：
+ step1. 设置 nextFilterIndex， FilterGroup 内部会根据 nextFilterIndex 创建好 nextFilter
+ step2. 调用 processPixelBuffer:leftPercent:leftFilter:rightFilter
+ */
+
+/**
+ @abstract 下一个要使用的滤镜在滤镜组中的索引
+ */
+@property (assign, nonatomic) NSInteger nextFilterIndex;
+
+/**
+ @abstract 下一个要使用的滤镜
+ */
+@property (strong, nonatomic) PLSFilter *nextFilter;
+
+/**
+ @abstract 从一个 filter 切换到另外一个 filter，将两个 filter 分别作用在图片的两边，给人一种对比效果
+ */
+- (CVPixelBufferRef)processPixelBuffer:(CVPixelBufferRef )originPixelBuffer
+                           leftPercent:(float)leftPercent
+                            leftFilter:(PLSFilter *)leftFilter
+                           rightFilter:(PLSFilter *)rightFilter;
+
 @end

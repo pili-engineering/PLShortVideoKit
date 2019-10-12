@@ -67,6 +67,10 @@
 @property (strong, nonatomic) PLSRateButtonView *rateButtonView;
 
 @property (strong, nonatomic) PLSScrollView *dynamicScrollView;
+
+// 0 剪辑 1 转码 2 拼接
+@property (assign, nonatomic) NSInteger typeIndex;
+
 - (void)nextButtonClick:(UIButton *)sender;
 
 - (void)fetchAssetsWithMediaType:(PHAssetMediaType)mediaType;

@@ -10,13 +10,8 @@
 #import "MovieTransCodeViewController.h"
 #import "PLShortVideoKit/PLShortVideoKit.h"
 #import "ViewRecordViewController.h"
+#import "MoiveClipViewController.h"
 #import "EditViewController.h"
-
-#define AlertViewShow(msg) [[[UIAlertView alloc] initWithTitle:@"warning" message:[NSString stringWithFormat:@"%@", msg] delegate:nil cancelButtonTitle:@"ok" otherButtonTitles:nil] show]
-#define PLS_RGBCOLOR(r,g,b) [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:1]
-#define PLS_SCREEN_WIDTH CGRectGetWidth([UIScreen mainScreen].bounds)
-#define PLS_SCREEN_HEIGHT CGRectGetHeight([UIScreen mainScreen].bounds)
-
 
 #pragma mark -- PLSScrollView
 
@@ -501,11 +496,11 @@ static NSString * const reuseIdentifier = @"Cell";
     [self.view addSubview:self.baseToolboxView];
     
     // 标题
-    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(100, 0, 100, 64)];
+    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(100, 20, 100, 44)];
     if (iPhoneX_SERIES) {
-        titleLabel.center = CGPointMake(PLS_SCREEN_WIDTH / 2, 48);
+        titleLabel.center = CGPointMake(PLS_SCREEN_WIDTH / 2, 58);
     } else {
-        titleLabel.center = CGPointMake(PLS_SCREEN_WIDTH / 2, 32);
+        titleLabel.center = CGPointMake(PLS_SCREEN_WIDTH / 2, 42);
     }
     titleLabel.text = @"相机胶卷";
     titleLabel.textAlignment = NSTextAlignmentCenter;
@@ -518,13 +513,13 @@ static NSString * const reuseIdentifier = @"Cell";
     [cancelButton setTitle:@"取消" forState:UIControlStateNormal];
     [cancelButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [cancelButton setTitleColor:PLS_RGBCOLOR(141, 141, 142) forState:UIControlStateHighlighted];
-    cancelButton.frame = CGRectMake(PLS_SCREEN_WIDTH - 80, 0, 80, 64);
+    cancelButton.frame = CGRectMake(PLS_SCREEN_WIDTH - 80, 20, 80, 44);
     cancelButton.titleLabel.font = [UIFont systemFontOfSize:16];
     [cancelButton addTarget:self action:@selector(cancelButtonClick:) forControlEvents:UIControlEventTouchUpInside];
     [self.baseToolboxView addSubview:cancelButton];
     
     // 展示视频拼接的进度
-    self.progressLabel = [[UILabel alloc] initWithFrame:CGRectMake(160, 0, 200, 45)];
+    self.progressLabel = [[UILabel alloc] initWithFrame:CGRectMake(160, 20, 200, 25)];
     self.progressLabel.center = CGPointMake(self.view.center.x, self.view.center.y + 30);
     self.progressLabel.textAlignment =  NSTextAlignmentCenter;
     self.progressLabel.textColor = [UIColor whiteColor];
@@ -756,16 +751,36 @@ static NSString * const reuseIdentifier = @"Cell";
             }
             
             if (self.urls.count == 1) {
-                // 视频转码
-                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:@"视频转码" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
-                alertView.tag = 10002;
-                [alertView show];
                 
-            }else {
-                // 多个视频拼接 或者 单个视频转码 都可以用 PLSMovieComposer
-                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:@"视频拼接" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
-                alertView.tag = 10003;
-                [alertView show];
+                if (_typeIndex == 1) {
+                    // 视频转码
+                    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:@"视频转码" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
+                    alertView.tag = 10002;
+                    [alertView show];
+                } else if (_typeIndex == 2) {
+                    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:@"视频拼接需要选择视频个数大于 1！" delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定", nil];
+                    alertView.tag = 10005;
+                    [alertView show];
+                } else {
+                    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:@"视频截取" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
+                    alertView.tag = 10006;
+                    [alertView show];
+                }
+            } else {
+                if (_typeIndex == 2) {
+                    // 多个视频拼接 或者 单个视频转码 都可以用 PLSMovieComposer
+                    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:@"视频拼接" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
+                    alertView.tag = 10003;
+                    [alertView show];
+                } else if (_typeIndex == 1) {
+                    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:@"选择 1 个视频进行转码处理！" delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定", nil];
+                    alertView.tag = 10005;
+                    [alertView show];
+                }  else {
+                    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:@"选择 1 个视频进行剪辑处理！" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
+                    alertView.tag = 10005;
+                    [alertView show];
+                }
             }
         }
     }
@@ -774,7 +789,7 @@ static NSString * const reuseIdentifier = @"Cell";
 #pragma mark -- UIAlertView delegate
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
     // 检测是否授权访问相册，没有授权就跳转到 App 的设置页
-    if (10001 != alertView.tag && 10002 != alertView.tag && 10003 != alertView.tag && 10004 != alertView.tag) {
+    if (10001 != alertView.tag && 10002 != alertView.tag && 10003 != alertView.tag && 10004 != alertView.tag && 10005 != alertView.tag && 10006 != alertView.tag) {
         if (buttonIndex == alertView.firstOtherButtonIndex) {
             [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
         }
@@ -822,6 +837,13 @@ static NSString * const reuseIdentifier = @"Cell";
         } else {
             [self movieComposerEvent:PLSComposerPriorityTypeAudio];
         }
+    } else if (10005 == alertView.tag) {
+        [self dismissViewControllerAnimated:YES completion:nil];
+    } else if (10006 == alertView.tag) {
+        MoiveClipViewController *movieClipViewController = [[MoiveClipViewController alloc] init];
+        movieClipViewController.url = self.urls[0];
+        movieClipViewController.modalPresentationStyle = UIModalPresentationFullScreen;
+        [self presentViewController:movieClipViewController animated:YES completion:nil];
     }
 }
 
@@ -842,6 +864,7 @@ static NSString * const reuseIdentifier = @"Cell";
     EditViewController *videoEditViewController = [[EditViewController alloc] init];
     videoEditViewController.settings = outputSettings;
     videoEditViewController.filesURLArray = @[url];
+    videoEditViewController.modalPresentationStyle = UIModalPresentationFullScreen;
     [self presentViewController:videoEditViewController animated:YES completion:nil];
 }
 
@@ -886,9 +909,7 @@ static NSString * const reuseIdentifier = @"Cell";
         [weakSelf removeActivityIndicatorView];
         weakSelf.progressLabel.text = @"";
         
-        MovieTransCodeViewController *transCodeViewController = [[MovieTransCodeViewController alloc] init];
-        transCodeViewController.url = url;
-        [weakSelf presentViewController:transCodeViewController animated:YES completion:nil];
+        [weakSelf joinEditViewController:url];
     }];
     [self.imageToMovieComposer setFailureBlock:^(NSError *error) {
         NSLog(@"imageToMovieComposer failed");
@@ -910,6 +931,7 @@ static NSString * const reuseIdentifier = @"Cell";
 - (void)viewRecordEvent {
     ViewRecordViewController *viewRecordViewController = [[ViewRecordViewController alloc] init];
     viewRecordViewController.selectedAssets = self.dynamicScrollView.selectedAssets;
+    viewRecordViewController.modalPresentationStyle = UIModalPresentationFullScreen;
     [self presentViewController:viewRecordViewController animated:YES completion:nil];
 }
 
@@ -917,6 +939,7 @@ static NSString * const reuseIdentifier = @"Cell";
 - (void)movieTransCodeEvent {
     MovieTransCodeViewController *transCodeViewController = [[MovieTransCodeViewController alloc] init];
     transCodeViewController.url = self.urls[0];
+    transCodeViewController.modalPresentationStyle = UIModalPresentationFullScreen;
     [self presentViewController:transCodeViewController animated:YES completion:nil];
 }
 
@@ -946,9 +969,7 @@ static NSString * const reuseIdentifier = @"Cell";
         [weakSelf removeActivityIndicatorView];
         weakSelf.progressLabel.text = @"";
         
-        MovieTransCodeViewController *transCodeViewController = [[MovieTransCodeViewController alloc] init];
-        transCodeViewController.url = url;
-        [weakSelf presentViewController:transCodeViewController animated:YES completion:nil];
+        [weakSelf joinEditViewController:url];
     }];
     [self.movieComposer setFailureBlock:^(NSError *error) {
         NSLog(@"movieComposer failed");

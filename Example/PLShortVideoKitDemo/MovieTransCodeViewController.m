@@ -8,16 +8,11 @@
 
 #import "MovieTransCodeViewController.h"
 #import "PLShortVideoKit/PLShortVideoKit.h"
-#import "PLSClipMovieView.h"
 #import <Masonry/Masonry.h>
 #import "PLSSelectionView.h"
 #import "EditViewController.h"
 
-#define AlertViewShow(msg) [[[UIAlertView alloc] initWithTitle:@"warning" message:[NSString stringWithFormat:@"%@", msg] delegate:nil cancelButtonTitle:@"ok" otherButtonTitles:nil] show]
-#define PLS_RGBCOLOR(r,g,b) [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:1]
 #define PLS_BaseToolboxView_HEIGHT 64
-#define PLS_SCREEN_WIDTH CGRectGetWidth([UIScreen mainScreen].bounds)
-#define PLS_SCREEN_HEIGHT CGRectGetHeight([UIScreen mainScreen].bounds)
 
 
 typedef enum : NSUInteger {
@@ -30,7 +25,6 @@ typedef enum : NSUInteger {
 
 @interface MovieTransCodeViewController ()
 <
-PLSClipMovieViewDelegate,
 PLSSelectionViewDelegate,
 PLShortVideoEditorDelegate
 >
@@ -39,9 +33,6 @@ PLShortVideoEditorDelegate
 @property (strong, nonatomic) UIView *baseToolboxView;
 @property (strong, nonatomic) UIActivityIndicatorView *activityIndicatorView;
 @property (strong, nonatomic) UILabel *progressLabel;
-
-// 选取需要的视频段
-@property (strong, nonatomic) PLSClipMovieView *clipMovieView;
 
 // 选取转码质量
 @property (strong, nonatomic) PLSSelectionView *selectionView;
@@ -85,8 +76,6 @@ PLShortVideoEditorDelegate
     [self setupBaseToolboxView];
     
     [self setupSelectionView];
-    
-    [self setupClipMovieView];
     
     [self setupScopeCutView];
 }
@@ -132,7 +121,7 @@ PLShortVideoEditorDelegate
     self.shortVideoEditor.timeRange = CMTimeRangeMake(start, duration);
     
     // 视频的预览视图
-    self.shortVideoEditor.previewView.frame = CGRectMake(0, PLS_BaseToolboxView_HEIGHT, PLS_SCREEN_WIDTH, PLS_SCREEN_WIDTH);
+    self.shortVideoEditor.previewView.frame = CGRectMake(0, PLS_BaseToolboxView_HEIGHT, PLS_SCREEN_WIDTH, PLS_SCREEN_WIDTH + 145);
     [self.view addSubview:self.shortVideoEditor.previewView];
 }
 
@@ -151,18 +140,18 @@ PLShortVideoEditorDelegate
     [backButton setTitle:@"返回" forState:UIControlStateNormal];
     [backButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [backButton setTitleColor:PLS_RGBCOLOR(141, 141, 142) forState:UIControlStateHighlighted];
-    backButton.frame = CGRectMake(0, 0, 80, 64);
+    backButton.frame = CGRectMake(0, 20, 80, 44);
     backButton.titleEdgeInsets = UIEdgeInsetsMake(0, 7, 0, 0);
     backButton.titleLabel.font = [UIFont systemFontOfSize:16];
     [backButton addTarget:self action:@selector(backButtonClick) forControlEvents:UIControlEventTouchUpInside];
     [self.baseToolboxView addSubview:backButton];
     
     // 标题
-    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(100, 0, 100, 64)];
+    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(100, 20, 100, 44)];
     if (iPhoneX_SERIES) {
-        titleLabel.center = CGPointMake(PLS_SCREEN_WIDTH / 2, 48);
+        titleLabel.center = CGPointMake(PLS_SCREEN_WIDTH / 2, 58);
     } else {
-        titleLabel.center = CGPointMake(PLS_SCREEN_WIDTH / 2, 32);
+        titleLabel.center = CGPointMake(PLS_SCREEN_WIDTH / 2, 42);
     }
     titleLabel.text = @"转码";
     titleLabel.textAlignment = NSTextAlignmentCenter;
@@ -177,7 +166,7 @@ PLShortVideoEditorDelegate
     [nextButton setTitle:@"下一步" forState:UIControlStateNormal];
     [nextButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [nextButton setTitleColor:PLS_RGBCOLOR(141, 141, 142) forState:UIControlStateHighlighted];
-    nextButton.frame = CGRectMake(PLS_SCREEN_WIDTH - 80, 0, 80, 64);
+    nextButton.frame = CGRectMake(PLS_SCREEN_WIDTH - 80, 20, 80, 44);
     nextButton.titleEdgeInsets = UIEdgeInsetsMake(0, -40, 0, 0);
     nextButton.imageEdgeInsets = UIEdgeInsetsMake(0, 50, 0, 0);
     nextButton.titleLabel.font = [UIFont systemFontOfSize:16];
@@ -201,9 +190,9 @@ PLShortVideoEditorDelegate
 - (void)setupSelectionView {
     CGFloat rotateViewTopSpace;
     if (PLS_SCREEN_HEIGHT > 568) {
-        rotateViewTopSpace = PLS_BaseToolboxView_HEIGHT + PLS_SCREEN_WIDTH + 5;
+        rotateViewTopSpace = PLS_BaseToolboxView_HEIGHT + PLS_SCREEN_WIDTH + 5 + 145;
     } else{
-        rotateViewTopSpace = PLS_BaseToolboxView_HEIGHT + PLS_SCREEN_WIDTH;
+        rotateViewTopSpace = PLS_BaseToolboxView_HEIGHT + PLS_SCREEN_WIDTH + 145;
     }
     
     self.selectionView = [[PLSSelectionView alloc] initWithFrame:CGRectMake(0, rotateViewTopSpace, PLS_SCREEN_WIDTH, 35) lineWidth:1 lineColor:[UIColor blackColor]];
@@ -218,36 +207,15 @@ PLShortVideoEditorDelegate
     
     // 视频旋转
     UIButton *rotateVideoButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    rotateVideoButton.frame = CGRectMake(PLS_SCREEN_WIDTH - 120, self.selectionView.frame.origin.y + 38, 100, 36);
+    rotateVideoButton.frame = CGRectMake(PLS_SCREEN_WIDTH/2 - 50, self.selectionView.frame.origin.y + 38, 100, 36);
     [rotateVideoButton setTitle:@"旋转视频" forState:UIControlStateNormal];
     [rotateVideoButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     rotateVideoButton.titleLabel.font = [UIFont systemFontOfSize:16];
     rotateVideoButton.layer.cornerRadius = 5;
     rotateVideoButton.layer.borderWidth = 1;
     rotateVideoButton.layer.borderColor = [UIColor whiteColor].CGColor;
-
-    UILabel *cutLabel = [[UILabel alloc] init];
-    cutLabel.font = [UIFont systemFontOfSize:14];
-    cutLabel.text = @"移动红色线框选择剪裁区域";
-    cutLabel.textColor = [UIColor colorWithWhite:1 alpha:.5];
-    [cutLabel sizeToFit];
-    cutLabel.frame = CGRectMake(5, rotateVideoButton.frame.origin.y + 10, cutLabel.bounds.size.width, cutLabel.bounds.size.height);
-    [self.view addSubview:cutLabel];
-    
     [rotateVideoButton addTarget:self action:@selector(rotateVideoButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:rotateVideoButton];
-    
-}
-
-- (void)setupClipMovieView {
-    CGFloat duration = [self getFileDuration:self.url];
-    self.clipMovieView = [[PLSClipMovieView alloc] initWithMovieURL:self.url minDuration:2.0f maxDuration:duration];
-    self.clipMovieView.delegate = self;
-    [self.view addSubview:self.clipMovieView];
-    [self.clipMovieView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.right.bottom.mas_equalTo(0);
-        make.height.mas_equalTo(145);
-    }];
 }
 
 - (void)setupScopeCutView {
@@ -378,27 +346,6 @@ PLShortVideoEditorDelegate
         default:
             break;
     }
-}
-
-#pragma mark - PLSClipMovieView delegate
-- (void)didStartDragView {
- 
-}
-
-- (void)clipFrameView:(PLSClipMovieView *)clipFrameView didEndDragLeftView:(CMTime)leftTime rightView:(CMTime)rightTime {
-    CGFloat start = CMTimeGetSeconds(leftTime);
-    CGFloat end = CMTimeGetSeconds(rightTime);
-    CGFloat duration = end - start;
-    
-    self.movieSettings[PLSStartTimeKey] = [NSNumber numberWithFloat:start];
-    self.movieSettings[PLSDurationKey] = [NSNumber numberWithFloat:duration];
-    
-    self.shortVideoEditor.timeRange = CMTimeRangeMake(leftTime, CMTimeSubtract(rightTime, leftTime));
-    [self.shortVideoEditor startEditing];
-}
-
-- (void)clipFrameView:(PLSClipMovieView *)clipFrameView isScrolling:(BOOL)scrolling {
-    self.view.userInteractionEnabled = !scrolling;
 }
 
 #pragma mark -- PLSSelectionViewDelegate
@@ -574,6 +521,7 @@ PLShortVideoEditorDelegate
             EditViewController *videoEditViewController = [[EditViewController alloc] init];
             videoEditViewController.settings = outputSettings;
             videoEditViewController.filesURLArray = @[url];
+            videoEditViewController.modalPresentationStyle = UIModalPresentationFullScreen;
             [weakSelf presentViewController:videoEditViewController animated:YES completion:nil];
         });
     }];

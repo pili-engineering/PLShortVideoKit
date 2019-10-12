@@ -8,7 +8,6 @@
 
 #import "PLSClipMulitMediaView.h"
 #import <Photos/Photos.h>
-#import "BaseViewController.h"
 #import "PLShortVideoKit/PLShortVideoKit.h"
 
 #ifndef MAS_SHORTHAND_GLOBALS

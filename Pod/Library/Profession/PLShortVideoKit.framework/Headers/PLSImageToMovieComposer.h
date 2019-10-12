@@ -79,6 +79,8 @@ __deprecated_msg("Class PLSImageToMovieComposer is deprecated in v1.16.0, use PL
  @property transitionDuration
  @abstract 转场动画持续的时长，默认为1.0，即1秒
  
+ @warning  transitionDuration 最大值不能超过 imageDuration，大于 imageDuration 内部将默认取 imageDuration 的值
+ 
  @since      v1.8.0
  */
 @property (assign, nonatomic) CGFloat transitionDuration;

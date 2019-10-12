@@ -326,4 +326,7 @@
  */
 - (void)resetVideoLayerOrientation;
 
+
+- (void)reverserEffectVideoEnable:(BOOL)enable;
+
 @end

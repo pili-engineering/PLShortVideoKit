@@ -124,7 +124,7 @@ __deprecated_msg("Class PLSMovieComposer is deprecated in v1.16.0, use PLSImageV
 
 /*!
  @method stopComposing
- @brief 停止视频拼接s
+ @brief 停止视频拼接
  
  @since      v1.4.0
  */

@@ -6,7 +6,7 @@
 //  Copyright © 2018年 Pili Engineering, Qiniu Inc. All rights reserved.
 //
 
-#import "BaseViewController.h"
+
 
 @interface MulitClipViewController : BaseViewController
 
