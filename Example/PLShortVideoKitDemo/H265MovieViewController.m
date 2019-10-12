@@ -9,8 +9,6 @@
 #import "H265MovieViewController.h"
 #import "MovieTransCodeViewController.h"
 
-#define PLS_RGBCOLOR(r,g,b) [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:1]
-
 static NSString *reuseIdentifier = @"reuseIdentifier";
 
 @interface H265MovieViewController () <UIAlertViewDelegate>
@@ -31,8 +29,17 @@ static NSString *reuseIdentifier = @"reuseIdentifier";
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     
-    UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithTitle:@"返回 " style:(UIBarButtonItemStylePlain) target:self action:@selector(clickBackItem:)];
-    self.navigationItem.leftBarButtonItem = backItem;
+    self.navigationItem.title = @"H.265";
+    self.navigationController.navigationBar.barTintColor  = PLS_RGBCOLOR(65, 154, 208);
+    [self.navigationController.navigationBar setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor whiteColor]}];
+    
+    UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [backButton setImage:[UIImage imageNamed:@"get_back"] forState:UIControlStateNormal];
+    backButton.frame = CGRectMake(0, 0, 26, 26);
+    backButton.imageEdgeInsets = UIEdgeInsetsMake(8, -6, 8, 20);
+    [backButton addTarget:self action:@selector(clickBackItem) forControlEvents:UIControlEventTouchUpInside];
+    
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
     
     [self loadH265Videos];
     
@@ -48,8 +55,8 @@ static NSString *reuseIdentifier = @"reuseIdentifier";
     [_h265VideoArray addObjectsFromArray:[bundle pathsForResourcesOfType:@"mov" inDirectory:subpath]];
 }
 
-- (void)clickBackItem:(UIBarButtonItem *)item {
-    [self dismissViewControllerAnimated:YES completion:nil];
+- (void)clickBackItem {
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -91,6 +98,7 @@ static NSString *reuseIdentifier = @"reuseIdentifier";
             // 转码
             MovieTransCodeViewController *transCodeViewController = [[MovieTransCodeViewController alloc] init];
             transCodeViewController.url = url;
+            transCodeViewController.modalPresentationStyle = UIModalPresentationFullScreen;
             [self presentViewController:transCodeViewController animated:YES completion:nil];
             
         }

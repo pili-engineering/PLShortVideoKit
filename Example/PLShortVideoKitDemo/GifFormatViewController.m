@@ -12,11 +12,7 @@
 #import <Masonry/Masonry.h>
 #import "PlayViewController.h"
 
-
-#define PLS_RGBCOLOR(r,g,b) [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:1]
 #define PLS_BaseToolboxView_HEIGHT 64
-#define PLS_SCREEN_WIDTH CGRectGetWidth([UIScreen mainScreen].bounds)
-#define PLS_SCREEN_HEIGHT CGRectGetHeight([UIScreen mainScreen].bounds)
 
 @interface GifFormatViewController ()<PLSFormatGifViewDelegate>
 
@@ -160,6 +156,7 @@
     PlayViewController *playViewController = [[PlayViewController alloc]init];
     playViewController.actionType = PLSActionTypeGif;
     playViewController.url = url;
+    playViewController.modalPresentationStyle = UIModalPresentationFullScreen;
     [obj presentViewController:playViewController animated:YES completion:nil];
 }
 

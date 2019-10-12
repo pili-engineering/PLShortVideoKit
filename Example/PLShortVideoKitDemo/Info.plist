@@ -15,9 +15,9 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.2.0</string>
+	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
-	<string>2.2.0.git-2019-07-12-395e7f2</string>
+	<string>$(MARKETING_VERSION).git-2019-07-25-f93b75a</string>
 	<key>Fabric</key>
 	<dict>
 		<key>APIKey</key>
@@ -66,5 +66,7 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<false/>
 </dict>
 </plist>

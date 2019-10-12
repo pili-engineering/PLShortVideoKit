@@ -12,11 +12,9 @@
 #import "FLAnimatedImage.h"
 #import "PLSPlayerView.h"
 
-#define PLS_SCREEN_WIDTH CGRectGetWidth([UIScreen mainScreen].bounds)
-#define PLS_SCREEN_HEIGHT CGRectGetHeight([UIScreen mainScreen].bounds)
+
 #define PLS_BaseToolboxView_HEIGHT 64
 #define PLS_EditToolboxView_HEIGHT 50
-#define PLS_RGBCOLOR(r,g,b) [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:1]
 
 static NSString *const kUploadToken = @"QxZugR8TAhI38AiJ_cptTl3RbzLyca3t-AAiH-Hh:3hK7jJJQKwmemseSwQ1duO5AXOw=:eyJzY29wZSI6InNhdmUtc2hvcnQtdmlkZW8tZnJvbS1kZW1vIiwiZGVhZGxpbmUiOjM1NTk2OTU4NzYsInVwaG9zdHMiOlsiaHR0cDovL3VwLXoyLnFpbml1LmNvbSIsImh0dHA6Ly91cGxvYWQtejIucWluaXUuY29tIiwiLUggdXAtejIucWluaXUuY29tIGh0dHA6Ly8xNC4xNTIuMzcuNCJdfQ==";
 static NSString *const kURLPrefix = @"http://panm32w98.bkt.clouddn.com";
@@ -163,7 +161,7 @@ UIGestureRecognizerDelegate
     [backButton setTitle:@"返回" forState:UIControlStateNormal];
     [backButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [backButton setTitleColor:PLS_RGBCOLOR(141, 141, 142) forState:UIControlStateHighlighted];
-    backButton.frame = CGRectMake(0, 0, 80, 64);
+    backButton.frame = CGRectMake(0, 20, 80, 44);
     backButton.titleLabel.font = [UIFont systemFontOfSize:16];
     [backButton addTarget:self action:@selector(backButtonClick) forControlEvents:UIControlEventTouchUpInside];
     [self.baseToolboxView addSubview:backButton];
@@ -173,7 +171,7 @@ UIGestureRecognizerDelegate
     [self.uploadButton setTitle:@"取消" forState:UIControlStateSelected];
     [self.uploadButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [self.uploadButton setTitleColor:PLS_RGBCOLOR(141, 141, 142) forState:UIControlStateHighlighted];
-    self.uploadButton.frame = CGRectMake(PLS_SCREEN_WIDTH - 80, 0, 80, 64);
+    self.uploadButton.frame = CGRectMake(PLS_SCREEN_WIDTH - 80, 20, 80, 44);
     self.uploadButton.titleLabel.font = [UIFont systemFontOfSize:16];
     [self.uploadButton addTarget:self action:@selector(uploadButtonClick:) forControlEvents:UIControlEventTouchUpInside];
     [self.baseToolboxView addSubview:self.uploadButton];

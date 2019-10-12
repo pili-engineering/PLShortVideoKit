@@ -15,17 +15,8 @@
 #import "PLSEditVideoCell.h"
 #import "PLSFilterGroup.h"
 
-#define AlertViewShow(msg) [[[UIAlertView alloc] initWithTitle:@"warning" message:[NSString stringWithFormat:@"%@", msg] delegate:nil cancelButtonTitle:@"ok" otherButtonTitles:nil] show]
-
 #define PLS_CLOSE_CONTROLLER_ALERTVIEW_TAG 10001
-#define PLS_SCREEN_WIDTH CGRectGetWidth([UIScreen mainScreen].bounds)
-#define PLS_SCREEN_HEIGHT CGRectGetHeight([UIScreen mainScreen].bounds)
-#define PLS_RGBCOLOR(r,g,b) [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:1]
-#define PLS_RGBACOLOR(r,g,b,a) [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:(a)]
-
 #define PLS_BaseToolboxView_HEIGHT 64
-#define PLS_SCREEN_WIDTH CGRectGetWidth([UIScreen mainScreen].bounds)
-#define PLS_SCREEN_HEIGHT CGRectGetHeight([UIScreen mainScreen].bounds)
 
 @interface MixRecordViewController ()
 <
@@ -64,7 +55,13 @@ UICollectionViewDelegateFlowLayout
 // 展示所有滤镜的集合视图
 @property (strong, nonatomic) UICollectionView *editVideoCollectionView;
 @property (strong, nonatomic) NSMutableArray<NSDictionary *> *filtersArray;
-@property (assign, nonatomic) NSInteger filterIndex;
+// 切换滤镜的时候，为了更好的用户体验，添加以下属性来做切换动画
+@property (nonatomic, assign) BOOL isPanning;
+@property (nonatomic, assign) BOOL isLeftToRight;
+@property (nonatomic, assign) BOOL isNeedChangeFilter;
+@property (nonatomic, weak) PLSFilter *leftFilter;
+@property (nonatomic, weak) PLSFilter *rightFilter;
+@property (nonatomic, assign) float leftPercent;
 
 @property (strong, nonatomic) UIButton *draftButton;
 @property (strong, nonatomic) NSURL *URL;
@@ -140,16 +137,45 @@ UICollectionViewDelegateFlowLayout
 
 - (void)setupvideoMixRecorder {
     
+    CGSize videoSize = CGSizeZero;
+    CGRect cameraFrame = CGRectZero;
+    CGRect sampleFrame = CGRectZero;
+    NSInteger cameraZIndex = 0;
+    NSInteger sampleZIndex = 0;
+    
+    if (enumMixTypeLeftRight == self.mixType) {
+        videoSize = CGSizeMake(1080, 960);
+        cameraFrame = CGRectMake(0, 0, 540, 960);
+        sampleFrame = CGRectMake(540, 0, 540, 960);
+        cameraZIndex = 0;
+        sampleZIndex = 1;
+    } else if (enumMixTypeUpdown == self.mixType) {
+        videoSize = CGSizeMake(720, 1280);
+        cameraFrame = CGRectMake(0, 0, 720, 1280);
+        sampleFrame = CGRectMake(50, 50, 240, 426);
+        cameraZIndex = 0;
+        sampleZIndex = 1;
+    } else {
+        videoSize = CGSizeMake(720, 1280);
+        sampleFrame = CGRectMake(0, 0, 720, 1280);
+        cameraFrame = CGRectMake(50, 50, 240, 426);
+        cameraZIndex = 1;
+        sampleZIndex = 0;
+    }
+    
     self.videoConfiguration = [PLSVideoMixConfiguration defaultConfiguration];
     self.videoConfiguration.position = AVCaptureDevicePositionFront;
     self.videoConfiguration.sessionPreset = AVCaptureSessionPresetiFrame1280x720;
-    self.videoConfiguration.videoFrameRate = 25;
-    self.videoConfiguration.averageVideoBitRate = 1024*2000;//2.0M
-    self.videoConfiguration.videoSize = CGSizeMake(720, 640);
-    self.videoConfiguration.cameraVideoFrame = CGRectMake(0, 0, 360, 640);
-    self.videoConfiguration.sampleVideoFrame = CGRectMake(360, 0, 360, 640);
+    self.videoConfiguration.videoFrameRate = 30;
+    self.videoConfiguration.videoSize = videoSize;
+    self.videoConfiguration.averageVideoBitRate = 1024*4000;
+    self.videoConfiguration.cameraVideoFrame = cameraFrame;
+    self.videoConfiguration.sampleVideoFrame = sampleFrame;
+    self.videoConfiguration.camermZIndex = cameraZIndex;
+    self.videoConfiguration.sampleZIndex = sampleZIndex;
     self.videoConfiguration.videoOrientation = AVCaptureVideoOrientationPortrait;
-    self.videoConfiguration.previewMirrorFrontFacing = NO;
+    self.videoConfiguration.previewMirrorFrontFacing = YES;
+    self.videoConfiguration.streamMirrorFrontFacing = YES;
     
     self.audioConfiguration = [PLSAudioMixConfiguration defaultConfiguration];
     self.audioConfiguration.sampleVolume = 0.5;
@@ -166,6 +192,9 @@ UICollectionViewDelegateFlowLayout
     self.videoMixRecorder.mergeVideoURL = self.mixURL;
     [self.videoMixRecorder setBeautifyModeOn:YES];
     CGFloat height = PLS_SCREEN_WIDTH/2 * 640.0 / 360.0;
+    if (enumMixTypeLeftRight != self.mixType) {
+        height = PLS_SCREEN_WIDTH * 1280 / 720;
+    }
     self.videoMixRecorder.previewView.frame = CGRectMake(0, (PLS_SCREEN_HEIGHT - height)/2, PLS_SCREEN_WIDTH, height);
     [self.view addSubview:self.videoMixRecorder.previewView];
     
@@ -602,8 +631,15 @@ UICollectionViewDelegateFlowLayout
     //此处可以做美颜/滤镜等处理
     // 是否在录制时使用滤镜，默认是关闭的，NO
     if (self.isUseFilterWhenRecording) {
-        PLSFilter *filter = self.filterGroup.currentFilter;
-        pixelBuffer = [filter process:pixelBuffer];
+        if (self.isPanning) {
+            pixelBuffer = [self.filterGroup processPixelBuffer:pixelBuffer
+                                                   leftPercent:self.leftPercent
+                                                    leftFilter:self.leftFilter
+                                                   rightFilter:self.rightFilter];
+        } else {
+            PLSFilter *filter = self.filterGroup.currentFilter;
+            pixelBuffer = [filter process:pixelBuffer];
+        }
     }
     
     return pixelBuffer;
@@ -721,6 +757,7 @@ UICollectionViewDelegateFlowLayout
     EditViewController *videoEditViewController = [[EditViewController alloc] init];
     videoEditViewController.settings = outputSettings;
     videoEditViewController.filesURLArray = filesURLArray;
+    videoEditViewController.modalPresentationStyle = UIModalPresentationFullScreen;
     [self presentViewController:videoEditViewController animated:YES completion:nil];
 }
 
@@ -828,61 +865,122 @@ UICollectionViewDelegateFlowLayout
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    
     // 滤镜
     self.filterGroup.filterIndex = indexPath.row;
 }
 
 #pragma mark - 通过手势切换滤镜
 - (void)setupGestureRecognizer {
-    UISwipeGestureRecognizer *recognizer;
-    // 添加右滑手势
-    recognizer = [[UISwipeGestureRecognizer alloc]initWithTarget:self action:@selector(handleSwipeFrom:)];
-    [recognizer setDirection:(UISwipeGestureRecognizerDirectionRight)];
-    [self.view addGestureRecognizer:recognizer];
-    // 添加左滑手势
-    recognizer = [[UISwipeGestureRecognizer alloc]initWithTarget:self action:@selector(handleSwipeFrom:)];
-    [recognizer setDirection:(UISwipeGestureRecognizerDirectionLeft)];
-    [self.view addGestureRecognizer:recognizer];
-    // 添加上滑手势
-    recognizer = [[UISwipeGestureRecognizer alloc]initWithTarget:self action:@selector(handleSwipeFrom:)];
-    [recognizer setDirection:(UISwipeGestureRecognizerDirectionUp)];
-    [self.view addGestureRecognizer:recognizer];
-    // 添加下滑手势
-    recognizer = [[UISwipeGestureRecognizer alloc]initWithTarget:self action:@selector(handleSwipeFrom:)];
-    [recognizer setDirection:(UISwipeGestureRecognizerDirectionDown)];
-    [self.view addGestureRecognizer:recognizer];
+    UIPanGestureRecognizer * panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleFilterPan:)];
+    [self.view addGestureRecognizer:panGesture];
 }
 
 // 添加手势的响应事件
-- (void)handleSwipeFrom:(UISwipeGestureRecognizer *)recognizer{
-    if(recognizer.direction == UISwipeGestureRecognizerDirectionDown) {
-        NSLog(@"swipe down");
-        self.filterIndex++;
-        self.filterIndex %= self.filterGroup.filtersInfo.count;
-    }
-    if(recognizer.direction == UISwipeGestureRecognizerDirectionUp) {
-        NSLog(@"swipe up");
-        self.filterIndex--;
-        if (self.filterIndex < 0) {
-            self.filterIndex = self.filterGroup.filtersInfo.count - 1;
-        }
-    }
-    if(recognizer.direction == UISwipeGestureRecognizerDirectionLeft) {
-        NSLog(@"swipe left");
-        self.filterIndex--;
-        if (self.filterIndex < 0) {
-            self.filterIndex = self.filterGroup.filtersInfo.count - 1;
-        }
-    }
-    if(recognizer.direction == UISwipeGestureRecognizerDirectionRight) {
-        NSLog(@"swipe right");
-        self.filterIndex++;
-        self.filterIndex %= self.filterGroup.filtersInfo.count;
-    }
+- (void)handleFilterPan:(UIPanGestureRecognizer *)gestureRecognizer {
     
-    // 滤镜
-    self.filterGroup.filterIndex = self.filterIndex;
+    CGPoint transPoint = [gestureRecognizer translationInView:gestureRecognizer.view];
+    CGPoint speed = [gestureRecognizer velocityInView:gestureRecognizer.view];
+    
+    switch (gestureRecognizer.state) {
+            
+        case UIGestureRecognizerStateBegan: {
+            NSInteger index = 0;
+            if (speed.x > 0) {
+                self.isLeftToRight = YES;
+                index = self.filterGroup.filterIndex - 1;
+            } else {
+                index = self.filterGroup.filterIndex + 1;
+                self.isLeftToRight = NO;
+            }
+            
+            if (index < 0) {
+                index = self.filterGroup.filtersInfo.count - 1;
+            } else if (index >= self.filterGroup.filtersInfo.count) {
+                index = index - self.filterGroup.filtersInfo.count;
+            }
+            self.filterGroup.nextFilterIndex = index;
+            
+            if (self.isLeftToRight) {
+                self.leftFilter = self.filterGroup.nextFilter;
+                self.rightFilter = self.filterGroup.currentFilter;
+                self.leftPercent = 0.0;
+            } else {
+                self.leftFilter = self.filterGroup.currentFilter;
+                self.rightFilter = self.filterGroup.nextFilter;
+                self.leftPercent = 1.0;
+            }
+            self.isPanning = YES;
+            break;
+        }
+        case UIGestureRecognizerStateChanged: {
+            if (self.isLeftToRight) {
+                if (transPoint.x <= 0) {
+                    transPoint.x = 0;
+                }
+                self.leftPercent = 2 * transPoint.x / gestureRecognizer.view.bounds.size.width;
+                self.isNeedChangeFilter = (self.leftPercent >= 0.5) || (speed.x > 500 );
+            } else {
+                if (transPoint.x >= 0) {
+                    transPoint.x = 0;
+                }
+                self.leftPercent = 1 - 2 * fabs(transPoint.x) / gestureRecognizer.view.bounds.size.width;
+                self.isNeedChangeFilter = (self.leftPercent <= 0.5) || (speed.x < -500);
+            }
+            break;
+        }
+        case UIGestureRecognizerStateEnded:
+        case UIGestureRecognizerStateCancelled: {
+            
+            gestureRecognizer.enabled = NO;
+            __weak typeof(self) weakself = self;
+            
+            // 做一个滤镜过渡动画，优化用户体验
+            dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0));
+            dispatch_source_set_timer(timer, DISPATCH_TIME_NOW, 0.01 * NSEC_PER_SEC, 0.005 * NSEC_PER_SEC);
+            dispatch_source_set_event_handler(timer, ^{
+                
+                if (!weakself.isPanning) return;
+                
+                float delta = 0.03;
+                if (weakself.isNeedChangeFilter) {
+                    // apply filter change
+                    if (weakself.isLeftToRight) {
+                        weakself.leftPercent = MIN(1, weakself.leftPercent + delta);
+                    } else {
+                        weakself.leftPercent = MAX(0, weakself.leftPercent - delta);
+                    }
+                } else {
+                    // cancel filter change
+                    if (weakself.isLeftToRight) {
+                        weakself.leftPercent = MAX(0, weakself.leftPercent - delta);
+                    } else {
+                        weakself.leftPercent = MIN(1, weakself.leftPercent + delta);
+                    }
+                }
+                
+                if (weakself.leftPercent < FLT_EPSILON || fabs(1.0 - weakself.leftPercent) < FLT_EPSILON) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        dispatch_source_cancel(timer);
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            dispatch_source_cancel(timer);
+                            if (self.isNeedChangeFilter) {
+                                self.filterGroup.filterIndex = self.filterGroup.nextFilterIndex;
+                            }
+                            self.isPanning = NO;
+                            self.isNeedChangeFilter = NO;
+                            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                                gestureRecognizer.enabled = YES;
+                            });
+                        });
+                    });
+                }
+            });
+            dispatch_resume(timer);
+            break;
+        }
+        default:
+            break;
+    }
 }
 
 @end

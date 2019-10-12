@@ -46,13 +46,40 @@
         
         VideoMixViewController *mulitMixViewController = [[VideoMixViewController alloc] init];
         mulitMixViewController.urls = urls;
+        mulitMixViewController.modalPresentationStyle = UIModalPresentationFullScreen;
         [self presentViewController:mulitMixViewController animated:YES completion:nil];
         
     } else if (enumVideoNextActionRecording == self.actionType) {
         
-        MixRecordViewController *recordViewController = [[MixRecordViewController alloc] init];
-        recordViewController.mixURL = urls[0];
-        [self presentViewController:recordViewController animated:YES completion:nil];
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"选择合拍的样式" message:nil preferredStyle:(UIAlertControllerStyleAlert)];
+        UIAlertAction *leftRight = [UIAlertAction actionWithTitle:@"左右分屏" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+            MixRecordViewController *recordViewController = [[MixRecordViewController alloc] init];
+            recordViewController.mixURL = urls[0];
+            recordViewController.mixType = enumMixTypeLeftRight;
+            recordViewController.modalPresentationStyle = UIModalPresentationFullScreen;
+            [self presentViewController:recordViewController animated:YES completion:nil];
+
+        }];
+        UIAlertAction *updown = [UIAlertAction actionWithTitle:@"素材在上(画中画)" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+            MixRecordViewController *recordViewController = [[MixRecordViewController alloc] init];
+            recordViewController.mixURL = urls[0];
+            recordViewController.mixType = enumMixTypeUpdown;
+            recordViewController.modalPresentationStyle = UIModalPresentationFullScreen;
+            [self presentViewController:recordViewController animated:YES completion:nil];
+        }];
+        UIAlertAction *downup = [UIAlertAction actionWithTitle:@"素材在下(画中画)" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+            MixRecordViewController *recordViewController = [[MixRecordViewController alloc] init];
+            recordViewController.mixURL = urls[0];
+            recordViewController.mixType = enumMixTypeDownup;
+            recordViewController.modalPresentationStyle = UIModalPresentationFullScreen;
+            [self presentViewController:recordViewController animated:YES completion:nil];
+        }];
+        
+        [alert addAction:leftRight];
+        [alert addAction:updown];
+        [alert addAction:downup];
+
+        [self presentViewController:alert animated:YES completion:nil];
         
     }
 }

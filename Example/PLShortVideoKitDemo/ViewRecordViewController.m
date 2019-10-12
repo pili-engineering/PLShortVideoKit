@@ -14,12 +14,8 @@
 #import "FLAnimatedImage.h"
 #import "PLShortVideoKit/PLShortVideoKit.h"
 
-#define AlertViewShow(msg) [[[UIAlertView alloc] initWithTitle:@"warning" message:[NSString stringWithFormat:@"%@", msg] delegate:nil cancelButtonTitle:@"ok" otherButtonTitles:nil] show]
-#define PLS_RGBCOLOR(r,g,b) [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:1]
-#define PLS_RGBCOLOR_ALPHA(r,g,b,a) [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:(a)]
+
 #define PLS_BaseToolboxView_HEIGHT 64
-#define PLS_SCREEN_WIDTH CGRectGetWidth([UIScreen mainScreen].bounds)
-#define PLS_SCREEN_HEIGHT CGRectGetHeight([UIScreen mainScreen].bounds)
 
 @interface ViewRecordViewController ()
 <
@@ -334,6 +330,7 @@ PLShortVideoRecorderDelegate
     EditViewController *videoEditViewController = [[EditViewController alloc] init];
     videoEditViewController.settings = outputSettings;
     videoEditViewController.filesURLArray = filesURLArray;
+    videoEditViewController.modalPresentationStyle = UIModalPresentationFullScreen;
     [self presentViewController:videoEditViewController animated:YES completion:nil];
 }
 

@@ -120,7 +120,7 @@ PLSImageRotateRecorderDelegate
     
     editViewController.filesURLArray = [self.recorder getAllRecordingFiles];
     editViewController.settings = outputSettings;
-    
+    editViewController.modalPresentationStyle = UIModalPresentationFullScreen;
     [self presentViewController:editViewController animated:YES completion:nil];
 
 }

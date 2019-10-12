@@ -9,8 +9,7 @@
 #import "PLSRateButtonView.h"
 
 #define KINDICATORHEIGHT 2.f
-#define PLS_SCREEN_WIDTH CGRectGetWidth([UIScreen mainScreen].bounds)
-#define PLS_SCREEN_HEIGHT CGRectGetHeight([UIScreen mainScreen].bounds)
+
 #define COLOR_RGB(a,b,c,d) [UIColor colorWithRed:a/255.0 green:b/255.0 blue:c/255.0 alpha:d]
 #define BUTTON_BACKGROUNDCOLOR COLOR_RGB(30, 30, 30, 0.8)
 #define SELECTED_COLOR COLOR_RGB(60, 157, 191, 1)

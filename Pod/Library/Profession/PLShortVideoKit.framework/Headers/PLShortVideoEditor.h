@@ -63,6 +63,7 @@
  @param editor PLShortVideoEditor 实例
  @param asset 当前视频
  @param timeRange 当前视频的有效视频区域，对应 PLShortVideoEditor 的属性 @property (assign, nonatomic) CMTimeRange timeRange
+ 
 
  @since      v1.9.0
  */
@@ -433,6 +434,11 @@
  @since      v1.7.0
  */
 - (void)resetVideoLayerOrientation;
+
+
+- (void)addReverserEffectVideoWithAudio:(BOOL)enable;
+
+- (void)removeReverserEffectVideoWithAudio;
 
 @end
 

@@ -335,6 +335,8 @@ static int KVOcontext = 0;
         transitionController.backgroundVideoURL = [(AVURLAsset *)asset URL];
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:transitionController];
         transitionController.delegate = self;
+        transitionController.modalPresentationStyle = UIModalPresentationFullScreen;
+        navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
         [self presentViewController:navigationController animated:YES completion:nil];
     }];
     
@@ -393,6 +395,7 @@ static int KVOcontext = 0;
             EditViewController *videoEditViewController = [[EditViewController alloc] init];
             videoEditViewController.settings = outputSettings;
             videoEditViewController.filesURLArray = @[url];
+            videoEditViewController.modalPresentationStyle = UIModalPresentationFullScreen;
             [weakSelf presentViewController:videoEditViewController animated:YES completion:nil];
         };
         self.movieExport.failureBlock = ^(NSError *error) {

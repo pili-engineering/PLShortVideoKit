@@ -19,17 +19,9 @@
 #import "PLSRateButtonView.h"
 #import "PLScreenRecorderManager.h"
 
-#define AlertViewShow(msg) [[[UIAlertView alloc] initWithTitle:@"warning" message:[NSString stringWithFormat:@"%@", msg] delegate:nil cancelButtonTitle:@"ok" otherButtonTitles:nil] show]
 
 #define PLS_CLOSE_CONTROLLER_ALERTVIEW_TAG 10001
-#define PLS_SCREEN_WIDTH CGRectGetWidth([UIScreen mainScreen].bounds)
-#define PLS_SCREEN_HEIGHT CGRectGetHeight([UIScreen mainScreen].bounds)
-#define PLS_RGBCOLOR(r,g,b) [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:1]
-#define PLS_RGBACOLOR(r,g,b,a) [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:(a)]
-
 #define PLS_BaseToolboxView_HEIGHT 64
-#define PLS_SCREEN_WIDTH CGRectGetWidth([UIScreen mainScreen].bounds)
-#define PLS_SCREEN_HEIGHT CGRectGetHeight([UIScreen mainScreen].bounds)
 
 @interface RecordViewController ()
 <
@@ -49,7 +41,6 @@ PLScreenRecorderManagerDelegate
 @property (strong, nonatomic) PLScreenRecorderManager *screenRecorderManager;
 @property (strong, nonatomic) PLSProgressBar *progressBar;
 @property (strong, nonatomic) UIButton *recordButton;
-@property (strong, nonatomic) UIButton *viewRecordButton;
 @property (strong, nonatomic) PLSDeleteButton *deleteButton;
 @property (strong, nonatomic) UIButton *endButton;
 @property (strong, nonatomic) PLSRateButtonView *rateButtonView;
@@ -80,13 +71,21 @@ PLScreenRecorderManagerDelegate
 // 展示所有滤镜的集合视图
 @property (strong, nonatomic) UICollectionView *editVideoCollectionView;
 @property (strong, nonatomic) NSMutableArray<NSDictionary *> *filtersArray;
-@property (assign, nonatomic) NSInteger filterIndex;
+// 切换滤镜的时候，为了更好的用户体验，添加以下属性来做切换动画
+@property (nonatomic, assign) BOOL isPanning;
+@property (nonatomic, assign) BOOL isLeftToRight;
+@property (nonatomic, assign) BOOL isNeedChangeFilter;
+@property (nonatomic, weak) PLSFilter *leftFilter;
+@property (nonatomic, weak) PLSFilter *rightFilter;
+@property (nonatomic, assign) float leftPercent;
 
 @property (strong, nonatomic) UIButton *draftButton;
 @property (strong, nonatomic) NSURL *URL;
 
 @property (strong, nonatomic) UIButton *musicButton;
 @property (strong, nonatomic) UIActivityIndicatorView *activityIndicatorView;
+
+@property (strong, nonatomic) UIButton *filterButton;
 
 @property (strong, nonatomic) UIButton *monitorButton;
 // 实时截图按钮
@@ -96,6 +95,9 @@ PLScreenRecorderManagerDelegate
 
 // 录制前是否开启自动检测设备方向调整视频拍摄的角度（竖屏、横屏）
 @property (assign, nonatomic) BOOL isUseAutoCheckDeviceOrientationBeforeRecording;
+
+@property (assign, nonatomic) BOOL isViewRecord;
+
 
 @end
 
@@ -126,6 +128,11 @@ PLScreenRecorderManagerDelegate
     // 短视频录制核心类设置
     [self setupShortVideoRecorder];
     
+    if (_screenRecord) {
+        _isViewRecord = YES;
+        [self viewRecorder];
+    }
+    
     // --------------------------
     [self setupBaseToolboxView];
     [self setupRecordToolboxView];
@@ -146,6 +153,8 @@ PLScreenRecorderManagerDelegate
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
+    [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:YES];
+    
     [self.shortVideoRecorder startCaptureSession];
     
     [self getFirstMovieFromPhotoAlbum];
@@ -153,6 +162,8 @@ PLScreenRecorderManagerDelegate
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
+    
+    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:YES];
     
     [self.shortVideoRecorder stopCaptureSession];
 }
@@ -172,8 +183,8 @@ PLScreenRecorderManagerDelegate
     self.videoConfiguration = [PLSVideoConfiguration defaultConfiguration];
     self.videoConfiguration.position = AVCaptureDevicePositionFront;
     self.videoConfiguration.videoFrameRate = 30;
-    self.videoConfiguration.averageVideoBitRate = 1000*2500;
     self.videoConfiguration.videoSize = CGSizeMake(720, 1280);
+    self.videoConfiguration.averageVideoBitRate = [self suitableVideoBitrateWithSize:self.videoConfiguration.videoSize];
     self.videoConfiguration.videoOrientation = AVCaptureVideoOrientationPortrait;
     self.videoConfiguration.sessionPreset = AVCaptureSessionPreset1280x720;
 
@@ -191,12 +202,6 @@ PLScreenRecorderManagerDelegate
 
     // 录制前是否开启自动检测设备方向调整视频拍摄的角度（竖屏、横屏）
     if (self.isUseAutoCheckDeviceOrientationBeforeRecording) {
-        UIView *deviceOrientationView = [[UIView alloc] init];
-        deviceOrientationView.frame = CGRectMake(0, 0, PLS_SCREEN_WIDTH/2, 44);
-        deviceOrientationView.center = CGPointMake(PLS_SCREEN_WIDTH/2, 44/2);
-        deviceOrientationView.backgroundColor = [UIColor grayColor];
-        deviceOrientationView.alpha = 0.7;
-        [self.view addSubview:deviceOrientationView];
         self.shortVideoRecorder.adaptationRecording = YES; // 根据设备方向自动确定横屏 or 竖屏拍摄效果
         [self.shortVideoRecorder setDeviceOrientationBlock:^(PLSPreviewOrientation deviceOrientation){
             switch (deviceOrientation) {
@@ -214,23 +219,6 @@ PLScreenRecorderManagerDelegate
                     break;
                 default:
                     break;
-            }
-            
-            if (deviceOrientation == PLSPreviewOrientationPortrait) {
-                deviceOrientationView.frame = CGRectMake(0, 0, PLS_SCREEN_WIDTH/2, 44);
-                deviceOrientationView.center = CGPointMake(PLS_SCREEN_WIDTH/2, 44/2);
-                
-            } else if (deviceOrientation == PLSPreviewOrientationPortraitUpsideDown) {
-                deviceOrientationView.frame = CGRectMake(0, 0, PLS_SCREEN_WIDTH/2, 44);
-                deviceOrientationView.center = CGPointMake(PLS_SCREEN_WIDTH/2, PLS_SCREEN_HEIGHT - 44/2);
-                
-            } else if (deviceOrientation == PLSPreviewOrientationLandscapeRight) {
-                deviceOrientationView.frame = CGRectMake(0, 0, 44, PLS_SCREEN_HEIGHT/2);
-                deviceOrientationView.center = CGPointMake(PLS_SCREEN_WIDTH - 44/2, PLS_SCREEN_HEIGHT/2);
-                
-            } else if (deviceOrientation == PLSPreviewOrientationLandscapeLeft) {
-                deviceOrientationView.frame = CGRectMake(0, 0, 44, PLS_SCREEN_HEIGHT/2);
-                deviceOrientationView.center = CGPointMake(44/2, PLS_SCREEN_HEIGHT/2);
             }
         }];
     }
@@ -250,17 +238,6 @@ PLScreenRecorderManagerDelegate
             
             [self.filtersArray addObject:dic];
         }
-        
-        // 展示多种滤镜的 UICollectionView
-        CGRect frame = self.editVideoCollectionView.frame;
-        CGFloat x = PLS_BaseToolboxView_HEIGHT;
-        CGFloat y = PLS_BaseToolboxView_HEIGHT;
-        CGFloat width = frame.size.width - 2*x;
-        CGFloat height = frame.size.height;
-        self.editVideoCollectionView.frame = CGRectMake(x, y, width, height);
-        [self.view addSubview:self.editVideoCollectionView];
-        [self.editVideoCollectionView reloadData];
-        self.editVideoCollectionView.hidden = YES;
     }
     
     // 本地视频
@@ -269,83 +246,121 @@ PLScreenRecorderManagerDelegate
 }
 
 - (void)setupBaseToolboxView {
-    self.baseToolboxView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, PLS_BaseToolboxView_HEIGHT, PLS_BaseToolboxView_HEIGHT + PLS_SCREEN_WIDTH)];
-    self.baseToolboxView.backgroundColor = [UIColor clearColor];
-    [self.view addSubview:self.baseToolboxView];
+    UIView *topToolView = [[UIView alloc] initWithFrame:CGRectMake(10, 10, 176, 35)];
+    topToolView.backgroundColor = [UIColor clearColor];
+    [self.view addSubview:topToolView];
     
     // 返回
     UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    backButton.frame = CGRectMake(10, 10, 35, 35);
-    [backButton setBackgroundImage:[UIImage imageNamed:@"btn_camera_cancel_a"] forState:UIControlStateNormal];
-    [backButton setBackgroundImage:[UIImage imageNamed:@"btn_camera_cancel_b"] forState:UIControlStateHighlighted];
+    backButton.frame = CGRectMake(0, 0, 35, 35);
+    backButton.imageEdgeInsets = UIEdgeInsetsMake(2, 2, 2, 2);
+    [backButton setImage:[UIImage imageNamed:@"close_back"] forState:UIControlStateNormal];
     [backButton addTarget:self action:@selector(backButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
-    [self.baseToolboxView addSubview:backButton];
+    [topToolView addSubview:backButton];
     
-    // 七牛滤镜
-    UIButton *filterButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    filterButton.frame = CGRectMake(10, 55, 35, 35);
-    [filterButton setTitle:@"滤镜" forState:UIControlStateNormal];
-    [filterButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    filterButton.titleLabel.font = [UIFont systemFontOfSize:14];
-    [filterButton addTarget:self action:@selector(filterButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
-    [self.baseToolboxView addSubview:filterButton];
-    
-    // 录屏按钮
-    self.viewRecordButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.viewRecordButton.frame = CGRectMake(10, 100, 35, 35);
-    [self.viewRecordButton setTitle:@"录屏" forState:UIControlStateNormal];
-    [self.viewRecordButton setTitle:@"完成" forState:UIControlStateSelected];
-    self.viewRecordButton.selected = NO;
-    [self.viewRecordButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    self.viewRecordButton.titleLabel.font = [UIFont systemFontOfSize:14];
-    [self.viewRecordButton addTarget:self action:@selector(viewRecorderButtonClick:) forControlEvents:UIControlEventTouchUpInside];
-    [self.baseToolboxView addSubview:self.viewRecordButton];
-    
-    // 全屏／正方形录制模式
-    self.squareRecordButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.squareRecordButton.frame = CGRectMake(10, 145, 35, 35);
-    [self.squareRecordButton setTitle:@"1:1" forState:UIControlStateNormal];
-    [self.squareRecordButton setTitle:@"全屏" forState:UIControlStateSelected];
-    self.squareRecordButton.selected = NO;
-    [self.squareRecordButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    self.squareRecordButton.titleLabel.font = [UIFont systemFontOfSize:14];
-    [self.squareRecordButton addTarget:self action:@selector(squareRecordButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
-    [self.baseToolboxView addSubview:self.squareRecordButton];
-    
-    // 闪光灯
-    UIButton *flashButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    flashButton.frame = CGRectMake(10, 190, 35, 35);
-    [flashButton setBackgroundImage:[UIImage imageNamed:@"flash_close"] forState:UIControlStateNormal];
-    [flashButton setBackgroundImage:[UIImage imageNamed:@"flash_open"] forState:UIControlStateSelected];
-    [flashButton addTarget:self action:@selector(flashButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
-    [self.baseToolboxView addSubview:flashButton];
-    
-    // 美颜
-    UIButton *beautyFaceButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    beautyFaceButton.frame = CGRectMake(10, 235, 30, 30);
-    [beautyFaceButton setTitle:@"美颜" forState:UIControlStateNormal];
-    [beautyFaceButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    beautyFaceButton.titleLabel.font = [UIFont systemFontOfSize:14];
-    [beautyFaceButton addTarget:self action:@selector(beautyFaceButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
-    [self.baseToolboxView addSubview:beautyFaceButton];
-    beautyFaceButton.selected = YES;
+    // 截图
+    self.snapshotButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    self.snapshotButton.frame = CGRectMake(47, 0, 35, 35);
+    [self.snapshotButton setImage:[UIImage imageNamed:@"screen_shoots"] forState:UIControlStateNormal];
+    [self.snapshotButton addTarget:self action:@selector(snapshotButtonOnClick:) forControlEvents:UIControlEventTouchUpInside];
+    [topToolView addSubview:_snapshotButton];
     
     // 切换摄像头
     UIButton *toggleCameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    toggleCameraButton.frame = CGRectMake(10, 280, 35, 35);
-    [toggleCameraButton setBackgroundImage:[UIImage imageNamed:@"toggle_camera"] forState:UIControlStateNormal];
+    toggleCameraButton.frame = CGRectMake(47 * 2, 0, 35, 35);
+    toggleCameraButton.imageEdgeInsets = UIEdgeInsetsMake(1, 1, 1, 1);
+    [toggleCameraButton setImage:[UIImage imageNamed:@"toggle_camera"] forState:UIControlStateNormal];
     [toggleCameraButton addTarget:self action:@selector(toggleCameraButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
-    [self.baseToolboxView addSubview:toggleCameraButton];
+    [topToolView addSubview:toggleCameraButton];
+    
+    // 闪光灯
+    UIButton *flashButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    flashButton.frame = CGRectMake(47 * 3, 0, 35, 35);
+    flashButton.imageEdgeInsets = UIEdgeInsetsMake(2, 2, 2, 2);
+    [flashButton setImage:[UIImage imageNamed:@"flash_close"] forState:UIControlStateNormal];
+    [flashButton setImage:[UIImage imageNamed:@"flash_open"] forState:UIControlStateSelected];
+    [flashButton addTarget:self action:@selector(flashButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
+    [topToolView addSubview:flashButton];
+    
+    UIView *leftToolView = [[UIView alloc] initWithFrame:CGRectMake(10, 60, 72, 228)];
+    leftToolView.backgroundColor = [UIColor clearColor];
+    [self.view addSubview:leftToolView];
+    
+    // 美颜
+    UIButton *beautyFaceButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    beautyFaceButton.frame = CGRectMake(0, 0, 72, 28);
+    [beautyFaceButton setTitle:@"美颜: 关" forState:UIControlStateNormal];
+    [beautyFaceButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [beautyFaceButton setTitle:@"美颜: 开" forState:UIControlStateSelected];
+    [beautyFaceButton setTitleColor:[UIColor whiteColor] forState:UIControlStateSelected];
+    beautyFaceButton.titleLabel.font = [UIFont systemFontOfSize:14];
+    [beautyFaceButton sizeToFit];
+    [beautyFaceButton addTarget:self action:@selector(beautyFaceButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
+    [leftToolView addSubview:beautyFaceButton];
+    beautyFaceButton.selected = YES;
+    
+    // 七牛滤镜
+    self.filterButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    self.filterButton.frame = CGRectMake(0, 40, 72, 28);
+    [self.filterButton setTitle:@"滤镜: 原色" forState:UIControlStateNormal];
+    [self.filterButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    self.filterButton.titleLabel.font = [UIFont systemFontOfSize:14];
+    [self.filterButton sizeToFit];
+    [self.filterButton addTarget:self action:@selector(filterButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
+    [leftToolView addSubview:self.filterButton];
+    
+    //是否开启 SDK 退到后台监听
+    self.monitorButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    self.monitorButton.frame = CGRectMake(0, 80, 72, 28);
+    [self.monitorButton setTitle:@"监听: 关" forState:UIControlStateNormal];
+    [self.monitorButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [self.monitorButton setTitle:@"监听: 开" forState:UIControlStateSelected];
+    [self.monitorButton setTitleColor:[UIColor whiteColor] forState:UIControlStateSelected];
+    self.monitorButton.titleLabel.font = [UIFont systemFontOfSize:14];
+    [self.monitorButton sizeToFit];
+    [self.monitorButton addTarget:self action:@selector(monitorButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
+    [leftToolView addSubview:self.monitorButton];
+    self.monitorButton.selected = NO;
+    
+    // 30FPS/60FPS
+    self.frameRateButton =  [[UIButton alloc] init];
+    self.frameRateButton.frame = CGRectMake(0, 120, 72, 28);
+    [self.frameRateButton setTitle:@"帧率: 30" forState:(UIControlStateNormal)];
+    [self.frameRateButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [self.frameRateButton setTitle:@"帧率: 60" forState:(UIControlStateSelected)];
+    [self.frameRateButton setTitleColor:[UIColor whiteColor] forState:UIControlStateSelected];
+    self.frameRateButton.titleLabel.font = [UIFont systemFontOfSize:14];
+    [self.frameRateButton sizeToFit];
+    [self.frameRateButton addTarget:self action:@selector(frameRateButtonOnClick:) forControlEvents:UIControlEventTouchUpInside];
+    [leftToolView addSubview:self.frameRateButton];
+    
+    // 全屏／正方形录制模式
+    self.squareRecordButton = [[UIButton alloc] init];
+    self.squareRecordButton.frame = CGRectMake(0, 160, 72, 28);
+    [self.squareRecordButton setTitle:@"屏比: 全屏" forState:UIControlStateNormal];
+    [self.squareRecordButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [self.squareRecordButton setTitle:@"屏比: 1:1" forState:UIControlStateSelected];
+    [self.squareRecordButton setTitleColor:[UIColor whiteColor] forState:UIControlStateSelected];
+    self.squareRecordButton.titleLabel.font = [UIFont systemFontOfSize:14];
+    [self.squareRecordButton sizeToFit];
+    [self.squareRecordButton addTarget:self action:@selector(squareRecordButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
+    [leftToolView addSubview:self.squareRecordButton];
+    self.squareRecordButton.selected = NO;
     
     // 录制的视频文件的存储路径设置
     self.filePathButton = [[UIButton alloc] init];
-    self.filePathButton.frame = CGRectMake(10, 325, 35, 35);
-    [self.filePathButton setImage:[UIImage imageNamed:@"file_path"] forState:UIControlStateNormal];
+    self.filePathButton.frame = CGRectMake(0, 200, 72, 28);
+    [self.filePathButton setTitle:@"目录: 开" forState:UIControlStateNormal];
+    [self.filePathButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [self.filePathButton setTitle:@"目录: 关" forState:UIControlStateSelected];
+    [self.filePathButton setTitleColor:[UIColor whiteColor] forState:UIControlStateSelected];
+    self.filePathButton.titleLabel.font = [UIFont systemFontOfSize:14];
+    [self.filePathButton sizeToFit];
     [self.filePathButton addTarget:self action:@selector(filePathButtonClickedEvent:) forControlEvents:UIControlEventTouchUpInside];
-    [self.baseToolboxView addSubview:self.filePathButton];
-    
+    [leftToolView addSubview:self.filePathButton];
     self.filePathButton.selected = NO;
     self.useSDKInternalPath = YES;
+
     
     // 展示拼接视频的动画
     self.activityIndicatorView = [[UIActivityIndicatorView alloc] initWithFrame:self.view.bounds];
@@ -355,7 +370,6 @@ PLScreenRecorderManagerDelegate
 }
 
 - (void)setupRightButtonView {
-    
     self.rightScrollView = [[UIScrollView alloc] init];
     self.rightScrollView.bounces = YES;
     CGRect rc = self.rateButtonView.bounds;
@@ -366,64 +380,30 @@ PLScreenRecorderManagerDelegate
         [weakSelf.rightScrollView flashScrollIndicators];
     });
     
-    UIColor *backgroundColor = [UIColor colorWithWhite:0.0 alpha:.55];
+    UIColor *backgroundColor = [UIColor whiteColor];
     
     int index = 0;
-    // 拍照
-    self.snapshotButton = [[UIButton alloc] initWithFrame:CGRectMake(0, index * 60 + 10, 46, 46)];
-    self.snapshotButton.layer.cornerRadius = 23;
-    self.snapshotButton.backgroundColor = backgroundColor;
-    [self.snapshotButton setImage:[UIImage imageNamed:@"icon_trim"] forState:UIControlStateNormal];
-    self.snapshotButton.imageEdgeInsets = UIEdgeInsetsMake(6, 6, 6, 6);
-    [self.snapshotButton addTarget:self action:@selector(snapshotButtonOnClick:) forControlEvents:UIControlEventTouchUpInside];
-    [self.rightScrollView addSubview:_snapshotButton];
-    
-    index ++;
     // 加载草稿视频
-    self.draftButton = [[UIButton alloc] initWithFrame:CGRectMake(0, index * 60 + 10, 46, 46)];
-    self.draftButton.layer.cornerRadius = 23;
+    self.draftButton = [[UIButton alloc] initWithFrame:CGRectMake(0, index * 46 + 20, 46, 32)];
+    self.draftButton.layer.cornerRadius = 3;
     self.draftButton.backgroundColor = backgroundColor;
-    [self.draftButton setImage:[UIImage imageNamed:@"draft_video"] forState:UIControlStateNormal];
-    self.draftButton.imageEdgeInsets = UIEdgeInsetsMake(6, 6, 6, 6);
+    [self.draftButton setTitle:@"片段" forState:UIControlStateNormal];
+    self.draftButton.titleLabel.font = [UIFont systemFontOfSize:14];
+    [self.draftButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [self.draftButton addTarget:self action:@selector(draftVideoButtonOnClick:) forControlEvents:UIControlEventTouchUpInside];
     [self.rightScrollView addSubview:self.draftButton];
     
     index ++;
     // 是否使用背景音乐
-    self.musicButton = [[UIButton alloc] initWithFrame:CGRectMake(0, index * 60 + 10, 46, 46)];
-    self.musicButton.layer.cornerRadius = 23;
+    self.musicButton = [[UIButton alloc] initWithFrame:CGRectMake(0, index * 46 + 20, 46, 32)];
+    self.musicButton.layer.cornerRadius = 3;
     self.musicButton.backgroundColor = backgroundColor;
-    [self.musicButton setImage:[UIImage imageNamed:@"music_no_selected"] forState:UIControlStateNormal];
-    [self.musicButton setImage:[UIImage imageNamed:@"music_selected"] forState:UIControlStateSelected];
-    self.musicButton.imageEdgeInsets = UIEdgeInsetsMake(6, 6, 6, 6);
+    [self.musicButton setTitle:@"音乐" forState:UIControlStateNormal];
+    self.musicButton.titleLabel.font = [UIFont systemFontOfSize:14];
+    [self.musicButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [self.musicButton setTitleColor:PLS_RGBCOLOR(65, 154, 208) forState:UIControlStateSelected];
     [self.musicButton addTarget:self action:@selector(musicButtonOnClick:) forControlEvents:UIControlEventTouchUpInside];
     [self.rightScrollView addSubview:self.musicButton];
-    
-    index ++;
-    // 30FPS/60FPS
-    self.frameRateButton = [[UIButton alloc] initWithFrame:CGRectMake(0, index * 60 + 10, 46, 46)];
-    self.frameRateButton.layer.cornerRadius = 23;
-    self.frameRateButton.backgroundColor = backgroundColor;
-    [self.frameRateButton setTitle:@"30帧" forState:(UIControlStateNormal)];
-    self.frameRateButton.titleLabel.font = [UIFont systemFontOfSize:14];
-    [self.frameRateButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    [self.frameRateButton addTarget:self action:@selector(frameRateButtonOnClick:) forControlEvents:UIControlEventTouchUpInside];
-    [self.rightScrollView addSubview:self.frameRateButton];
-    
-    index ++;
-    //是否开启 SDK 退到后台监听
-    self.monitorButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.monitorButton.layer.cornerRadius = 23;
-    self.monitorButton.backgroundColor = backgroundColor;
-    [self.monitorButton setTitle:@"监听关" forState:UIControlStateNormal];
-    [self.monitorButton setTitle:@"监听开" forState:UIControlStateSelected];
-    self.monitorButton.selected = NO;
-    [self.monitorButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    self.monitorButton.titleLabel.font = [UIFont systemFontOfSize:14];
-    [self.monitorButton sizeToFit];
-    self.monitorButton.frame = CGRectMake(0, index * 60 + 10, 46, 46);
-    [self.monitorButton addTarget:self action:@selector(monitorButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
-    [self.rightScrollView addSubview:self.monitorButton];
     
     index ++;
     [self.view addSubview:self.rightScrollView];
@@ -458,9 +438,12 @@ PLScreenRecorderManagerDelegate
     // 录制视频的操作按钮
     CGFloat buttonWidth = 80.0f;
     self.recordButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    self.recordButton.layer.cornerRadius = buttonWidth/2;
+    self.recordButton.layer.borderWidth = 5;
+    self.recordButton.layer.borderColor = [UIColor whiteColor].CGColor;
+    self.recordButton.backgroundColor = PLS_RGBCOLOR(65, 154, 208);
     self.recordButton.frame = CGRectMake(0, 0, buttonWidth, buttonWidth);
     self.recordButton.center = CGPointMake(PLS_SCREEN_WIDTH / 2, self.recordToolboxView.frame.size.height - 80);
-    [self.recordButton setImage:[UIImage imageNamed:@"btn_record_a"] forState:UIControlStateNormal];
     [self.recordButton addTarget:self action:@selector(recordButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
     [self.recordToolboxView addSubview:self.recordButton];
     
@@ -559,7 +542,7 @@ PLScreenRecorderManagerDelegate
 
 // 返回上一层
 - (void)backButtonEvent:(id)sender {
-    if (self.viewRecordButton.isSelected) {
+    if (self.isViewRecord) {
         [self.viewRecorderManager cancelRecording];
         [self.screenRecorderManager cancelRecording];
     }
@@ -602,40 +585,25 @@ PLScreenRecorderManagerDelegate
 }
 
 //录制 self.view
-- (void)viewRecorderButtonClick:(id)sender {
+- (void)viewRecorder {
     if (@available(iOS 11.0, *)) {
         if (!self.screenRecorderManager) {
             self.screenRecorderManager = [[PLScreenRecorderManager alloc] init];
             self.screenRecorderManager.delegate = self;
         }
-        if (self.viewRecordButton.isSelected) {
-            self.viewRecordButton.selected = NO;
-            [self.screenRecorderManager stopRecording];
-        } else {
-            self.viewRecordButton.selected = YES;
-            [self.screenRecorderManager startRecording];
-        }
+        [self.screenRecorderManager startRecording];
     } else {
         if (!self.viewRecorderManager) {
             self.viewRecorderManager = [[PLSViewRecorderManager alloc] initWithRecordedView:self.shortVideoRecorder.previewView];
             self.viewRecorderManager.delegate = self;
         }
+        [self.viewRecorderManager startRecording];
         
-        if (self.viewRecordButton.isSelected) {
-            self.viewRecordButton.selected = NO;
-            [self.viewRecorderManager stopRecording];
-            
-            [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillResignActiveNotification object:nil];
-        }
-        else {
-            self.viewRecordButton.selected = YES;
-            [self.viewRecorderManager startRecording];
-            
-            [[NSNotificationCenter defaultCenter] addObserver:self
-                                                     selector:@selector(applicationWillResignActive:)
-                                                         name:UIApplicationWillResignActiveNotification
-                                                       object:nil];
-        }}
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(applicationWillResignActive:)
+                                                     name:UIApplicationWillResignActiveNotification
+                                                   object:nil];
+    }
 }
 
 // 打开／关闭闪光灯
@@ -678,7 +646,23 @@ PLScreenRecorderManagerDelegate
 // 七牛滤镜
 - (void)filterButtonEvent:(UIButton *)button {
     button.selected = !button.selected;
-    self.editVideoCollectionView.hidden = !button.selected;
+    CGFloat height = CGRectGetHeight(self.editVideoCollectionView.frame);
+    if (button.selected) {
+        [self.view insertSubview:self.editVideoCollectionView aboveSubview:self.view.subviews.lastObject];
+        [UIView animateWithDuration:0.5 animations:^{
+            self.editVideoCollectionView.frame = CGRectMake(0, PLS_SCREEN_HEIGHT -  height, PLS_SCREEN_WIDTH, height);
+        } completion:^(BOOL finished) {
+            [self.editVideoCollectionView reloadData];
+        }];
+    } else {
+        [UIView animateWithDuration:1 animations:^{
+            self.editVideoCollectionView.frame = CGRectMake(0, PLS_SCREEN_HEIGHT, PLS_SCREEN_WIDTH, height);
+        } completion:^(BOOL finished) {
+            [self.editVideoCollectionView reloadData];
+            [self.editVideoCollectionView removeFromSuperview];
+        }];
+    }
+   
 }
 
 // 加载草稿视频
@@ -719,15 +703,11 @@ PLScreenRecorderManagerDelegate
 - (void)frameRateButtonOnClick:(UIButton *)button {
     if (60 == self.videoConfiguration.videoFrameRate) {
         self.videoConfiguration.videoFrameRate = 30;
-        self.videoConfiguration.averageVideoBitRate = 1000 * 2500;
         self.videoConfiguration.sessionPreset = AVCaptureSessionPreset1280x720;
-        [button setTitle:@"30帧" forState:(UIControlStateNormal)];
         [self.shortVideoRecorder reloadvideoConfiguration:self.videoConfiguration];
     } else {
         self.videoConfiguration.videoFrameRate = 60;
-        self.videoConfiguration.averageVideoBitRate = 1000 * 3500;
         self.videoConfiguration.sessionPreset = AVCaptureSessionPresetInputPriority;
-        [button setTitle:@"60帧" forState:(UIControlStateNormal)];
         [self.shortVideoRecorder reloadvideoConfiguration:self.videoConfiguration];
         [self checkActiveFormat];
     }
@@ -830,7 +810,6 @@ PLScreenRecorderManagerDelegate
     [self playEvent:asset];
     [self.viewRecorderManager cancelRecording];
     [self.screenRecorderManager cancelRecording];
-    self.viewRecordButton.selected = NO;
 }
 
 // 取消录制
@@ -842,14 +821,14 @@ PLScreenRecorderManagerDelegate
 // 导入视频
 - (void)importMovieButtonEvent:(id)sender {
     PhotoAlbumViewController *photoAlbumViewController = [[PhotoAlbumViewController alloc] init];
+    photoAlbumViewController.modalPresentationStyle = UIModalPresentationFullScreen;
     [self presentViewController:photoAlbumViewController animated:YES completion:nil];
 }
 
 #pragma mark - Notification
 - (void)applicationWillResignActive:(NSNotification *)notification {
-    if (self.viewRecordButton.selected) {
+    if (self.isViewRecord) {
         [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillResignActiveNotification object:nil];
-        self.viewRecordButton.selected = NO;        
         [self.viewRecorderManager cancelRecording];
     }
 }
@@ -904,7 +883,7 @@ PLScreenRecorderManagerDelegate
 
 #pragma mark - PLSViewRecorderManagerDelegate
 - (void)viewRecorderManager:(PLSViewRecorderManager *)manager didFinishRecordingToAsset:(AVAsset *)asset totalDuration:(CGFloat)totalDuration {
-    self.viewRecordButton.selected = NO;
+    self.isViewRecord = NO;
     // 设置音视频、水印等编辑信息
     NSMutableDictionary *outputSettings = [[NSMutableDictionary alloc] init];
     // 待编辑的原始视频素材
@@ -917,12 +896,13 @@ PLScreenRecorderManagerDelegate
     
     EditViewController *videoEditViewController = [[EditViewController alloc] init];
     videoEditViewController.settings = outputSettings;
+    videoEditViewController.modalPresentationStyle = UIModalPresentationFullScreen;
     [self presentViewController:videoEditViewController animated:YES completion:nil];
 }
 
 #pragma mark - PLScreenRecorderManagerDelegate
 - (void)screenRecorderManager:(PLScreenRecorderManager *)manager didFinishRecordingToAsset:(AVAsset *)asset totalDuration:(CGFloat)totalDuration {
-    self.viewRecordButton.selected = NO;
+    self.isViewRecord = NO;
     // 设置音视频、水印等编辑信息
     NSMutableDictionary *outputSettings = [[NSMutableDictionary alloc] init];
     // 待编辑的原始视频素材
@@ -935,6 +915,7 @@ PLScreenRecorderManagerDelegate
     
     EditViewController *videoEditViewController = [[EditViewController alloc] init];
     videoEditViewController.settings = outputSettings;
+    videoEditViewController.modalPresentationStyle = UIModalPresentationFullScreen;
     [self presentViewController:videoEditViewController animated:YES completion:nil];
 }
 
@@ -942,7 +923,7 @@ PLScreenRecorderManagerDelegate
     NSString *message = [NSString stringWithFormat:@"%@", error];
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"错误" message:message delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
     [alert show];
-    self.viewRecordButton.selected = NO;
+    self.isViewRecord = NO;
 }
 
 #pragma mark -- PLShortVideoRecorderDelegate 摄像头／麦克风鉴权的回调
@@ -975,8 +956,14 @@ PLScreenRecorderManagerDelegate
     //此处可以做美颜/滤镜等处理
     // 是否在录制时使用滤镜，默认是关闭的，NO
     if (self.isUseFilterWhenRecording) {
-        PLSFilter *filter = self.filterGroup.currentFilter;
-        pixelBuffer = [filter process:pixelBuffer];
+        // 进行滤镜处理
+        if (self.isPanning) {
+            // 正在滤镜切换过程中，使用 processPixelBuffer:leftPercent:leftFilter:rightFilter 做滤镜切换动画
+            pixelBuffer = [self.filterGroup processPixelBuffer:pixelBuffer leftPercent:self.leftPercent leftFilter:self.leftFilter rightFilter:self.rightFilter];
+        } else {
+            // 正常滤镜处理
+            pixelBuffer = [self.filterGroup.currentFilter process:pixelBuffer];
+        }
     }
     
     return pixelBuffer;
@@ -1057,7 +1044,7 @@ PLScreenRecorderManagerDelegate
     AVAsset *asset = self.shortVideoRecorder.assetRepresentingAllFiles;
     [self playEvent:asset];
     [self.viewRecorderManager cancelRecording];
-    self.viewRecordButton.selected = NO;
+    self.isViewRecord = NO;
 }
 
 #pragma mark -- 下一步
@@ -1114,6 +1101,7 @@ PLScreenRecorderManagerDelegate
     EditViewController *videoEditViewController = [[EditViewController alloc] init];
     videoEditViewController.settings = outputSettings;
     videoEditViewController.filesURLArray = filesURLArray;
+    videoEditViewController.modalPresentationStyle = UIModalPresentationFullScreen;
     [self presentViewController:videoEditViewController animated:YES completion:nil];
 }
 #pragma mark - 输出路径
@@ -1146,11 +1134,6 @@ PLScreenRecorderManagerDelegate
 - (void)removeActivityIndicatorView {
     [self.activityIndicatorView removeFromSuperview];
     [self.activityIndicatorView stopAnimating];
-}
-
-#pragma mark -- 隐藏状态栏
-- (BOOL)prefersStatusBarHidden {
-    return YES;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -1189,8 +1172,8 @@ PLScreenRecorderManagerDelegate
         layout.minimumLineSpacing = 10;
         layout.minimumInteritemSpacing = 10;
         
-        _editVideoCollectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, 0, PLS_SCREEN_WIDTH, layout.itemSize.height) collectionViewLayout:layout];
-        _editVideoCollectionView.backgroundColor = [UIColor clearColor];
+        _editVideoCollectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, PLS_SCREEN_HEIGHT, PLS_SCREEN_WIDTH, layout.itemSize.height) collectionViewLayout:layout];
+        _editVideoCollectionView.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.3];
         
         _editVideoCollectionView.showsHorizontalScrollIndicator = NO;
         _editVideoCollectionView.showsVerticalScrollIndicator = NO;
@@ -1224,61 +1207,152 @@ PLScreenRecorderManagerDelegate
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-
     // 滤镜
     self.filterGroup.filterIndex = indexPath.row;
+    NSArray *array = @[];
+    NSDictionary *dic = self.filtersArray[indexPath.row];
+    [self.filterButton setTitle:[NSString stringWithFormat:@"滤镜: %@", dic[@"name"]] forState:UIControlStateNormal];
 }
 
 #pragma mark - 通过手势切换滤镜
 - (void)setupGestureRecognizer {
-    UISwipeGestureRecognizer *recognizer;
-    // 添加右滑手势
-    recognizer = [[UISwipeGestureRecognizer alloc]initWithTarget:self action:@selector(handleSwipeFrom:)];
-    [recognizer setDirection:(UISwipeGestureRecognizerDirectionRight)];
-    [self.view addGestureRecognizer:recognizer];
-    // 添加左滑手势
-    recognizer = [[UISwipeGestureRecognizer alloc]initWithTarget:self action:@selector(handleSwipeFrom:)];
-    [recognizer setDirection:(UISwipeGestureRecognizerDirectionLeft)];
-    [self.view addGestureRecognizer:recognizer];
-    // 添加上滑手势
-    recognizer = [[UISwipeGestureRecognizer alloc]initWithTarget:self action:@selector(handleSwipeFrom:)];
-    [recognizer setDirection:(UISwipeGestureRecognizerDirectionUp)];
-    [self.view addGestureRecognizer:recognizer];
-    // 添加下滑手势
-    recognizer = [[UISwipeGestureRecognizer alloc]initWithTarget:self action:@selector(handleSwipeFrom:)];
-    [recognizer setDirection:(UISwipeGestureRecognizerDirectionDown)];
-    [self.view addGestureRecognizer:recognizer];
+    UIPanGestureRecognizer * panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleFilterPan:)];
+    [self.view addGestureRecognizer:panGesture];
 }
 
 // 添加手势的响应事件
-- (void)handleSwipeFrom:(UISwipeGestureRecognizer *)recognizer{
-    if(recognizer.direction == UISwipeGestureRecognizerDirectionDown) {
-        NSLog(@"swipe down");
-        self.filterIndex++;
-        self.filterIndex %= self.filterGroup.filtersInfo.count;
-    }
-    if(recognizer.direction == UISwipeGestureRecognizerDirectionUp) {
-        NSLog(@"swipe up");
-        self.filterIndex--;
-        if (self.filterIndex < 0) {
-            self.filterIndex = self.filterGroup.filtersInfo.count - 1;
-        }
-    }
-    if(recognizer.direction == UISwipeGestureRecognizerDirectionLeft) {
-        NSLog(@"swipe left");
-        self.filterIndex--;
-        if (self.filterIndex < 0) {
-            self.filterIndex = self.filterGroup.filtersInfo.count - 1;
-        }
-    }
-    if(recognizer.direction == UISwipeGestureRecognizerDirectionRight) {
-        NSLog(@"swipe right");
-        self.filterIndex++;
-        self.filterIndex %= self.filterGroup.filtersInfo.count;
-    }
+- (void)handleFilterPan:(UIPanGestureRecognizer *)gestureRecognizer {
     
-    // 滤镜
-    self.filterGroup.filterIndex = self.filterIndex;
+    CGPoint transPoint = [gestureRecognizer translationInView:gestureRecognizer.view];
+    CGPoint speed = [gestureRecognizer velocityInView:gestureRecognizer.view];
+    
+    switch (gestureRecognizer.state) {
+            
+            /*!
+             手势开始的时候，根据手势的滑动方向，确定切换到下一个滤镜的索引值
+             */
+        case UIGestureRecognizerStateBegan: {
+            NSInteger index = 0;
+            if (speed.x > 0) {
+                self.isLeftToRight = YES;
+                index = self.filterGroup.filterIndex - 1;
+            } else {
+                index = self.filterGroup.filterIndex + 1;
+                self.isLeftToRight = NO;
+            }
+            
+            if (index < 0) {
+                index = self.filterGroup.filtersInfo.count - 1;
+            } else if (index >= self.filterGroup.filtersInfo.count) {
+                index = index - self.filterGroup.filtersInfo.count;
+            }
+            self.filterGroup.nextFilterIndex = index;
+            
+            if (self.isLeftToRight) {
+                self.leftFilter = self.filterGroup.nextFilter;
+                self.rightFilter = self.filterGroup.currentFilter;
+                self.leftPercent = 0.0;
+            } else {
+                self.leftFilter = self.filterGroup.currentFilter;
+                self.rightFilter = self.filterGroup.nextFilter;
+                self.leftPercent = 1.0;
+            }
+            self.isPanning = YES;
+            
+            break;
+        }
+            
+            /*!
+             手势变化的过程中，根据滑动的距离来确定两个滤镜所占的百分比
+             */
+        case UIGestureRecognizerStateChanged: {
+            if (self.isLeftToRight) {
+                if (transPoint.x <= 0) {
+                    transPoint.x = 0;
+                }
+                self.leftPercent = transPoint.x / gestureRecognizer.view.bounds.size.width;
+                self.isNeedChangeFilter = (self.leftPercent >= 0.5) || (speed.x > 500 );
+            } else {
+                if (transPoint.x >= 0) {
+                    transPoint.x = 0;
+                }
+                self.leftPercent = 1 - fabs(transPoint.x) / gestureRecognizer.view.bounds.size.width;
+                self.isNeedChangeFilter = (self.leftPercent <= 0.5) || (speed.x < -500);
+            }
+            break;
+        }
+            
+            /*!
+             手势结束的时候，根据滑动距离，判断是否切换到下一个滤镜，并且做一下切换的动画
+             */
+        case UIGestureRecognizerStateEnded:
+        case UIGestureRecognizerStateCancelled:
+        case UIGestureRecognizerStateFailed: {
+            gestureRecognizer.enabled = NO;
+            
+            // 做一个滤镜过渡动画，优化用户体验
+            dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0));
+            dispatch_source_set_timer(timer, DISPATCH_TIME_NOW, 0.01 * NSEC_PER_SEC, 0.005 * NSEC_PER_SEC);
+            dispatch_source_set_event_handler(timer, ^{
+                if (!self.isPanning) return;
+                
+                float delta = 0.03;
+                if (self.isNeedChangeFilter) {
+                    // apply filter change
+                    if (self.isLeftToRight) {
+                        self.leftPercent = MIN(1, self.leftPercent + delta);
+                    } else {
+                        self.leftPercent = MAX(0, self.leftPercent - delta);
+                    }
+                } else {
+                    // cancel filter change
+                    if (self.isLeftToRight) {
+                        self.leftPercent = MAX(0, self.leftPercent - delta);
+                    } else {
+                        self.leftPercent = MIN(1, self.leftPercent + delta);
+                    }
+                }
+                
+                if (self.leftPercent < FLT_EPSILON || fabs(1.0 - self.leftPercent) < FLT_EPSILON) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        dispatch_source_cancel(timer);
+                        if (self.isNeedChangeFilter) {
+                            self.filterGroup.filterIndex = self.filterGroup.nextFilterIndex;
+                        }
+                        self.isPanning = NO;
+                        self.isNeedChangeFilter = NO;
+                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                            gestureRecognizer.enabled = YES;
+                        });
+                    });
+                }
+            });
+            dispatch_resume(timer);
+            break;
+        }
+            
+        case UIGestureRecognizerStatePossible: {
+            NSLog(@"UIGestureRecognizerStatePossible");
+        } break;
+            
+        default:
+            break;
+    }
+}
+
+#pragma mark - 较高质量下，不同分辨率对应的码率值取值
+- (NSInteger)suitableVideoBitrateWithSize:(CGSize)videoSize {
+    
+    // 下面的码率设置均偏大，为了拍摄出来的视频更清晰，选择了偏大的码率，不过均比系统相机拍摄出来的视频码率小很多
+    if (videoSize.width + videoSize.height > 720 + 1280) {
+        return 8 * 1000 * 1000;
+    } else if (videoSize.width + videoSize.height > 544 + 960) {
+        return 4 * 1000 * 1000;
+    } else if (videoSize.width + videoSize.height > 360 + 640) {
+        return 2 * 1000 * 1000;
+    } else {
+        return 1 * 1000 * 1000;
+    }
 }
 
 #pragma mark - addObserverEvent

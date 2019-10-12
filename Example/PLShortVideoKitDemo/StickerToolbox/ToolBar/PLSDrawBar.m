@@ -196,7 +196,7 @@ UICollectionViewDataSource
         colorView.backgroundColor = cellColor;
         if (self.currentColor == cellColor) {
             colorView.layer.borderWidth = 2.0;
-            colorView.layer.borderColor = RGBCOLOR_ALPHA(229, 61, 146, 1).CGColor;;
+            colorView.layer.borderColor = RGBCOLOR_ALPHA(65, 154, 208, 1).CGColor;;
         } else {
             colorView.layer.borderWidth = 0;
         }

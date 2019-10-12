@@ -13,10 +13,8 @@
 
 @interface EditViewController : UIViewController
 
-@property (strong, nonatomic) NSDictionary *settings;
-
-@property (strong, nonatomic) NSArray *filesURLArray;
-
-@property (strong, nonatomic) AVPlayerItem *playerItem;
+@property (nonatomic, strong) NSDictionary *settings;
+@property (nonatomic, strong) NSArray *filesURLArray;
+@property (nonatomic, strong) AVPlayerItem *playerItem;
 
 @end

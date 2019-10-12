@@ -32,7 +32,7 @@
     
     MulitClipViewController *mulitClipViewController = [[MulitClipViewController alloc] init];
     mulitClipViewController.phAssetArray = assetArray;
-    
+    mulitClipViewController.modalPresentationStyle = UIModalPresentationFullScreen;
     [self presentViewController:mulitClipViewController animated:YES completion:nil];
 }
 
