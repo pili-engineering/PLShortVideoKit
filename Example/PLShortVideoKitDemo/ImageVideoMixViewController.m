@@ -59,7 +59,6 @@
     [musicLabel sizeToFit];
     musicLabel.center = CGPointMake(rc.origin.x - musicLabel.bounds.size.width/2 - 5, self.transitionSwitch.center.y);
     [self.nextButton.superview addSubview:musicLabel];
-    
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -132,6 +131,7 @@
                 media.url = [asset movieURL];
                 NSLog(@"Video use url");
             }
+            media.timeRange = CMTimeRangeMake(kCMTimeZero, CMTimeMake(5 * 1000, 1000));
             [mediaItems addObject:media];
         } else if (PHAssetMediaTypeImage == asset.mediaType) {
             
@@ -146,8 +146,7 @@
                 }
             }];
             
-            PLSComposeMediaItem *media = [[PLSComposeMediaItem alloc] init];
-            
+            PLSComposeMediaItem *media = [[PLSComposeMediaItem alloc] init];            
             media.imageDuration = MAX(3, arc4random_uniform(8));
             if (isGIFImage) {
                 media.mediaType = PLSMediaTypeGIF;
@@ -185,40 +184,30 @@
         self.imageVideoComposer.musicVolume = 1.0;
         self.imageVideoComposer.movieVolume = 1.0;
     }
+        
+    self.imageVideoComposer.disableTransition = NO;
     
-    __weak typeof(self) weakSelf = self;
+    [self showWating];
     
+    __weak typeof(self)weakSelf = self;
+
     [self.imageVideoComposer setProcessingBlock:^(float progress) {
         NSLog(@"process = %f", progress);
         [weakSelf setProgress:progress];
     }];
-    
+        
     [self.imageVideoComposer setCompletionBlock:^(NSURL * _Nonnull url) {
         NSLog(@"completion");
         [weakSelf hideWating];
+        weakSelf.progressLabel.text = @"";
         
-        // 设置音视频、水印等编辑信息
-        NSMutableDictionary *outputSettings = [[NSMutableDictionary alloc] init];
-        // 待编辑的原始视频素材
-        NSMutableDictionary *plsMovieSettings = [[NSMutableDictionary alloc] init];
-        AVAsset *asset = [AVAsset assetWithURL:url];
-        plsMovieSettings[PLSURLKey] = url;
-        plsMovieSettings[PLSAssetKey] = asset;
-        plsMovieSettings[PLSStartTimeKey] = [NSNumber numberWithFloat:0.f];
-        plsMovieSettings[PLSDurationKey] = [NSNumber numberWithFloat:CMTimeGetSeconds(asset.duration)];
-        plsMovieSettings[PLSVolumeKey] = [NSNumber numberWithFloat:1.0f];
-        outputSettings[PLSMovieSettingsKey] = plsMovieSettings;
-        
-        EditViewController *videoEditViewController = [[EditViewController alloc] init];
-        videoEditViewController.settings = outputSettings;
-        videoEditViewController.filesURLArray = @[url];
-        videoEditViewController.modalPresentationStyle = UIModalPresentationFullScreen;
-        [weakSelf presentViewController:videoEditViewController animated:YES completion:nil];
-        
+        [weakSelf joinEditViewController:url];
     }];
     
     [self.imageVideoComposer setFailureBlock:^(NSError * _Nonnull error) {
         [weakSelf hideWating];
+        weakSelf.progressLabel.text = @"";
+
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"错误" message:error.localizedDescription delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil];
         [alert show];
     }];
@@ -228,25 +217,25 @@
         UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"选择拼接模式" message:@"同步优先：优先考虑拼接之后音视频的同步性，但是可能造个各个视频的拼接处播放的时候出现音频或者视频卡顿\n流畅优先：优先考虑拼接之后播放的流畅性，各个视频的拼接处不会出现音视频卡顿现象，但是可能造成音视频不同步\n视频优先：以每一段视频数据长度来决定每一段音频数据长度\n 音频优先：以每一段音频数据长度来决定每一段视频数据长度" preferredStyle:(UIAlertControllerStyleAlert)];
         
         UIAlertAction *syncAction = [UIAlertAction actionWithTitle:@"同步模式" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
-            [self showWating];
+            [weakSelf hideWating];
             self.imageVideoComposer.composerPriorityType = PLSComposerPriorityTypeSync;
             [self.imageVideoComposer startComposing];
         }];
         
         UIAlertAction *smoothAction = [UIAlertAction actionWithTitle:@"流畅模式" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
-            [self showWating];
+            [weakSelf hideWating];
             self.imageVideoComposer.composerPriorityType = PLSComposerPriorityTypeSmooth;
             [self.imageVideoComposer startComposing];
         }];
         
         UIAlertAction *videoAction = [UIAlertAction actionWithTitle:@"视频优先" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
-            [self showWating];
+            [weakSelf hideWating];
             self.imageVideoComposer.composerPriorityType = PLSComposerPriorityTypeVideo;
             [self.imageVideoComposer startComposing];
         }];
         
         UIAlertAction *audioAction = [UIAlertAction actionWithTitle:@"音频优先" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
-            [self showWating];
+            [weakSelf hideWating];
             self.imageVideoComposer.composerPriorityType = PLSComposerPriorityTypeAudio;
             [self.imageVideoComposer startComposing];
         }];
@@ -259,9 +248,29 @@
         [self presentViewController:alert animated:YES completion:nil];
         
     } else {
-        [self showWating];
         [self.imageVideoComposer startComposing];
     }
+}
+
+// 进入编辑页面
+- (void)joinEditViewController:(NSURL *)url {
+    // 设置音视频、水印等编辑信息
+    NSMutableDictionary *outputSettings = [[NSMutableDictionary alloc] init];
+    // 待编辑的原始视频素材
+    NSMutableDictionary *plsMovieSettings = [[NSMutableDictionary alloc] init];
+    AVAsset *asset = [AVAsset assetWithURL:url];
+    plsMovieSettings[PLSURLKey] = url;
+    plsMovieSettings[PLSAssetKey] = asset;
+    plsMovieSettings[PLSStartTimeKey] = [NSNumber numberWithFloat:0.f];
+    plsMovieSettings[PLSDurationKey] = [NSNumber numberWithFloat:CMTimeGetSeconds(asset.duration)];
+    plsMovieSettings[PLSVolumeKey] = [NSNumber numberWithFloat:1.0f];
+    outputSettings[PLSMovieSettingsKey] = plsMovieSettings;
+    
+    EditViewController *videoEditViewController = [[EditViewController alloc] init];
+    videoEditViewController.settings = outputSettings;
+    videoEditViewController.filesURLArray = @[url];
+    videoEditViewController.modalPresentationStyle = UIModalPresentationFullScreen;
+    [self presentViewController:videoEditViewController animated:YES completion:nil];
 }
 
 - (void)fetchAssetsWithMediaType:(PHAssetMediaType)mediaType {

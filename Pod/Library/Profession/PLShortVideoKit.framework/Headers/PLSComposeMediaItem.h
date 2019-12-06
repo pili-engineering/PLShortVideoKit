@@ -37,7 +37,6 @@
  */
 @property (strong, nonatomic) NSURL *_Nullable url;
 
-
 #pragma mark - Video property
 
 /*!
@@ -48,6 +47,13 @@
  */
 @property (strong, nonatomic) AVAsset *_Nullable asset;
 
+/*!
+ @property  timeRange
+ @brief     如果当前媒体文件是视频，选取视频片段，未设置时默认为 kCMTimeRangeZero，将使用整个视频；设置具体值时长不为 0 且时长小于等于总时长时，则按照设置的起始点位置使用，大于总时长将使用整个视频
+ 
+ @since      v3.1.0
+ */
+@property (assign, nonatomic) CMTimeRange timeRange;
 
 #pragma mark - Image property
 
@@ -61,7 +67,7 @@
 
 /*!
  @property  imageDuration
- @brief     图片转换为视频的时长,默认为3.0，即3秒
+ @brief     图片转换为视频的时长,默认为3.0，即3秒；建议大于2秒
  
  @since      v1.16.0
  */

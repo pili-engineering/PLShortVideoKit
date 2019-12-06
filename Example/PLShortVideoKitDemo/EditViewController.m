@@ -128,11 +128,6 @@ PLSClipMovieViewDelegate
 @property (nonatomic, strong) NSMutableArray *multiMusicsArray;
 @property (nonatomic, strong) PLSTimeLineAudioItem *processAudioItem;
 // 音乐信息
-
-// 时光倒流
-@property (nonatomic, strong) PLSReverserEffect *reverser;
-@property (nonatomic, strong) AVAsset *inputAsset;
-@property (nonatomic, strong) UIButton *reverserButton;
 @property (nonatomic, strong) NSMutableArray *musicsArray;
 
 // MV信息
@@ -157,6 +152,10 @@ PLSClipMovieViewDelegate
 @property (nonatomic, strong) PLSTimelineView *timelineView;
 @property (nonatomic, strong) PLSTimelineMediaInfo *mediaInfo;
 
+// 时光倒流
+@property (nonatomic, strong) PLSReverserEffect *reverser;
+@property (nonatomic, strong) AVAsset *inputAsset;
+@property (nonatomic, strong) UIButton *reverserButton;
 
 // 贴纸信息
 @property (nonatomic, strong) NSMutableArray *stickerSettingsArray;
@@ -536,6 +535,9 @@ PLSClipMovieViewDelegate
                                       startX:button.frame.origin.x + button.frame.size.width + 20
                                        title:@"倒序"];
     self.reverserButton = button;
+    self.reverserButton.selected = NO;
+    [self.reverserButton setTitleColor:[UIColor redColor] forState:UIControlStateSelected];
+    [self.reverserButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     
     // 视频旋转
     button = [self toolBoxButtonWithSelector:@selector(rotateVideoButtonEvent:)
@@ -882,10 +884,16 @@ PLSClipMovieViewDelegate
             audioItemDictionary[PLSStartTimeKey] = [NSNumber numberWithFloat:0.f];
             audioItemDictionary[PLSDurationKey] = [NSNumber numberWithFloat:CMTimeGetSeconds([[AVAsset assetWithURL:audioItem.url] duration])];
             audioItemDictionary[PLSVolumeKey] = [NSNumber numberWithFloat:audioItem.volume];
-            audioItemDictionary[PLSLocationStartTimeKey] = [NSNumber numberWithFloat:audioItem.startTime];
-            audioItemDictionary[PLSLocationDurationKey] = [NSNumber numberWithFloat:(audioItem.endTime - audioItem.startTime)];
-            
+            if (self.reverserButton.isSelected) {
+                CGFloat time = audioItem.endTime > audioItem.startTime?audioItem.endTime:audioItem.startTime;
+                audioItemDictionary[PLSLocationStartTimeKey] = [NSNumber numberWithFloat:([self.movieSettings[PLSDurationKey] floatValue]- time)];
+            }else{
+                CGFloat time = audioItem.endTime < audioItem.startTime?audioItem.endTime:audioItem.startTime;
+                audioItemDictionary[PLSLocationStartTimeKey] = [NSNumber numberWithFloat:time];
+            }
             audioItemDictionary[PLSLocationDurationKey] = [NSNumber numberWithFloat:fabs(audioItem.endTime - audioItem.startTime)];
+            
+            
             [self.audioSettingsArray addObject:audioItemDictionary];
         }
         [self.shortVideoEditor updateMultiMusics:self.audioSettingsArray];
@@ -1476,73 +1484,13 @@ PLSClipMovieViewDelegate
 
 // 时光倒流
 - (void)reverserButtonEvent:(id)sender {
-    
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"是否移除音频" message:@"如果不移除音频，将维持原音频，即不对音频进行倒序处理" preferredStyle:(UIAlertControllerStyleAlert)];
-    UIAlertAction *removeAction = [UIAlertAction actionWithTitle:@"移除" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
-        [self doReserverEffect:YES];
-    }];
-    
-    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"保留" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
-        [self doReserverEffect:NO];
-    }];
-    
-    [alertController addAction:removeAction];
-    [alertController addAction:cancelAction];
-    
-    [self presentViewController:alertController animated:YES completion:nil];
-}
-
-- (void)doReserverEffect:(BOOL)removeAudio {
-    
-    [self.shortVideoEditor stopEditing];
-    self.playButton.selected = YES;
-    
-    [self loadActivityIndicatorView];
-    
-    if (self.reverser.isReversing) {
-        NSLog(@"reverser effect isReversing");
-        return;
+    self.reverserButton.selected = !self.reverserButton.isSelected;
+    [self updateMultiMusics:[self.timelineView getAllAddedAudioItems]];
+    if (self.reverserButton.isSelected) {
+        [self.shortVideoEditor addReverserEffectVideoWithAudio:YES];
+    }else {
+        [self.shortVideoEditor removeReverserEffectVideoWithAudio];
     }
-    
-    if (self.reverser) {
-        self.reverser = nil;
-    }
-    
-    __weak typeof(self)weakSelf = self;
-    AVAsset *asset = self.movieSettings[PLSAssetKey];
-    self.reverser = [[PLSReverserEffect alloc] initWithAsset:asset];
-    self.reverser.audioRemoved = removeAudio;
-    self.inputAsset = self.movieSettings[PLSAssetKey];
-    [self.reverser setCompletionBlock:^(NSURL *url) {
-        [weakSelf removeActivityIndicatorView];
-        
-        NSLog(@"reverser effect, url: %@", url);
-        
-        weakSelf.movieSettings[PLSURLKey] = url;
-        weakSelf.movieSettings[PLSAssetKey] = [AVAsset assetWithURL:url];
-        
-        [weakSelf.shortVideoEditor replaceCurrentAssetWithAsset:weakSelf.movieSettings[PLSAssetKey]];
-        [weakSelf.shortVideoEditor startEditing];
-        weakSelf.playButton.selected = NO;
-    }];
-    
-    [self.reverser setFailureBlock:^(NSError *error){
-        [weakSelf removeActivityIndicatorView];
-        
-        NSLog(@"reverser effect, error: %@",error);
-        
-        weakSelf.movieSettings[PLSAssetKey] = weakSelf.inputAsset;
-        
-        [weakSelf.shortVideoEditor replaceCurrentAssetWithAsset:weakSelf.movieSettings[PLSAssetKey]];
-        [weakSelf.shortVideoEditor startEditing];
-        weakSelf.playButton.selected = NO;
-    }];
-    
-    [self.reverser setProcessingBlock:^(float progress) {
-        NSLog(@"reverser effect, progress: %f", progress);
-    }];
-    
-    [self.reverser startReversing];
 }
 
 // 裁剪背景音乐
@@ -2120,6 +2068,9 @@ PLSClipMovieViewDelegate
     self.playButton.selected = YES;
 
     [self loadActivityIndicatorView];
+    if (self.reverserButton.isSelected) {
+        [self doReserverEffect:NO];
+    }else{
     // 贴纸信息
     [self.stickerSettingsArray removeAllObjects];
         
@@ -2278,6 +2229,7 @@ PLSClipMovieViewDelegate
         }];
         
         [exportSession exportAsynchronously];
+    }
 }
 
 #pragma mark - 完成视频合成跳转到下一页面
@@ -2288,8 +2240,192 @@ PLSClipMovieViewDelegate
     PlayViewController *playViewController = [[PlayViewController alloc] init];
     playViewController.url = url;
     playViewController.modalPresentationStyle = UIModalPresentationFullScreen;
-    playViewController.modalPresentationStyle = UIModalPresentationFullScreen;
     [self presentViewController:playViewController animated:YES completion:nil];
+}
+
+- (void)doReserverEffect:(BOOL)removeAudio {
+    [self.shortVideoEditor stopEditing];
+    self.playButton.selected = YES;
+    
+    [self loadActivityIndicatorView];
+    
+    if (self.reverser.isReversing) {
+        NSLog(@"reverser effect isReversing");
+        return;
+    }
+    
+    if (self.reverser) {
+        self.reverser = nil;
+    }
+    
+    __weak typeof(self)weakSelf = self;
+    AVAsset *asset = self.movieSettings[PLSAssetKey];
+    self.reverser = [[PLSReverserEffect alloc] initWithAsset:asset];
+    self.reverser.audioRemoved = removeAudio;
+    self.inputAsset = self.movieSettings[PLSAssetKey];
+    [self.reverser setCompletionBlock:^(NSURL *url) {
+        //        [weakSelf removeActivityIndicatorView];
+        
+        NSLog(@"reverser effect, url: %@", url);
+        // 贴纸信息
+        [weakSelf.stickerSettingsArray removeAllObjects];
+        if ([self.timelineView getAllAddedItems].count != 0) {
+            for (int i = 0; i < [self.timelineView getAllAddedItems].count; i++) {
+                PLSTimeLineItem *item = [weakSelf.timelineView getAllAddedItems][i];
+                
+                NSMutableDictionary *stickerSettings = [[NSMutableDictionary alloc] init];
+                PLSStickerView *stickerView = (PLSStickerView *)item.target;
+                
+                CGAffineTransform transform = stickerView.transform;
+                CGFloat widthScale = sqrt(transform.a * transform.a + transform.c * transform.c);
+                CGFloat heightScale = sqrt(transform.b * transform.b + transform.d * transform.d);
+                CGSize viewSize = CGSizeMake(stickerView.bounds.size.width * widthScale, stickerView.bounds.size.height * heightScale);
+                CGPoint viewCenter =  CGPointMake(stickerView.frame.origin.x + stickerView.frame.size.width / 2, stickerView.frame.origin.y + stickerView.frame.size.height / 2);
+                CGPoint viewPoint = CGPointMake(viewCenter.x - viewSize.width / 2, viewCenter.y - viewSize.height / 2);
+                
+                stickerSettings[PLSSizeKey] = [NSValue valueWithCGSize:viewSize];
+                stickerSettings[PLSPointKey] = [NSValue valueWithCGPoint:viewPoint];
+                
+                CGFloat rotation = atan2f(transform.b, transform.a);
+                rotation = rotation * (180 / M_PI);
+                stickerSettings[PLSRotationKey] = [NSNumber numberWithFloat:rotation];
+                
+                stickerSettings[PLSStartTimeKey] = [NSNumber numberWithFloat:item.startTime];
+                stickerSettings[PLSDurationKey] = [NSNumber numberWithFloat:(item.endTime - item.startTime)];
+                stickerSettings[PLSVideoPreviewSizeKey] = [NSValue valueWithCGSize:weakSelf.stickerOverlayView.frame.size];
+                stickerSettings[PLSVideoOutputSizeKey] = [NSValue valueWithCGSize:self.videoSize];
+                
+                if (StickerType_Gif == stickerView.stickerType) {
+                    // 如果贴纸是 GIF 类型，PLSStickerKey 的 value 必须是下列三种中的某一种:
+                    int type = arc4random() % 3;
+                    if (0 == type) {
+                        // value = GIF URL
+                        stickerSettings[PLSStickerKey] = stickerView.stickerURL;
+                    } else if (1 == type) {
+                        // value = GIF path
+                        stickerSettings[PLSStickerKey] = stickerView.stickerURL.path;
+                    } else if (2 == type) {
+                        // value = GIF data
+                        stickerSettings[PLSStickerKey] = [NSData dataWithContentsOfFile:stickerView.stickerURL.path];
+                    }
+                    
+                } else {
+#if 0
+                    // v2.0.0 及之前的版本添加静态贴纸的方式, 传入的是 stickerView。如果传入的是 stickerView，添加了滤镜或者特效，这些效果会作用到贴纸上。如果不希望贴纸被滤镜和特效作用，则需要使用新的添加贴纸的方式
+                    stickerView.hidden = NO;
+                    stickerSettings[PLSStickerKey] = stickerView;
+#else
+                    //  ===== 新的静态贴纸添加方式，v2.1.0 之后生效，建议所有用户换成新的添加贴纸方式 ======
+                    if (StickerType_Image == stickerView.stickerType) {
+                        int type = arc4random() % 4;
+                        if (0 == type) {
+                            // value = image URL
+                            stickerSettings[PLSStickerKey] = stickerView.stickerURL;
+                        } else if (1 == type) {
+                            // value = image path
+                            stickerSettings[PLSStickerKey] = stickerView.stickerURL.path;
+                        } else if (2 == type) {
+                            // value = image data
+                            // 如果贴纸晗 alpha 通道，使用 UIImageJPEGRepresentation(stickerView.image, 1) 得到的是没有 alpha 的图片，建议使用 UIImagePNGRepresentation(stickerView.image) 来获取 data
+                            stickerSettings[PLSStickerKey] = UIImagePNGRepresentation(stickerView.stickerImage);
+                        } else {
+                            // value = image
+                            stickerSettings[PLSStickerKey] = stickerView.stickerImage;
+                        }
+                    } else if (StickerType_Text == stickerView.stickerType) {
+                        // 文字
+                        stickerView.hidden = NO;
+                        stickerSettings[PLSStickerKey] = [self convertViewToImage:stickerView];
+                    }
+#endif
+                }
+                [self.stickerSettingsArray addObject:stickerSettings];
+            }
+        }
+        
+        // 添加背景音乐信息
+        if (self.backgroundAudioSettings[PLSURLKey] && ![self.audioSettingsArray containsObject:self.backgroundAudioSettings]) {
+            [self.audioSettingsArray insertObject:self.backgroundAudioSettings atIndex:0];
+        }
+        
+        AVAsset *asset = [AVAsset assetWithURL:url];
+        PLSAVAssetExportSession *exportSession = [[PLSAVAssetExportSession alloc] initWithAsset:asset];
+        exportSession.outputFileType = PLSFileTypeMPEG4;
+        exportSession.shouldOptimizeForNetworkUse = YES;
+        exportSession.outputSettings = self.outputSettings;
+        exportSession.delegate = self;
+        exportSession.isExportMovieToPhotosAlbum = YES;
+        exportSession.audioChannel = 2;
+        exportSession.audioBitrate = PLSAudioBitRate_128Kbps;
+        exportSession.outputVideoFrameRate = MIN(60, asset.pls_normalFrameRate);
+        //    // 设置视频的码率
+        //    exportSession.bitrate = 3000*1000;
+        //    // 设置视频的输出路径
+        //    exportSession.outputURL = [self getFileURL:@"outputMovie"];
+        
+        // 设置视频的导出分辨率，会将原视频缩放
+        exportSession.outputVideoSize = self.videoSize;
+        
+        // 旋转视频
+        exportSession.videoLayerOrientation = self.videoLayerOrientation;
+        if (self.colorImagePath) {
+            [exportSession addFilter:self.colorImagePath];
+        }
+        if (self.colorURL && self.alphaURL) {
+            [exportSession addMVLayerWithColor:self.colorURL alpha:self.alphaURL timeRange:kCMTimeRangeZero loopEnable:YES];
+        }
+        
+        [exportSession setCompletionBlock:^(NSURL *url) {
+            NSLog(@"Asset Export Completed");
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [weakSelf joinNextViewController:url];
+            });
+        }];
+        
+        [exportSession setFailureBlock:^(NSError *error) {
+            NSLog(@"Asset Export Failed: %@", error);
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [weakSelf removeActivityIndicatorView];
+                AlertViewShow(error);
+            });
+        }];
+        
+        //        __weak typeof(self)weaksSelf = weakSelf;
+        [exportSession setProcessingBlock:^(float progress) {
+            // 更新进度 UI
+            NSLog(@"Asset Export Progress: %f %d", progress,(int)(50+(progress * 50)));
+            dispatch_async(dispatch_get_main_queue(), ^{
+                weakSelf.progressLabel.text = [NSString stringWithFormat:@"%d%%", (int)(50+(progress * 50))];
+            });
+        }];
+        
+        [exportSession exportAsynchronously];
+        
+    }];
+    
+    [self.reverser setFailureBlock:^(NSError *error){
+        [weakSelf removeActivityIndicatorView];
+        
+        NSLog(@"reverser effect, error: %@",error);
+        
+        weakSelf.movieSettings[PLSAssetKey] = weakSelf.inputAsset;
+        
+        [weakSelf.shortVideoEditor replaceCurrentAssetWithAsset:weakSelf.movieSettings[PLSAssetKey]];
+        [weakSelf.shortVideoEditor startEditing];
+        weakSelf.playButton.selected = NO;
+        
+    }];
+    
+    [self.reverser setProcessingBlock:^(float progress) {
+        NSLog(@"reverser effect, progress: %f", progress);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            weakSelf.progressLabel.text = [NSString stringWithFormat:@"%d%%", (int)(progress * 50)];
+        });
+    }];
+    
+    [self.reverser startReversing];
 }
 
 #pragma mark - UIActivityIndicatorView

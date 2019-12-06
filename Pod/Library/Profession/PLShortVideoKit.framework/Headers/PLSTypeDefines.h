@@ -250,10 +250,11 @@ typedef enum {
  
  @abstract 视频转场动画效果
  
- @since      v1.7.0
+ @since      v3.1.0
  */
 typedef enum {
-    PLSTransitionTypeFade    = 0, // 淡入淡出
+    PLSTransitionTypeFade                 = 0,  // 淡入淡出
+    PLSTransitionTypeNone                 = 1,  // 无
 } PLSTransitionType;
 
 /*!
