@@ -15,6 +15,7 @@
 
 @implementation QNAppDelegate
 
+#warning 需要先解压缩 Pods/Nama/FaceUnity-SDK-iOS-v6.4.1/libnama.a.zip
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
