@@ -14,4 +14,5 @@ target 'ShortVideo' do
   pod 'JGProgressHUD'
   pod 'SDWebImage'
   pod 'SDCycleScrollView','>= 1.80'
+  pod 'Nama', '6.4.1'
 end
