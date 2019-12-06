@@ -2251,6 +2251,7 @@
 					"$(PROJECT_DIR)",
 					"$(PROJECT_DIR)/PLShortVideoKitDemo/Librarys",
 				);
+				MARKETING_VERSION = 3.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.qiniu.PLShortVideoKitDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = 1;
@@ -2286,6 +2287,7 @@
 					"$(PROJECT_DIR)",
 					"$(PROJECT_DIR)/PLShortVideoKitDemo/Librarys",
 				);
+				MARKETING_VERSION = 3.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.qiniu.PLShortVideoKitDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = 1;

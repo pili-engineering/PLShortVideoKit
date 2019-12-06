@@ -691,7 +691,6 @@ UICollectionViewDelegateFlowLayout
     self.microphoneSwitch.enabled = YES;
     self.sampleSwitch.enabled = YES;
     self.acousticEchoCancellationSwitch.enabled = YES;
-    
     if (self.fileEndDecoding) {
         [self endButtonEvent:nil];
     }

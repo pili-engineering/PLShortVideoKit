@@ -116,6 +116,7 @@ UITableViewDataSource
     } else if (indexPath.row == 5) {
         // 导入 H.265
         H265MovieViewController *h265MovieViewController = [[H265MovieViewController alloc] init];
+        h265MovieViewController.modalPresentationStyle = UIModalPresentationFullScreen;
         [self.navigationController pushViewController:h265MovieViewController animated:YES];
     }
     
