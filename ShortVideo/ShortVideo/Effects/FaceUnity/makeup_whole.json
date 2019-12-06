@@ -1,0 +1,131 @@
+
+{
+    "data": [{"name":"卸妆",
+        "imageStr":"qn_makeup_noitem",
+        "isSel":true,
+        "value":1.0,
+        "selectedFilter":"origin",
+        "selectedFilterLevel":0.0,
+        "makeups":[
+            {"namaTypeStr" : "makeup_lip_color","namaValueStr":"makeup_intensity_lip","namaImgStr":"","value":0.0},
+            {"namaTypeStr" : "tex_blusher","namaValueStr":"makeup_intensity_blusher","namaImgStr":"","value":0.0},
+            {"namaTypeStr" : "tex_brow","namaValueStr":"makeup_intensity_eyeBrow","namaImgStr":"","value":0.0},
+            {"namaTypeStr" : "tex_eye","namaValueStr":"makeup_intensity_eye","namaImgStr":"","value":0.0},
+            {"namaTypeStr" : "tex_eyeLiner","namaValueStr":"makeup_intensity_eyeLiner","namaImgStr":"","value":0.0},
+            {"namaTypeStr" : "tex_eyeLash","namaValueStr":"makeup_intensity_eyelash","namaImgStr":"","value":0.0},
+        {"namaTypeStr" : "tex_pupil","namaValueStr":"makeup_intensity_pupil","namaImgStr":"","value":0.0}]
+    },
+    
+    {"name":"赤茶妆",
+        "imageStr":"qn_makeup_red_tea",
+        "value":1.0,
+        "selectedFilter":"xiaoqingxin2",
+        "selectedFilterLevel":0.85,
+        "isSel":false,
+        "makeups":[
+            {"namaTypeStr" : "makeup_lip_color","namaValueStr":"makeup_intensity_lip","namaImgStr":"mu_lip_16","value":0.9},
+            {"namaTypeStr" : "tex_blusher","namaValueStr":"makeup_intensity_blusher","namaImgStr":"mu_blush_18","value":1.0},
+            {"namaTypeStr" : "tex_brow","namaValueStr":"makeup_intensity_eyeBrow","namaImgStr":"mu_eyebrow_10","value":0.6},
+            {"namaTypeStr" : "tex_eye","namaValueStr":"makeup_intensity_eye","namaImgStr":"mu_eyeshadow_16","value":1.0},
+            {"namaTypeStr" : "tex_eyeLiner","namaValueStr":"makeup_intensity_eyeLiner","namaImgStr":"","value":0.0},
+            {"namaTypeStr" : "tex_eyeLash","namaValueStr":"makeup_intensity_eyelash","namaImgStr":"","value":0.0},
+        {"namaTypeStr" : "tex_pupil","namaValueStr":"makeup_intensity_pupil","namaImgStr":"","value":0.0}]
+    },
+    
+    
+    {"name":"冬日妆",
+        "imageStr":"qn_makeup_winter",
+        "value":1.0,
+        "selectedFilter":"nuansediao1",
+        "selectedFilterLevel":0.8,
+        "isSel":false,
+        "makeups":[
+            {"namaTypeStr" : "makeup_lip_color","namaValueStr":"makeup_intensity_lip","namaImgStr":"mu_lip_17","value":0.9},
+            {"namaTypeStr" : "tex_blusher","namaValueStr":"makeup_intensity_blusher","namaImgStr":"mu_blush_19","value":0.8},
+            {"namaTypeStr" : "tex_brow","namaValueStr":"makeup_intensity_eyeBrow","namaImgStr":"mu_eyebrow_12","value":0.6},
+            {"namaTypeStr" : "tex_eye","namaValueStr":"makeup_intensity_eye","namaImgStr":"mu_eyeshadow_17","value":0.8},
+            {"namaTypeStr" : "tex_eyeLiner","namaValueStr":"makeup_intensity_eyeLiner","namaImgStr":"","value":0.0},
+            {"namaTypeStr" : "tex_eyeLash","namaValueStr":"makeup_intensity_eyelash","namaImgStr":"","value":0.0},
+        {"namaTypeStr" : "tex_pupil","namaValueStr":"makeup_intensity_pupil","namaImgStr":"","value":0.0}]
+    },
+    {"name":"奶油妆",
+        "imageStr":"qn_makeup_cream",
+        "value":1.0,
+        "selectedFilter":"bailiang1",
+        "selectedFilterLevel":0.85,
+        "isSel":false,
+        "makeups":[
+            {"namaTypeStr" : "makeup_lip_color","namaValueStr":"makeup_intensity_lip","namaImgStr":"mu_lip_19","value":0.75},
+            {"namaTypeStr" : "tex_blusher","namaValueStr":"makeup_intensity_blusher","namaImgStr":"mu_blush_21","value":1.0},
+            {"namaTypeStr" : "tex_brow","namaValueStr":"makeup_intensity_eyeBrow","namaImgStr":"mu_eyebrow_17","value":0.5},
+            {"namaTypeStr" : "tex_eye","namaValueStr":"makeup_intensity_eye","namaImgStr":"mu_eyeshadow_19","value":0.95},
+            {"namaTypeStr" : "tex_eyeLiner","namaValueStr":"makeup_intensity_eyeLiner","namaImgStr":"","value":0.0},
+            {"namaTypeStr" : "tex_eyeLash","namaValueStr":"makeup_intensity_eyelash","namaImgStr":"","value":0.0},
+        {"namaTypeStr" : "tex_pupil","namaValueStr":"makeup_intensity_pupil","namaImgStr":"","value":0.0}]
+    },
+    {"name":"桃花",
+        "imageStr":"qn_makeup_peachblossom",
+        "value":1.0,
+        "selectedFilter":"fennen3",
+        "selectedFilterLevel":1.0,
+        "isSel":false,
+        "makeups":[
+            {"namaTypeStr" : "makeup_lip_color","namaValueStr":"makeup_intensity_lip","namaImgStr":"mu_lip_01","value":0.9},
+            {"namaTypeStr" : "tex_blusher","namaValueStr":"makeup_intensity_blusher","namaImgStr":"mu_blush_01","value":0.9},
+            {"namaTypeStr" : "tex_brow","namaValueStr":"makeup_intensity_eyeBrow","namaImgStr":"mu_eyebrow_01","value":0.5},
+            {"namaTypeStr" : "tex_eye","namaValueStr":"makeup_intensity_eye","namaImgStr":"mu_eyeshadow_01","value":0.9},
+            {"namaTypeStr" : "tex_eyeLiner","namaValueStr":"makeup_intensity_eyeLiner","namaImgStr":"","value":0.0},
+            {"namaTypeStr" : "tex_eyeLash","namaValueStr":"makeup_intensity_eyelash","namaImgStr":"","value":0.0},
+        {"namaTypeStr" : "tex_pupil","namaValueStr":"makeup_intensity_pupil","namaImgStr":"","value":0.0}]
+    },
+    
+    {"name":"西柚",
+        "imageStr":"qn_makeup_grapefruit",
+        "value":1.0,
+        "selectedFilter":"lengsediao4",
+        "selectedFilterLevel":0.7,
+        "isSel":false,
+        "makeups":[
+            {"namaTypeStr" : "makeup_lip_color","namaValueStr":"makeup_intensity_lip","namaImgStr":"mu_lip_21","value":0.7},
+            {"namaTypeStr" : "tex_blusher","namaValueStr":"makeup_intensity_blusher","namaImgStr":"mu_blush_23","value":0.7},
+            {"namaTypeStr" : "tex_brow","namaValueStr":"makeup_intensity_eyeBrow","namaImgStr":"mu_eyebrow_19","value":0.5},
+            {"namaTypeStr" : "tex_eye","namaValueStr":"makeup_intensity_eye","namaImgStr":"mu_eyeshadow_21","value":0.7},
+            {"namaTypeStr" : "tex_eyeLiner","namaValueStr":"makeup_intensity_eyeLiner","namaImgStr":"","value":0.0},
+            {"namaTypeStr" : "tex_eyeLash","namaValueStr":"makeup_intensity_eyelash","namaImgStr":"","value":0.0},
+        {"namaTypeStr" : "tex_pupil","namaValueStr":"makeup_intensity_pupil","namaImgStr":"","value":0.0}]
+    },
+    
+    {"name":"男友",
+        "imageStr":"qn_makeup_boyfriend",
+        "value":1.0,
+        "selectedFilter":"xiaoqingxin3",
+        "selectedFilterLevel":0.9,
+        "isSel":false,
+        "makeups":[
+            {"namaTypeStr" : "makeup_lip_color","namaValueStr":"makeup_intensity_lip","namaImgStr":"mu_lip_18","value":0.7},
+            {"namaTypeStr" : "tex_blusher","namaValueStr":"makeup_intensity_blusher","namaImgStr":"mu_blush_20","value":0.7},
+            {"namaTypeStr" : "tex_brow","namaValueStr":"makeup_intensity_eyeBrow","namaImgStr":"mu_eyebrow_16","value":0.5},
+            {"namaTypeStr" : "tex_eye","namaValueStr":"makeup_intensity_eye","namaImgStr":"mu_eyeshadow_18","value":0.7},
+            {"namaTypeStr" : "tex_eyeLiner","namaValueStr":"makeup_intensity_eyeLiner","namaImgStr":"","value":0.0},
+            {"namaTypeStr" : "tex_eyeLash","namaValueStr":"makeup_intensity_eyelash","namaImgStr":"","value":0.0},
+        {"namaTypeStr" : "tex_pupil","namaValueStr":"makeup_intensity_pupil","namaImgStr":"","value":0.0}]
+    },
+    {"name":"清透",
+        "imageStr":"qn_makeup_clear",
+        "value":1.0,
+        "selectedFilter":"xiaoqingxin6",
+        "selectedFilterLevel":0.8,
+        "isSel":false,
+        "makeups":[
+            {"namaTypeStr" : "makeup_lip_color","namaValueStr":"makeup_intensity_lip","namaImgStr":"mu_lip_20","value":0.7},
+            {"namaTypeStr" : "tex_blusher","namaValueStr":"makeup_intensity_blusher","namaImgStr":"mu_blush_22","value":0.7},
+            {"namaTypeStr" : "tex_brow","namaValueStr":"makeup_intensity_eyeBrow","namaImgStr":"mu_eyebrow_18","value":0.5},
+            {"namaTypeStr" : "tex_eye","namaValueStr":"makeup_intensity_eye","namaImgStr":"mu_eyeshadow_20","value":0.7},
+            {"namaTypeStr" : "tex_eyeLiner","namaValueStr":"makeup_intensity_eyeLiner","namaImgStr":"","value":0.0},
+            {"namaTypeStr" : "tex_eyeLash","namaValueStr":"makeup_intensity_eyelash","namaImgStr":"","value":0.0},
+        {"namaTypeStr" : "tex_pupil","namaValueStr":"makeup_intensity_pupil","namaImgStr":"","value":0.0}]
+    }
+    
+    ]
+}
+

@@ -1,0 +1,17 @@
+# Uncomment the next line to define a global platform for your project
+# platform :ios, '9.0'
+
+target 'ShortVideo' do
+  # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
+  # use_frameworks!
+
+  # Pods for ShortVideo
+
+  pod "PLShortVideoKit", :path => "../"
+
+  pod 'Masonry'
+  pod 'MMMaterialDesignSpinner'
+  pod 'JGProgressHUD'
+  pod 'SDWebImage'
+  pod 'SDCycleScrollView','>= 1.80'
+end

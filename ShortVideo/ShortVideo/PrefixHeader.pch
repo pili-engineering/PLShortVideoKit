@@ -1,0 +1,65 @@
+//
+//  PrefixHeader.pch
+//  ShortVideo
+//
+//  Created by hxiongan on 2019/4/8.
+//  Copyright © 2019年 ahx. All rights reserved.
+//
+
+#ifndef PrefixHeader_pch
+#define PrefixHeader_pch
+
+// MARK: - System Kit
+#import <UIKit/UIKit.h>
+
+// MARK: - Log
+#ifdef DEBUG
+#define NSLog NSLog
+#else
+#define NSLog(...);
+#endif
+
+#define MAS_SHORTHAND
+#define MAS_SHORTHAND_GLOBALS
+#define QN_RGBCOLOR(r,g,b) [UIColor colorWithRed:r/255.0 green:g/255.0 blue:b/255.0 alpha:1]
+#define QN_RGBCOLOR_ALPHA(r,g,b,a) [UIColor colorWithRed:r/255.0 green:g/255.0 blue:b/255.0 alpha:a]
+#define QN_COMMON_BACKGROUND_COLOR [UIColor colorWithWhite:.2 alpha:.8]
+
+// MARK: - Color
+#define QN_MAIN_COLOR QN_RGBCOLOR(6.0, 130.0, 255.0)
+#define QN_HELP_COLOR QN_RGBCOLOR(254.0, 45.0, 85.0)
+#define QN_BLUE_COLOR QN_RGBCOLOR(135.0,195.0,255.0)
+#define QN_ALPHA_SHADOW_COLOR QN_RGBCOLOR_ALPHA(139.0, 139.0, 139.0, 0.7)
+
+// MARK: - Screen Size
+#define QN_SCREEN_WIDTH CGRectGetWidth([UIScreen mainScreen].bounds)
+#define QN_SCREEN_HEIGHT CGRectGetHeight([UIScreen mainScreen].bounds)
+
+#define QN_iPhoneX ([UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(1125, 2436), [[UIScreen mainScreen] currentMode].size) : NO)
+#define QN_iPhoneXR ([UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(828, 1792), [[UIScreen mainScreen] currentMode].size) : NO)
+#define QN_iPhoneXSMAX ([UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(1242, 2688), [[UIScreen mainScreen] currentMode].size) : NO)
+#define QN_iPhoneP ([UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(1242, 2208), [[UIScreen mainScreen] currentMode].size) : NO)
+
+// MARK: - 七牛短视频 SDK
+#import <PLShortVideoKit/PLShortVideoKit.h>
+
+// MARK: - 涂图特效
+#import <TuSDK/TuSDK.h>
+#import <TuSDKVideo/TuSDKVideo.h>
+
+// MARK: - 相芯科技
+#import "FURenderer.h"
+
+// MARK: - Category
+#import "UIView+QNAlert.h"
+#import "NSObject+QNAuth.h"
+#import "UIView+QNAnimation.h"
+#import "UIView+QNCore.h"
+#import "PHAsset+QNCoverPicker.h"
+
+// MARK: - Pods
+#import <Masonry.h>
+#import <SDWebImage/SDWebImage.h>
+#import "SDCycleScrollView.h"
+
+#endif /* PrefixHeader_pch */
