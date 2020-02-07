@@ -367,6 +367,17 @@ typedef enum {
     PLSAuthenticationResultAuthorized
 } PLSAuthenticationResult;
 
+/*!
+ @typedef    PLSVideoHardwareType
+ @abstract   视频编码，硬编类型。
+ 
+ @since      v3.1.1
+ */
+typedef enum {
+    PLSVideoHardwareTypeH264 = 0,
+    PLSVideoHardwareTypeHEVC = 1,  // iOS 11.0 及以上版本支持，即 hvc1
+} PLSVideoHardwareType;
+
 #endif
 
 

@@ -147,6 +147,14 @@
 @property (assign, nonatomic) PLSFileType outputFileType;
 
 /*!
+ @property videoHardwareType
+ @brief 视频编码格式，默认是 PLSVideoHardwareTypeH264，iOS 11.0 及以上版本可配置为 PLSVideoHardwareTypeHEVC。
+ 
+ @since      v3.1.1
+ */
+@property (assign, nonatomic) PLSVideoHardwareType videoHardwareType;
+
+/*!
  @property mediaArrays
  @brief 合并的文件数组，按照数组顺序拼接
  
