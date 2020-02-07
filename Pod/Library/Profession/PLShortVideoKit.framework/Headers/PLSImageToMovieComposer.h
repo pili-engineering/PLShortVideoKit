@@ -102,6 +102,14 @@ __deprecated_msg("Class PLSImageToMovieComposer is deprecated in v1.16.0, use PL
 @property (assign, nonatomic) PLSFileType outputFileType;
 
 /*!
+ @property videoHardwareType
+ @brief 视频编码格式，默认是 PLSVideoHardwareTypeH264，iOS 11.0 及以上版本可配置为 PLSVideoHardwareTypeHEVC。
+ 
+ @since      v3.1.1
+ */
+@property (assign, nonatomic) PLSVideoHardwareType videoHardwareType;
+
+/*!
  @method initWithImages:
  @brief 初始化
  

@@ -51,6 +51,13 @@
  */
 @property (nonatomic, assign) float frameRate;
 
+/*!
+ @property videoHardwareType
+ @brief 是否使用 H265 编码，仅支持 iOS 11.0 系统以上
+ 
+ @since      v3.1.1
+ */
+@property (assign, nonatomic) PLSVideoHardwareType videoHardwareType;
 
 /*!
  @property completionBlock

@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
+#import "PLSTypeDefines.h"
 
 /*!
  @class PLSVideoConfiguration
@@ -124,6 +125,18 @@
  @since      v1.0.0
  */
 @property (nonatomic, copy) NSString *videoProfileLevel;
+
+/*!
+ @property   videoHardwareType
+ @abstract   是否使用 H.265 编码。
+ 
+ @discussion 默认为 PLSVideoHardwareTypeH264，设置为 PLSVideoHardwareTypeHEVC 编码时，H.264 编码配置的 Profile Level 将无效
+ 
+ @warning    PLSVideoHardwareTypeHEVC 仅支持 iOS 11.0 及以上版本。
+ 
+ @since      v3.1.1
+ */
+@property (nonatomic, assign) PLSVideoHardwareType videoHardwareType;
 
 /*!
  @method defaultConfiguration

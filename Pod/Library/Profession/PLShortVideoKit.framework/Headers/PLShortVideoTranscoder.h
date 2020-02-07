@@ -138,6 +138,14 @@
 @property (assign, nonatomic) float videoFrameRate;
 
 /*!
+ @property videoHardwareType
+ @abstract 默认为 PLSVideoHardwareTypeH264，当 iOS 系统为 iOS 11.0 及以上版本时，配置为 PLSVideoHardwareTypeHEVC 有效
+ 
+ @since      v3.1.1
+ */
+@property (assign, nonatomic) PLSVideoHardwareType videoHardwareType;
+
+/*!
  @property completionBlock
  @abstract 视频转码完成的 block
  

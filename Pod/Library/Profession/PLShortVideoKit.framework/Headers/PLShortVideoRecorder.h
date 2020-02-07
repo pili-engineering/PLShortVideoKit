@@ -79,7 +79,19 @@
  
  @since      v1.0.0
  */
-- (CVPixelBufferRef __nonnull)shortVideoRecorder:(PLShortVideoRecorder *__nonnull)recorder cameraSourceDidGetPixelBuffer:(CVPixelBufferRef __nonnull)pixelBuffer;
+- (CVPixelBufferRef __nonnull)shortVideoRecorder:(PLShortVideoRecorder *__nonnull)recorder cameraSourceDidGetPixelBuffer:(CVPixelBufferRef __nonnull)pixelBuffer __deprecated_msg("Method deprecated in v3.1.1. Use `shortVideoRecorder:cameraSourceDidGetPixelBuffer:timingInfo:'");
+
+/*!
+ @method shortVideoRecorder:pixelBuffer:
+ @abstract 获取到摄像头原数据时的回调, 便于开发者做滤镜等处理，需要注意的是这个回调在 camera 数据的输出线程，请不要做过于耗时的操作，否则可能会导致帧率下降
+ 
+ @param recorder PLShortVideoRecorder 实例
+ @param pixelBuffer 视频帧数据
+ @param timingInfo 采样时间信息
+ 
+ @since      v3.1.1
+ */
+- (CVPixelBufferRef __nonnull)shortVideoRecorder:(PLShortVideoRecorder *__nonnull)recorder cameraSourceDidGetPixelBuffer:(CVPixelBufferRef __nonnull)pixelBuffer timingInfo:(CMSampleTimingInfo)timingInfo;
 
 /*!
  @method shortVideoRecorder:microphoneSourceDidGetSampleBuffer:
