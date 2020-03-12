@@ -1,3 +1,4 @@
 *.cpp linguist-language=Objective-C
 *.c linguist-language=Objective-C
 *.hpp linguist-language=Objective-C
+/ShortVideoUIDemo/Pods/Nama/FaceUnity-SDK-iOS-v6.4.1/libnama.a filter=lfs diff=lfs merge=lfs -text
