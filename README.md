@@ -214,6 +214,8 @@ $ pod install
 
 请参考开发者中心文档：[PLShortVideoKit 文档](https://developer.qiniu.com/pili/sdk/3733/short-video-ios-sdk)
 
+*注意：GitHub 上出现无法 clone 时，可[点击下载](https://sdk-release.qnsdk.com/PLShortVideoKit-v3.1.1.zip)*
+
 # 6 声明
 
 本短视频 SDK 需授权方可使用，可通过 400-808-9176 转 2 号线联系七牛商务咨询，或者 [通过工单](https://support.qiniu.com/?ref=developer.qiniu.com) 联系七牛的技术支持。
