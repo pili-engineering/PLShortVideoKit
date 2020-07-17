@@ -61,7 +61,6 @@ typedef NS_ENUM(NSInteger, PositionMode){
 
 @property (nonatomic, assign) id<PLSStickerOverlayViewDelegate>delegate;
 @property (nonatomic, assign) PositionMode positionMode; // 操作当前 sticker 的位置模式
-@property (nonatomic, strong, readonly) UIView *layoutView;
 @property (nonatomic, strong) PLSStickerView *currentSticker;
 @property (nonatomic, strong, readonly) NSArray *stickersArray;
 

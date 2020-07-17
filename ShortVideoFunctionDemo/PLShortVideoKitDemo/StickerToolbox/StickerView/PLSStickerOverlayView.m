@@ -13,7 +13,6 @@
 PLSStickerViewDelegate
 >
 
-@property (nonatomic, strong, readwrite) UIView *layoutView;
 @property (nonatomic, strong) NSMutableArray *stickers;
 
 @property (nonatomic, assign) CGPoint loc_in;
@@ -26,8 +25,7 @@ PLSStickerViewDelegate
 - (instancetype)initWithFrame:(CGRect)frame layoutView:(UIView *)layoutView {
     self = [super initWithFrame:frame];
     if (self) {
-        self.layoutView = layoutView;
-        [self.layoutView addSubview:self];
+        [layoutView addSubview:self];
         
         self.stickers = [NSMutableArray array];
         self.positionMode = PositionMode_All_Center;
