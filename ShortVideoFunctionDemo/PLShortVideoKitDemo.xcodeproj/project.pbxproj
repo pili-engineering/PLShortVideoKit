@@ -195,6 +195,7 @@
 		76ECAC5021880EFC00EA153E /* ImageVideoMixViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 76ECAC4F21880EFC00EA153E /* ImageVideoMixViewController.m */; };
 		9343A8C01F66763A007213BD /* Time_Machine_No_Reverser.png in Resources */ = {isa = PBXBuildFile; fileRef = 9343A8BE1F66763A007213BD /* Time_Machine_No_Reverser.png */; };
 		9343A8C11F66763A007213BD /* Time_Machine_Reverser.png in Resources */ = {isa = PBXBuildFile; fileRef = 9343A8BF1F66763A007213BD /* Time_Machine_Reverser.png */; };
+		9C42B4832402B2F000D5D2D7 /* ScreenRecordViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C42B4822402B2F000D5D2D7 /* ScreenRecordViewController.m */; };
 		AA09EB0322E7F71E001BBA54 /* PLSDrawView.m in Sources */ = {isa = PBXBuildFile; fileRef = AA09EB0222E7F71E001BBA54 /* PLSDrawView.m */; };
 		AA09EB0D22E7FD2F001BBA54 /* PLSDrawBar.m in Sources */ = {isa = PBXBuildFile; fileRef = AA09EB0C22E7FD2F001BBA54 /* PLSDrawBar.m */; };
 		AA09EB1022E80583001BBA54 /* PLSDrawModel.m in Sources */ = {isa = PBXBuildFile; fileRef = AA09EB0F22E80583001BBA54 /* PLSDrawModel.m */; };
@@ -207,6 +208,8 @@
 		AA1F816E2330B85000AFC7A8 /* PLSListFunctionTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AA1F816D2330B85000AFC7A8 /* PLSListFunctionTableViewCell.m */; };
 		AA1F81712330C37800AFC7A8 /* MatterImportViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA1F81702330C37800AFC7A8 /* MatterImportViewController.m */; };
 		AA1F817F2332324200AFC7A8 /* MoiveClipViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA1F817E2332324200AFC7A8 /* MoiveClipViewController.m */; };
+		AA6A1C14238B7C320044F88D /* PLSTransitionScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = AA6A1C13238B7C320044F88D /* PLSTransitionScrollView.m */; };
+		AAA4E1FA24C82C3400A6BFF1 /* TransitionPreViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AAA4E1F924C82C3300A6BFF1 /* TransitionPreViewController.m */; };
 		AAAEB866230A480A00584B30 /* PLSStickerOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAEB865230A480A00584B30 /* PLSStickerOverlayView.m */; };
 		AAAEB87C230BFC8400584B30 /* PLSStickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAEB87B230BFC8400584B30 /* PLSStickerView.m */; };
 		BC281BF8225212C700CC7584 /* ReplayKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BC281BF0225212C700CC7584 /* ReplayKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -483,6 +486,8 @@
 		85B60FAE619932ED649E6840 /* Pods-PLShortVideoKitDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PLShortVideoKitDemo.release.xcconfig"; path = "Pods/Target Support Files/Pods-PLShortVideoKitDemo/Pods-PLShortVideoKitDemo.release.xcconfig"; sourceTree = "<group>"; };
 		9343A8BE1F66763A007213BD /* Time_Machine_No_Reverser.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Time_Machine_No_Reverser.png; path = images/Time_Machine_No_Reverser.png; sourceTree = "<group>"; };
 		9343A8BF1F66763A007213BD /* Time_Machine_Reverser.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Time_Machine_Reverser.png; path = images/Time_Machine_Reverser.png; sourceTree = "<group>"; };
+		9C42B4812402B2F000D5D2D7 /* ScreenRecordViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ScreenRecordViewController.h; sourceTree = "<group>"; };
+		9C42B4822402B2F000D5D2D7 /* ScreenRecordViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ScreenRecordViewController.m; sourceTree = "<group>"; };
 		AA09EB0122E7F71E001BBA54 /* PLSDrawView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PLSDrawView.h; sourceTree = "<group>"; };
 		AA09EB0222E7F71E001BBA54 /* PLSDrawView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PLSDrawView.m; sourceTree = "<group>"; };
 		AA09EB0B22E7FD2F001BBA54 /* PLSDrawBar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PLSDrawBar.h; sourceTree = "<group>"; };
@@ -501,6 +506,10 @@
 		AA1F81702330C37800AFC7A8 /* MatterImportViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MatterImportViewController.m; sourceTree = "<group>"; };
 		AA1F817D2332324200AFC7A8 /* MoiveClipViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MoiveClipViewController.h; sourceTree = "<group>"; };
 		AA1F817E2332324200AFC7A8 /* MoiveClipViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MoiveClipViewController.m; sourceTree = "<group>"; };
+		AA6A1C12238B7C320044F88D /* PLSTransitionScrollView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PLSTransitionScrollView.h; sourceTree = "<group>"; };
+		AA6A1C13238B7C320044F88D /* PLSTransitionScrollView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PLSTransitionScrollView.m; sourceTree = "<group>"; };
+		AAA4E1EF24C82C3300A6BFF1 /* TransitionPreViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TransitionPreViewController.h; sourceTree = "<group>"; };
+		AAA4E1F924C82C3300A6BFF1 /* TransitionPreViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TransitionPreViewController.m; sourceTree = "<group>"; };
 		AAAEB864230A480A00584B30 /* PLSStickerOverlayView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PLSStickerOverlayView.h; sourceTree = "<group>"; };
 		AAAEB865230A480A00584B30 /* PLSStickerOverlayView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PLSStickerOverlayView.m; sourceTree = "<group>"; };
 		AAAEB87A230BFC8400584B30 /* PLSStickerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLSStickerView.h; sourceTree = "<group>"; };
@@ -604,6 +613,8 @@
 				0A9435831E6CA2E2008845A3 /* AppDelegate.m */,
 				0A9435851E6CA2E2008845A3 /* ViewController.h */,
 				0A9435861E6CA2E2008845A3 /* ViewController.m */,
+				9C42B4812402B2F000D5D2D7 /* ScreenRecordViewController.h */,
+				9C42B4822402B2F000D5D2D7 /* ScreenRecordViewController.m */,
 				AA1F816F2330C37800AFC7A8 /* MatterImportViewController.h */,
 				AA1F81702330C37800AFC7A8 /* MatterImportViewController.m */,
 				0AECA4BE1E88258100AF2931 /* RecordViewController.h */,
@@ -632,6 +643,8 @@
 				76ECAC4F21880EFC00EA153E /* ImageVideoMixViewController.m */,
 				0A52C1911E9C987900561F37 /* EditViewController.h */,
 				0A52C1921E9C987900561F37 /* EditViewController.m */,
+				AAA4E1EF24C82C3300A6BFF1 /* TransitionPreViewController.h */,
+				AAA4E1F924C82C3300A6BFF1 /* TransitionPreViewController.m */,
 				C3FCBFC91F305B21007EBB10 /* GifFormatViewController.h */,
 				C3FCBFCA1F305B21007EBB10 /* GifFormatViewController.m */,
 				0A2604181FA80BC900609411 /* DubViewController.h */,
@@ -901,6 +914,8 @@
 				0A06B0BC1F123299003CA0F6 /* PLSFilterGroup.m */,
 				0A63402F1F15E8CC005ADF6C /* PLSSelectionView.h */,
 				0A6340301F15E8CC005ADF6C /* PLSSelectionView.m */,
+				AA6A1C12238B7C320044F88D /* PLSTransitionScrollView.h */,
+				AA6A1C13238B7C320044F88D /* PLSTransitionScrollView.m */,
 				0A534EA8200E27F00032A981 /* PLSViewRecorderManager.h */,
 				0A534EAA200E27F10032A981 /* PLSViewRecorderManager.m */,
 				BCAE1D86224C727100062455 /* PLScreenRecorderManager.h */,
@@ -1299,11 +1314,14 @@
 				760F7707202AF92A0052F513 /* PLSPlayerView.m in Sources */,
 				0A694C571FE3774B00E2BA60 /* PLSColumnListView.m in Sources */,
 				760F7704202AF92A0052F513 /* MulitPhotoAlbumViewController.m in Sources */,
+				9C42B4832402B2F000D5D2D7 /* ScreenRecordViewController.m in Sources */,
 				0A928BE31EE75703007D2250 /* PLSAudioVolumeView.m in Sources */,
 				7697482C202835D2001AC847 /* TransitionViewController.m in Sources */,
 				760F7709202AF92A0052F513 /* PLSClipMulitMediaView.m in Sources */,
 				0ACE7C381ED8B072002FF4C9 /* PLSEditVideoCell.m in Sources */,
+				AAA4E1FA24C82C3400A6BFF1 /* TransitionPreViewController.m in Sources */,
 				760F7703202AF92A0052F513 /* MulitClipViewController.m in Sources */,
+				AA6A1C14238B7C320044F88D /* PLSTransitionScrollView.m in Sources */,
 				0A534EAB200E27F10032A981 /* PLSViewRecorderManager.m in Sources */,
 				0ACE7C371ED8B072002FF4C9 /* PLSDeleteButton.m in Sources */,
 				C3FCBFCF1F305B37007EBB10 /* PLSFormatGifView.m in Sources */,
@@ -1463,9 +1481,10 @@
 					"$(PROJECT_DIR)",
 					"$(PROJECT_DIR)/PLShortVideoKitDemo/Librarys",
 				);
-				MARKETING_VERSION = 3.1.1;
+				MARKETING_VERSION = 3.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.qbox.PLShortVideoKitDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -1496,9 +1515,10 @@
 					"$(PROJECT_DIR)",
 					"$(PROJECT_DIR)/PLShortVideoKitDemo/Librarys",
 				);
-				MARKETING_VERSION = 3.1.1;
+				MARKETING_VERSION = 3.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.qbox.PLShortVideoKitDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

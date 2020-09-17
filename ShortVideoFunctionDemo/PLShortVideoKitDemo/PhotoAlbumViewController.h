@@ -17,6 +17,17 @@
 #import <Photos/Photos.h>
 #import "PLSRateButtonView.h"
 
+@class PLSScrollView;
+@protocol PLSScrollViewDelegate <NSObject>
+
+@optional
+/**
+ @abstract 点击元素选择转场特效
+ */
+- (void)scrollView:(PLSScrollView *)columnListView didClickIndex:(NSInteger)index button:(UIButton *)button;
+
+@end
+
 @interface PLSScrollView : UIView
 
 - (id)initWithFrame:(CGRect)frame withImages:(NSMutableArray *)images;
@@ -28,6 +39,13 @@
 @property(strong, nonatomic) NSMutableArray *imageViews;
 
 @property (strong, nonatomic) NSMutableArray *selectedAssets;
+
+@property (strong, nonatomic) NSMutableArray *selectedTypes;
+
+@property (strong, nonatomic) NSMutableArray *buttons;
+
+
+@property (weak, nonatomic) id<PLSScrollViewDelegate> delegate;
 
 - (void)addImage:(UIImage *)image;
 

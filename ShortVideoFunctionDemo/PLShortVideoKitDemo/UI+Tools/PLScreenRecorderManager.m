@@ -47,6 +47,10 @@
     self.screenRecorder.microphoneEnabled = YES;
 }
 
+- (BOOL)isStartRunning {
+    return self.shortVideoRecorder.isRecording;
+}
+
 - (void)startRecording {
     __weak typeof(self) weakSelf = self;
     if (@available(iOS 11.0, *)) {

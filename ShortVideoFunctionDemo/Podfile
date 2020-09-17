@@ -3,7 +3,7 @@ inhibit_all_warnings!
 
 target 'PLShortVideoKitDemo' do
    pod "PLShortVideoKit", :path => "../"
-   pod 'Qiniu', '7.2.5'
+   pod 'Qiniu', '7.4.4'
    pod 'Fabric', '1.6.11'
    pod 'Crashlytics', '3.8.4'
    pod 'Masonry', '1.0.2'

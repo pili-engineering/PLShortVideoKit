@@ -466,6 +466,7 @@ PLShortVideoEditorDelegate
     self.shortVideoTranscoder.timeRange = timeRange;
     self.shortVideoTranscoder.rotateOrientation = self.rotateOrientation;
 //    self.shortVideoTranscoder.outputURL = [self getFileURL:@"videoTranscoder-outputURL"]; // 自定义视频的存放地址
+//    self.shortVideoTranscoder.videoHardwareType = PLSVideoHardwareTypeHEVC;
     
     CGRect maxRect = self.maxScopeView.bounds;
     if (CGRectEqualToRect(maxRect, self.scopeView.frame)) {

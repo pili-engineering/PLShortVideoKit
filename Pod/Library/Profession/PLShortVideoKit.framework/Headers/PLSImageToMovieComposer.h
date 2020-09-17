@@ -147,4 +147,23 @@ __deprecated_msg("Class PLSImageToMovieComposer is deprecated in v1.16.0, use PL
  */
 - (void)stopComposing;
 
+/*!
+@method previewVideoByPlayerItem
+@brief 调用预览接口，从 previewBlock 获取 playerItem 用于预览播放
+
+@since      v3.2.0
+*/
+- (void)previewVideoByPlayerItem;
+
+/*!
+@method updatePreviewTransitionMedias:transitionType:
+@brief 在 useGobalTransition 为 NO 时，需要调用刷新 mediaArrays 中某个转场效果的预览，将从 previewBlock 自动更新 playerItem 用于预览播放
+ 
+@param index 对应 mediaArrays 的下标
+@param transitionType 重设的转场特效
+
+@since      v3.2.0
+*/
+- (void)updatePreviewTransitionMedias:(NSInteger)index transitionType:(PLSTransitionType)transitionType;
+
 @end

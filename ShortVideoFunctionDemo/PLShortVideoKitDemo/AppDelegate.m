@@ -26,11 +26,11 @@
     [PLShortVideoKitEnv initEnv];
     [PLShortVideoKitEnv setLogLevel:PLShortVideoLogLevelDebug];
     [PLShortVideoKitEnv enableFileLogging];
-    
+
     // crash 收集
     [Fabric with:@[[Crashlytics class]]];
-    
-    [[AVAudioSession sharedInstance] setCategory:(AVAudioSessionCategoryPlayback) error:nil];
+     AVAudioSessionCategoryOptions options = AVAudioSessionCategoryOptionDefaultToSpeaker |  AVAudioSessionCategoryOptionAllowBluetooth;
+    [[AVAudioSession sharedInstance] setCategory:(AVAudioSessionCategoryPlayback) withOptions:options error:nil];
     
     ViewController *viewController = [[ViewController alloc] init];
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:viewController];

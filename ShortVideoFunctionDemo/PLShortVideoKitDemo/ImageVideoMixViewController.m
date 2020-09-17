@@ -9,8 +9,12 @@
 #import "ImageVideoMixViewController.h"
 #import <PLShortVideoKit/PLShortVideoKit.h>
 #import "EditViewController.h"
+#import "TransitionPreViewController.h"
 
 @interface ImageVideoMixViewController ()
+<
+PLSScrollViewDelegate
+>
 
 @property (strong, nonatomic) PLSImageVideoComposer *imageVideoComposer;
 
@@ -59,6 +63,8 @@
     [musicLabel sizeToFit];
     musicLabel.center = CGPointMake(rc.origin.x - musicLabel.bounds.size.width/2 - 5, self.transitionSwitch.center.y);
     [self.nextButton.superview addSubview:musicLabel];
+    
+    self.dynamicScrollView.delegate = self;
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -131,6 +137,8 @@
                 media.url = [asset movieURL];
                 NSLog(@"Video use url");
             }
+            media.transitionDuration = 1.0;
+            media.transitionType = [self.dynamicScrollView.selectedTypes[i] intValue];
             media.timeRange = CMTimeRangeMake(kCMTimeZero, CMTimeMake(5 * 1000, 1000));
             [mediaItems addObject:media];
         } else if (PHAssetMediaTypeImage == asset.mediaType) {
@@ -146,7 +154,10 @@
                 }
             }];
             
-            PLSComposeMediaItem *media = [[PLSComposeMediaItem alloc] init];            
+            PLSComposeMediaItem *media = [[PLSComposeMediaItem alloc] init];
+            media.transitionDuration = 1.0;
+            media.transitionType = [self.dynamicScrollView.selectedTypes[i] intValue];
+            
             media.imageDuration = MAX(3, arc4random_uniform(8));
             if (isGIFImage) {
                 media.mediaType = PLSMediaTypeGIF;
@@ -186,91 +197,143 @@
     }
         
     self.imageVideoComposer.disableTransition = NO;
-    
-    [self showWating];
-    
-    __weak typeof(self)weakSelf = self;
-
-    [self.imageVideoComposer setProcessingBlock:^(float progress) {
-        NSLog(@"process = %f", progress);
-        [weakSelf setProgress:progress];
-    }];
-        
-    [self.imageVideoComposer setCompletionBlock:^(NSURL * _Nonnull url) {
-        NSLog(@"completion");
-        [weakSelf hideWating];
-        weakSelf.progressLabel.text = @"";
-        
-        [weakSelf joinEditViewController:url];
-    }];
-    
-    [self.imageVideoComposer setFailureBlock:^(NSError * _Nonnull error) {
-        [weakSelf hideWating];
-        weakSelf.progressLabel.text = @"";
-
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"错误" message:error.localizedDescription delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil];
-        [alert show];
-    }];
-
-    if (self.imageVideoComposer.disableTransition) {
-        
-        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"选择拼接模式" message:@"同步优先：优先考虑拼接之后音视频的同步性，但是可能造个各个视频的拼接处播放的时候出现音频或者视频卡顿\n流畅优先：优先考虑拼接之后播放的流畅性，各个视频的拼接处不会出现音视频卡顿现象，但是可能造成音视频不同步\n视频优先：以每一段视频数据长度来决定每一段音频数据长度\n 音频优先：以每一段音频数据长度来决定每一段视频数据长度" preferredStyle:(UIAlertControllerStyleAlert)];
-        
-        UIAlertAction *syncAction = [UIAlertAction actionWithTitle:@"同步模式" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
-            [weakSelf hideWating];
-            self.imageVideoComposer.composerPriorityType = PLSComposerPriorityTypeSync;
-            [self.imageVideoComposer startComposing];
-        }];
-        
-        UIAlertAction *smoothAction = [UIAlertAction actionWithTitle:@"流畅模式" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
-            [weakSelf hideWating];
-            self.imageVideoComposer.composerPriorityType = PLSComposerPriorityTypeSmooth;
-            [self.imageVideoComposer startComposing];
-        }];
-        
-        UIAlertAction *videoAction = [UIAlertAction actionWithTitle:@"视频优先" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
-            [weakSelf hideWating];
-            self.imageVideoComposer.composerPriorityType = PLSComposerPriorityTypeVideo;
-            [self.imageVideoComposer startComposing];
-        }];
-        
-        UIAlertAction *audioAction = [UIAlertAction actionWithTitle:@"音频优先" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
-            [weakSelf hideWating];
-            self.imageVideoComposer.composerPriorityType = PLSComposerPriorityTypeAudio;
-            [self.imageVideoComposer startComposing];
-        }];
-        
-        [alert addAction:syncAction];
-        [alert addAction:smoothAction];
-        [alert addAction:videoAction];
-        [alert addAction:audioAction];
-        
-        [self presentViewController:alert animated:YES completion:nil];
-        
-    } else {
-        [self.imageVideoComposer startComposing];
-    }
+    self.imageVideoComposer.useGobalTransition = NO;
+    [self startPreview];
 }
 
-// 进入编辑页面
-- (void)joinEditViewController:(NSURL *)url {
-    // 设置音视频、水印等编辑信息
-    NSMutableDictionary *outputSettings = [[NSMutableDictionary alloc] init];
-    // 待编辑的原始视频素材
-    NSMutableDictionary *plsMovieSettings = [[NSMutableDictionary alloc] init];
-    AVAsset *asset = [AVAsset assetWithURL:url];
-    plsMovieSettings[PLSURLKey] = url;
-    plsMovieSettings[PLSAssetKey] = asset;
-    plsMovieSettings[PLSStartTimeKey] = [NSNumber numberWithFloat:0.f];
-    plsMovieSettings[PLSDurationKey] = [NSNumber numberWithFloat:CMTimeGetSeconds(asset.duration)];
-    plsMovieSettings[PLSVolumeKey] = [NSNumber numberWithFloat:1.0f];
-    outputSettings[PLSMovieSettingsKey] = plsMovieSettings;
+#pragma mark - PLScrollViewDelegate
+
+- (void)scrollView:(PLSScrollView *)columnListView didClickIndex:(NSInteger)index button:(UIButton *)button{
+    __weak typeof(self)weakSelf = self;
+
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"选择转场效果" message:nil preferredStyle:(UIAlertControllerStyleAlert)];
+        
+    UIAlertAction *fadeAction = [UIAlertAction actionWithTitle:@"淡入淡出" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+        [weakSelf.dynamicScrollView.selectedTypes replaceObjectAtIndex:index withObject:@(PLSTransitionTypeFade)];
+        [button setTitle:@"淡入淡出" forState:UIControlStateNormal];
+    }];
+    [alert addAction:fadeAction];
+
+            
+    /********* OpenGL *********/
+    UIAlertAction *gradualBlackAction = [UIAlertAction actionWithTitle:@"闪黑" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+        [weakSelf.dynamicScrollView.selectedTypes replaceObjectAtIndex:index withObject:@(PLSTransitionTypeFadeBlack)];
+        [button setTitle:@"闪黑" forState:UIControlStateNormal];
+    }];
     
-    EditViewController *videoEditViewController = [[EditViewController alloc] init];
-    videoEditViewController.settings = outputSettings;
-    videoEditViewController.filesURLArray = @[url];
-    videoEditViewController.modalPresentationStyle = UIModalPresentationFullScreen;
-    [self presentViewController:videoEditViewController animated:YES completion:nil];
+    UIAlertAction *gradualWhiteAction = [UIAlertAction actionWithTitle:@"闪白" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+        [weakSelf.dynamicScrollView.selectedTypes replaceObjectAtIndex:index withObject:@(PLSTransitionTypeFadeWhite)];
+        [button setTitle:@"闪白" forState:UIControlStateNormal];
+    }];
+    
+    [alert addAction:gradualWhiteAction];
+    [alert addAction:gradualBlackAction];
+              
+    UIAlertAction *circularCropAction = [UIAlertAction actionWithTitle:@"圆形" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+        [weakSelf.dynamicScrollView.selectedTypes replaceObjectAtIndex:index withObject:@(PLSTransitionTypeCircularCrop)];
+        [button setTitle:@"圆形" forState:UIControlStateNormal];
+    }];
+    [alert addAction:circularCropAction];
+    
+    // 飞入 上下左右
+    UIAlertAction *sliderUpAction = [UIAlertAction actionWithTitle:@"从上飞入" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+        [weakSelf.dynamicScrollView.selectedTypes replaceObjectAtIndex:index withObject:@(PLSTransitionTypeSliderUp)];
+        [button setTitle:@"从上飞入" forState:UIControlStateNormal];
+    }];
+    
+    UIAlertAction *sliderDownAction = [UIAlertAction actionWithTitle:@"从下飞入" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+        [weakSelf.dynamicScrollView.selectedTypes replaceObjectAtIndex:index withObject:@(PLSTransitionTypeSliderDown)];
+        [button setTitle:@"从下飞入" forState:UIControlStateNormal];
+    }];
+    
+    UIAlertAction *sliderLeftAction = [UIAlertAction actionWithTitle:@"从左飞入" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+        [weakSelf.dynamicScrollView.selectedTypes replaceObjectAtIndex:index withObject:@(PLSTransitionTypeSliderLeft)];
+        [button setTitle:@"从左飞入" forState:UIControlStateNormal];
+    }];
+    
+    UIAlertAction *sliderRightAction = [UIAlertAction actionWithTitle:@"从右飞入" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+        [weakSelf.dynamicScrollView.selectedTypes replaceObjectAtIndex:index withObject:@(PLSTransitionTypeSliderRight)];
+        [button setTitle:@"从右飞入" forState:UIControlStateNormal];
+    }];
+    
+    [alert addAction:sliderUpAction];
+    [alert addAction:sliderDownAction];
+    [alert addAction:sliderLeftAction];
+    [alert addAction:sliderRightAction];
+              
+    // 擦除 上下左右
+    UIAlertAction *wipeUpAction = [UIAlertAction actionWithTitle:@"从上擦除" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+        [weakSelf.dynamicScrollView.selectedTypes replaceObjectAtIndex:index withObject:@(PLSTransitionTypeWipeUp)];
+        [button setTitle:@"从上擦除" forState:UIControlStateNormal];
+    }];
+    
+    UIAlertAction *wipeDownAction = [UIAlertAction actionWithTitle:@"从下擦除" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+        [weakSelf.dynamicScrollView.selectedTypes replaceObjectAtIndex:index withObject:@(PLSTransitionTypeWipeDown)];
+        [button setTitle:@"从下擦除" forState:UIControlStateNormal];
+    }];
+    
+    UIAlertAction *wipeLeftAction = [UIAlertAction actionWithTitle:@"从左擦除" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+        [weakSelf.dynamicScrollView.selectedTypes replaceObjectAtIndex:index withObject:@(PLSTransitionTypeWipeLeft)];
+        [button setTitle:@"从左擦除" forState:UIControlStateNormal];
+    }];
+    
+    UIAlertAction *wipeRightAction = [UIAlertAction actionWithTitle:@"从右擦除" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+        [weakSelf.dynamicScrollView.selectedTypes replaceObjectAtIndex:index withObject:@(PLSTransitionTypeWipeRight)];
+        [button setTitle:@"从右擦除" forState:UIControlStateNormal];
+    }];
+    
+    [alert addAction:wipeUpAction];
+    [alert addAction:wipeDownAction];
+    [alert addAction:wipeLeftAction];
+    [alert addAction:wipeRightAction];
+        
+    UIAlertAction *noneAction = [UIAlertAction actionWithTitle:@"无" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+        [weakSelf.dynamicScrollView.selectedTypes replaceObjectAtIndex:index withObject:@(PLSTransitionTypeNone)];
+        [button setTitle:@"无" forState:UIControlStateNormal];
+    }];
+        
+    [alert addAction:noneAction];
+    
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"取消" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+        
+    }];
+    
+    [alert addAction:cancelAction];
+
+    [self presentViewController:alert animated:YES completion:nil];
+}
+
+- (void)startPreview {
+    __weak typeof(self)weakSelf = self;
+
+    [self showWating];
+    
+    [self.imageVideoComposer setPreviewBlock:^(AVPlayerItem *playerItem) {
+        [weakSelf hideWating];
+        if (playerItem) {
+            [weakSelf enterTransitionPreviewWithPlayerItem:playerItem];
+        } else{
+            NSLog(@"playItem is nil!");
+        }
+    }];
+    
+    [self.imageVideoComposer setPreviewFailureBlock:^(NSError *error) {
+        [weakSelf hideWating];
+        NSLog(@"ImageVideoMixControllrt: imageVideoComposer preview failed error - %@", error.localizedDescription);
+    }];
+        
+    [self.imageVideoComposer previewVideoByPlayerItem];
+}
+
+
+// 进入预览界面
+- (void)enterTransitionPreviewWithPlayerItem:(AVPlayerItem *)playerItem {
+    TransitionPreViewController *transitionPreviewController = [[TransitionPreViewController alloc] init];
+    transitionPreviewController.playerItem = playerItem;
+    transitionPreviewController.imageVideoComposer = self.imageVideoComposer;
+    transitionPreviewController.images = self.dynamicScrollView.images;
+    transitionPreviewController.types = self.dynamicScrollView.selectedTypes;
+    [self presentViewController:transitionPreviewController animated:YES completion:nil];
 }
 
 - (void)fetchAssetsWithMediaType:(PHAssetMediaType)mediaType {

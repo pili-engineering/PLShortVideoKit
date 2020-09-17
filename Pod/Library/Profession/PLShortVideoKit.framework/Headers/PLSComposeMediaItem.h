@@ -37,6 +37,22 @@
  */
 @property (strong, nonatomic) NSURL *_Nullable url;
 
+/*!
+ @property transitionDuration
+ @brief 显示媒体前，产生转场动画持续的时长，默认为 1.0，即 1 秒. 如果 transitionDuration 的值大于媒体总时长的一半，则将使用媒体总时长的一半作为转场动画的时长.仅当属性  disableTransition 为 NO 时生效
+ 
+ @since      v3.2.0
+ */
+@property (assign, nonatomic) NSTimeInterval transitionDuration;
+
+/*!
+ @property  transitionType
+ @brief     媒体文件的转场特效，默认是淡入淡出
+ 
+ @since      v3.2.0
+ */
+@property (assign, nonatomic) PLSTransitionType transitionType;
+
 #pragma mark - Video property
 
 /*!

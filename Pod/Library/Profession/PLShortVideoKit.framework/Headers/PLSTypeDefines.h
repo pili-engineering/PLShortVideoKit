@@ -6,8 +6,8 @@
 //  Copyright © 2017年 Pili Engineering, Qiniu Inc. All rights reserved.
 //
 
-#ifndef PLCameraStreamingKit_PLTypeDefines_h
-#define PLCameraStreamingKit_PLTypeDefines_h
+#ifndef PLShortVideoKit_PLSTypeDefines_h
+#define PLShortVideoKit_PLSTypeDefines_h
 
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
@@ -255,6 +255,21 @@ typedef enum {
 typedef enum {
     PLSTransitionTypeFade                 = 0,  // 淡入淡出
     PLSTransitionTypeNone                 = 1,  // 无
+    
+    PLSTransitionTypeFadeBlack            = 2,  // 闪黑    v3.2.0
+    PLSTransitionTypeFadeWhite            = 3,  // 闪白    v3.2.0
+    PLSTransitionTypeCircularCrop         = 4,  // 圆形    v3.2.0
+    
+    PLSTransitionTypeSliderUp             = 5,  // 从上飞入 v3.2.0
+    PLSTransitionTypeSliderDown           = 6,  // 从下飞入 v3.2.0
+    PLSTransitionTypeSliderLeft           = 7,  // 从左飞入 v3.2.0
+    PLSTransitionTypeSliderRight          = 8,  // 从右飞入 v3.2.0
+    
+    PLSTransitionTypeWipeUp               = 9,  // 从上擦除 v3.2.0
+    PLSTransitionTypeWipeDown             = 10, // 从下擦除 v3.2.0
+    PLSTransitionTypeWipeLeft             = 11, // 从左擦除 v3.2.0
+    PLSTransitionTypeWipeRight            = 12, // 从右擦除 v3.2.0
+    
 } PLSTransitionType;
 
 /*!
