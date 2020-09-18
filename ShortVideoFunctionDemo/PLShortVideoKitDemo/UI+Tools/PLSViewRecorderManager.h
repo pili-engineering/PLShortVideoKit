@@ -20,6 +20,7 @@
 @interface PLSViewRecorderManager : NSObject
 
 @property (weak, nonatomic) id<PLSViewRecorderManagerDelegate> delegate;
+@property (readonly, nonatomic) BOOL isStartRunning;
 
 - (instancetype)initWithRecordedView:(UIView *)recordedView;
 

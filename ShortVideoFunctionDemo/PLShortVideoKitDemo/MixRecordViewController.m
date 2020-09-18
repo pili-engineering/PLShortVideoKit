@@ -370,9 +370,12 @@ UICollectionViewDelegateFlowLayout
     // 录制视频的操作按钮
     CGFloat buttonWidth = 80.0f;
     self.recordButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    self.recordButton.layer.cornerRadius = buttonWidth/2;
+    self.recordButton.layer.borderWidth = 5;
+    self.recordButton.layer.borderColor = [UIColor whiteColor].CGColor;
+    self.recordButton.backgroundColor = PLS_RGBCOLOR(65, 154, 208);
     self.recordButton.frame = CGRectMake(0, 0, buttonWidth, buttonWidth);
     self.recordButton.center = CGPointMake(PLS_SCREEN_WIDTH / 2, self.recordToolboxView.frame.size.height - 80);
-    [self.recordButton setImage:[UIImage imageNamed:@"btn_record_a"] forState:UIControlStateNormal];
     [self.recordButton addTarget:self action:@selector(recordButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
     [self.recordToolboxView addSubview:self.recordButton];
     

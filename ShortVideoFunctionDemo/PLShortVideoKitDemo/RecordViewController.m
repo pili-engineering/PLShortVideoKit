@@ -37,8 +37,6 @@ PLScreenRecorderManagerDelegate
 @property (strong, nonatomic) PLSVideoConfiguration *videoConfiguration;
 @property (strong, nonatomic) PLSAudioConfiguration *audioConfiguration;
 @property (strong, nonatomic) PLShortVideoRecorder *shortVideoRecorder;
-@property (strong, nonatomic) PLSViewRecorderManager *viewRecorderManager;
-@property (strong, nonatomic) PLScreenRecorderManager *screenRecorderManager;
 @property (strong, nonatomic) PLSProgressBar *progressBar;
 @property (strong, nonatomic) UIButton *recordButton;
 @property (strong, nonatomic) PLSDeleteButton *deleteButton;
@@ -128,11 +126,6 @@ PLScreenRecorderManagerDelegate
     // 短视频录制核心类设置
     [self setupShortVideoRecorder];
     
-    if (_screenRecord) {
-        _isViewRecord = YES;
-        [self viewRecorder];
-    }
-    
     // --------------------------
     [self setupBaseToolboxView];
     [self setupRecordToolboxView];
@@ -187,6 +180,7 @@ PLScreenRecorderManagerDelegate
     self.videoConfiguration.averageVideoBitRate = [self suitableVideoBitrateWithSize:self.videoConfiguration.videoSize];
     self.videoConfiguration.videoOrientation = AVCaptureVideoOrientationPortrait;
     self.videoConfiguration.sessionPreset = AVCaptureSessionPreset1280x720;
+//    self.videoConfiguration.videoHardwareType = PLSVideoHardwareTypeHEVC;
 
     self.audioConfiguration = [PLSAudioConfiguration defaultConfiguration];
     
@@ -542,10 +536,6 @@ PLScreenRecorderManagerDelegate
 
 // 返回上一层
 - (void)backButtonEvent:(id)sender {
-    if (self.isViewRecord) {
-        [self.viewRecorderManager cancelRecording];
-        [self.screenRecorderManager cancelRecording];
-    }
     if ([self.shortVideoRecorder getFilesCount] > 0) {
         self.alertView = [[UIAlertView alloc] initWithTitle:@"提醒" message:[NSString stringWithFormat:@"放弃这个视频(共%ld个视频段)?", (long)[self.shortVideoRecorder getFilesCount]] delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
         self.alertView.tag = PLS_CLOSE_CONTROLLER_ALERTVIEW_TAG;
@@ -581,28 +571,6 @@ PLScreenRecorderManagerDelegate
             self.shortVideoRecorder.previewView.frame = CGRectMake(0, 0, PLS_SCREEN_WIDTH, PLS_SCREEN_HEIGHT);
             self.progressBar.frame = CGRectMake(0, CGRectGetHeight(self.recordToolboxView.frame) - 10, PLS_SCREEN_WIDTH, 10);
         });
-    }
-}
-
-//录制 self.view
-- (void)viewRecorder {
-    if (@available(iOS 11.0, *)) {
-        if (!self.screenRecorderManager) {
-            self.screenRecorderManager = [[PLScreenRecorderManager alloc] init];
-            self.screenRecorderManager.delegate = self;
-        }
-        [self.screenRecorderManager startRecording];
-    } else {
-        if (!self.viewRecorderManager) {
-            self.viewRecorderManager = [[PLSViewRecorderManager alloc] initWithRecordedView:self.shortVideoRecorder.previewView];
-            self.viewRecorderManager.delegate = self;
-        }
-        [self.viewRecorderManager startRecording];
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(applicationWillResignActive:)
-                                                     name:UIApplicationWillResignActiveNotification
-                                                   object:nil];
     }
 }
 
@@ -808,8 +776,6 @@ PLScreenRecorderManagerDelegate
 - (void)endButtonEvent:(id)sender {
     AVAsset *asset = self.shortVideoRecorder.assetRepresentingAllFiles;
     [self playEvent:asset];
-    [self.viewRecorderManager cancelRecording];
-    [self.screenRecorderManager cancelRecording];
 }
 
 // 取消录制
@@ -823,14 +789,6 @@ PLScreenRecorderManagerDelegate
     PhotoAlbumViewController *photoAlbumViewController = [[PhotoAlbumViewController alloc] init];
     photoAlbumViewController.modalPresentationStyle = UIModalPresentationFullScreen;
     [self presentViewController:photoAlbumViewController animated:YES completion:nil];
-}
-
-#pragma mark - Notification
-- (void)applicationWillResignActive:(NSNotification *)notification {
-    if (self.isViewRecord) {
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillResignActiveNotification object:nil];
-        [self.viewRecorderManager cancelRecording];
-    }
 }
 
 #pragma mark - UIAlertViewDelegate
@@ -952,7 +910,7 @@ PLScreenRecorderManagerDelegate
 
 #pragma mark - PLShortVideoRecorderDelegate 摄像头采集的视频数据的回调
 /// @abstract 获取到摄像头原数据时的回调, 便于开发者做滤镜等处理，需要注意的是这个回调在 camera 数据的输出线程，请不要做过于耗时的操作，否则可能会导致帧率下降
-- (CVPixelBufferRef)shortVideoRecorder:(PLShortVideoRecorder *)recorder cameraSourceDidGetPixelBuffer:(CVPixelBufferRef)pixelBuffer {
+- (CVPixelBufferRef)shortVideoRecorder:(PLShortVideoRecorder *)recorder cameraSourceDidGetPixelBuffer:(CVPixelBufferRef)pixelBuffer timingInfo:(CMSampleTimingInfo)timingInfo {
     //此处可以做美颜/滤镜等处理
     // 是否在录制时使用滤镜，默认是关闭的，NO
     if (self.isUseFilterWhenRecording) {
@@ -1043,7 +1001,6 @@ PLScreenRecorderManagerDelegate
 
     AVAsset *asset = self.shortVideoRecorder.assetRepresentingAllFiles;
     [self playEvent:asset];
-    [self.viewRecorderManager cancelRecording];
     self.isViewRecord = NO;
 }
 

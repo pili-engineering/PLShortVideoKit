@@ -12,6 +12,7 @@
 #import "ViewRecordViewController.h"
 #import "MoiveClipViewController.h"
 #import "EditViewController.h"
+#import "TransitionPreViewController.h"
 
 #pragma mark -- PLSScrollView
 
@@ -36,6 +37,8 @@
         
         self.selectedAssets = [[NSMutableArray alloc] init];
         
+        self.selectedTypes = [[NSMutableArray alloc] init];
+        self.buttons = [[NSMutableArray alloc] init];
         // 创建底部滑动视图
         [self initScrollView];
         [self initViews];
@@ -71,7 +74,19 @@
     imgView.userInteractionEnabled = YES;
     [self.scrollView addSubview:imgView];
     [self.imageViews addObject:imgView];
-        
+    
+    UIButton *selectButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [selectButton setTitle:@"淡入淡出" forState:UIControlStateNormal];
+    selectButton.titleLabel.font = [UIFont systemFontOfSize:10.0];
+    [selectButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [selectButton addTarget:self action:@selector(selectAction:) forControlEvents:UIControlEventTouchUpInside];
+    selectButton.frame = CGRectMake(0, CGRectGetHeight(imgView.frame) - 20, CGRectGetWidth(imgView.frame), 20);
+    selectButton.backgroundColor = [UIColor whiteColor];
+    [imgView addSubview:selectButton];
+    
+    [self.selectedTypes addObject:@(PLSTransitionTypeFade)];
+    [self.buttons addObject:selectButton];
+    
     UIButton *deleteButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [deleteButton setImage:[UIImage imageNamed:@"btn_banner_a"] forState:UIControlStateNormal];
     [deleteButton addTarget:self action:@selector(deleteAction:) forControlEvents:UIControlEventTouchUpInside];
@@ -94,6 +109,15 @@
     return -1;
 }
 
+- (void)selectAction:(UIButton *)button {
+    UIImageView *imageView = (UIImageView *)button.superview;
+    __block NSUInteger index = [self.imageViews indexOfObject:imageView];
+    
+    if (self.delegate && [self.delegate respondsToSelector:@selector(scrollView:didClickIndex:button:)]) {
+        [self.delegate scrollView:self didClickIndex:index button:self.buttons[index]];
+    }
+}
+
 - (void)deleteAction:(UIButton *)button {
     UIImageView *imageView = (UIImageView *)button.superview;
     __block NSUInteger index = [self.imageViews indexOfObject:imageView];
@@ -102,6 +126,8 @@
     
     [self.images removeObjectAtIndex:index];
     [self.selectedAssets removeObjectAtIndex:index];
+    [self.selectedTypes removeObjectAtIndex:index];
+    [self.buttons removeObjectAtIndex:index];
 
     [UIView animateWithDuration:0.3 animations:^{
         imageView.transform = CGAffineTransformMakeScale(0.01, 0.01);
@@ -164,6 +190,8 @@
 
 - (void)clear {
     self.selectedAssets = nil;
+    self.selectedTypes = nil;
+    self.buttons = nil;
     self.images = nil;
     self.imageViews = nil;
 }
@@ -407,7 +435,7 @@
 #pragma mark -- 选择视频的控制器
 #pragma mark -- PhotoAlbumViewController
 
-@interface PhotoAlbumViewController () <UIAlertViewDelegate, PLSRateButtonViewDelegate>
+@interface PhotoAlbumViewController () <UIAlertViewDelegate, PLSRateButtonViewDelegate, PLSScrollViewDelegate>
 
 @property (strong, nonatomic) UIImageView *previewImageView;
 
@@ -415,6 +443,9 @@
 @property (strong, nonatomic) UIView *baseToolboxView;
 @property (strong, nonatomic) UIView *editToolboxView;
 @property (assign, nonatomic) BOOL isMovieLandscapeOrientation;
+
+@property (strong, nonatomic) PLSImageToMovieComposer *imageToMovieComposer;
+@property (strong, nonatomic) PLSMovieComposer *movieComposer;
 
 @property (strong, nonatomic) PLSImageVideoComposer *imageVideoComposer;
 
@@ -573,6 +604,7 @@ static NSString * const reuseIdentifier = @"Cell";
     // 展示选中的视频的封面
     CGFloat height = ([UIScreen mainScreen].bounds.size.width / 5);
     self.dynamicScrollView = [[PLSScrollView alloc] initWithFrame:CGRectMake(0, CGRectGetHeight(self.editToolboxView.frame) - height - 10, CGRectGetWidth(self.editToolboxView.frame), height) withImages:nil];
+    self.dynamicScrollView.delegate = self;
     [self.editToolboxView addSubview:self.dynamicScrollView];
     
     if (self.mediaType == PHAssetMediaTypeImage) {
@@ -751,7 +783,7 @@ static NSString * const reuseIdentifier = @"Cell";
     if (self.dynamicScrollView.selectedAssets.count > 0) {
         if (self.mediaType == PHAssetMediaTypeImage) {
             // 图片合成为视频
-            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:@"图片处理" delegate:self cancelButtonTitle:@"view录制" otherButtonTitles:@"合成视频", nil];
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:@"图片处理" delegate:self cancelButtonTitle:@"view录制" otherButtonTitles:@"视频预览", nil];
             alertView.tag = 10001;
             [alertView show];
             
@@ -780,7 +812,7 @@ static NSString * const reuseIdentifier = @"Cell";
                 }
             } else {
                 if (_typeIndex == 2) {
-                    // 多个视频拼接 或者 单个视频转码
+                    // 多个视频拼接 或者 单个视频转码 都可以用 PLSMovieComposer
                     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:@"视频拼接" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
                     alertView.tag = 10003;
                     [alertView show];
@@ -831,7 +863,6 @@ static NSString * const reuseIdentifier = @"Cell";
         
     } else if (10003 == alertView.tag) {
         if (1 == buttonIndex) {
-            // 视频拼接
             [self.urls removeAllObjects];
             for (PHAsset *asset in self.dynamicScrollView.selectedAssets) {
                 NSURL *url = asset.movieURL;
@@ -846,31 +877,29 @@ static NSString * const reuseIdentifier = @"Cell";
                 PLSComposeMediaItem *media = [[PLSComposeMediaItem alloc] init];
                 media.mediaType = PLSMediaTypeVideo;
                 media.asset = [AVAsset assetWithURL:url];
+                media.transitionDuration = 1.0;
+                media.transitionType = [self.dynamicScrollView.selectedTypes[i] intValue];
                 media.timeRange = CMTimeRangeMake(kCMTimeZero, CMTimeMake(5 * 1000, 1000));
                 [mediaItems addObject:media];
             }
             [self useImageVideosComposer:mediaItems];
+//            NSString *message = @"同步优先：优先考虑拼接之后音视频的同步性，但是可能造个各个视频的拼接处播放的时候出现音频或者视频卡顿\n流畅优先：优先考虑拼接之后播放的流畅性，各个视频的拼接处不会出现音视频卡顿现象，但是可能造成音视频不同步\n视频优先：以每一段视频数据长度来决定每一段音频数据长度\n 音频优先：以每一段音频数据长度来决定每一段视频数据长度";
+//            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:message delegate:self cancelButtonTitle:nil otherButtonTitles:@"同步优先", @"流畅优先",@"视频优先", @"音频优先", nil];
+//            alert.tag = 10004;
+//
+//            [alert show];
         }
     } else if (10004 == alertView.tag) {
-        [self.urls removeAllObjects];
-        for (PHAsset *asset in self.dynamicScrollView.selectedAssets) {
-            NSURL *url = asset.movieURL;
-            if (url) {
-                [self.urls addObject:url];
-            }
-        }
-        
-        NSMutableArray *mediaItems = [[NSMutableArray alloc] init];
-        for (NSInteger i = 0; i < self.urls.count; i++) {
-            NSURL *url = self.urls[i];
-            PLSComposeMediaItem *media = [[PLSComposeMediaItem alloc] init];
-            media.mediaType = PLSMediaTypeVideo;
-            media.asset = [AVAsset assetWithURL:url];
-            media.timeRange = CMTimeRangeMake(kCMTimeZero, CMTimeMake(5 * 1000, 1000));
-            [mediaItems addObject:media];
-        }
-        [self useImageVideosComposer:mediaItems];
-        
+        // 多个视频拼接 或者 单个视频转码 都可以用 PLSMovieComposer
+//        if (0 == buttonIndex) {
+//            [self movieComposerEvent:PLSComposerPriorityTypeSync];
+//        } else if (1 == buttonIndex ) {
+//            [self movieComposerEvent:PLSComposerPriorityTypeSmooth];
+//        } else if (2 == buttonIndex) {
+//            [self movieComposerEvent:PLSComposerPriorityTypeVideo];
+//        } else {
+//            [self movieComposerEvent:PLSComposerPriorityTypeAudio];
+//        }
     } else if (10005 == alertView.tag) {
         [self dismissViewControllerAnimated:YES completion:nil];
     } else if (10006 == alertView.tag) {
@@ -902,6 +931,18 @@ static NSString * const reuseIdentifier = @"Cell";
     [self presentViewController:videoEditViewController animated:YES completion:nil];
 }
 
+//#define USE_IMAGE
+
+// 进入预览界面
+- (void)enterTransitionPreviewWithPlayerItem:(AVPlayerItem *)playerItem {
+    TransitionPreViewController *transitionPreviewController = [[TransitionPreViewController alloc] init];
+    transitionPreviewController.playerItem = playerItem;
+    transitionPreviewController.imageVideoComposer = self.imageVideoComposer;
+    transitionPreviewController.images = self.dynamicScrollView.images;
+    transitionPreviewController.types = self.dynamicScrollView.selectedTypes;
+    [self presentViewController:transitionPreviewController animated:YES completion:nil];
+}
+
 // 使用 PLSImageVideoComposer 实现图片转视频
 - (void)imageToMoiveByImageVideoComposer {
     [self.urls removeAllObjects];
@@ -921,10 +962,143 @@ static NSString * const reuseIdentifier = @"Cell";
         media.mediaType = PLSMediaTypeImage;
         media.url = url;
         media.imageDuration = self.imageDuration;
+        media.transitionDuration = 1.0;
+        media.transitionType = [self.dynamicScrollView.selectedTypes[i] intValue];
         [mediaItems addObject:media];
     }
                         
     [self useImageVideosComposer:mediaItems];
+}
+
+- (void)startPreview {
+    [self loadActivityIndicatorView];
+    
+    __weak typeof(self)weakSelf = self;
+    
+    [self.imageVideoComposer setPreviewBlock:^(AVPlayerItem *playerItem) {
+        [weakSelf removeActivityIndicatorView];
+        if (playerItem) {
+            [weakSelf enterTransitionPreviewWithPlayerItem:playerItem];
+        } else{
+            NSLog(@"playItem is nil!");
+        }
+    }];
+    [self.imageVideoComposer setPreviewFailureBlock:^(NSError *error) {
+        [weakSelf removeActivityIndicatorView];
+        NSLog(@"error - %@", error);
+    }];
+    [self.imageVideoComposer previewVideoByPlayerItem];
+}
+
+- (void)configureDisableTransition:(BOOL)disableTransition {
+    self.imageVideoComposer.disableTransition = disableTransition;
+    if (!disableTransition) {
+        self.imageVideoComposer.musicURL = [[NSBundle mainBundle] URLForResource:@"Whistling_Down_the_Road" withExtension:@"m4a"];
+        self.imageVideoComposer.musicVolume = 1.0;
+        self.imageVideoComposer.movieVolume = 1.0;
+    }
+}
+
+#pragma mark - PLScrollViewDelegate
+
+- (void)scrollView:(PLSScrollView *)columnListView didClickIndex:(NSInteger)index button:(UIButton *)button{
+    __weak typeof(self)weakSelf = self;
+
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"选择转场效果" message:nil preferredStyle:(UIAlertControllerStyleAlert)];
+        
+    UIAlertAction *fadeAction = [UIAlertAction actionWithTitle:@"淡入淡出" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+        [weakSelf.dynamicScrollView.selectedTypes replaceObjectAtIndex:index withObject:@(PLSTransitionTypeFade)];
+        [button setTitle:@"淡入淡出" forState:UIControlStateNormal];
+    }];
+    [alert addAction:fadeAction];
+
+        
+    /********* OpenGL *********/
+    UIAlertAction *gradualBlackAction = [UIAlertAction actionWithTitle:@"闪黑" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+        [weakSelf.dynamicScrollView.selectedTypes replaceObjectAtIndex:index withObject:@(PLSTransitionTypeFadeBlack)];
+        [button setTitle:@"闪黑" forState:UIControlStateNormal];
+    }];
+    
+    UIAlertAction *gradualWhiteAction = [UIAlertAction actionWithTitle:@"闪白" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+        [weakSelf.dynamicScrollView.selectedTypes replaceObjectAtIndex:index withObject:@(PLSTransitionTypeFadeWhite)];
+        [button setTitle:@"闪白" forState:UIControlStateNormal];
+    }];
+    
+    [alert addAction:gradualWhiteAction];
+    [alert addAction:gradualBlackAction];
+          
+    UIAlertAction *circularCropAction = [UIAlertAction actionWithTitle:@"圆形" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+        [weakSelf.dynamicScrollView.selectedTypes replaceObjectAtIndex:index withObject:@(PLSTransitionTypeCircularCrop)];
+        [button setTitle:@"圆形" forState:UIControlStateNormal];
+    }];
+    [alert addAction:circularCropAction];
+    
+    // 飞入 上下左右
+    UIAlertAction *sliderUpAction = [UIAlertAction actionWithTitle:@"从上飞入" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+        [weakSelf.dynamicScrollView.selectedTypes replaceObjectAtIndex:index withObject:@(PLSTransitionTypeSliderUp)];
+        [button setTitle:@"从上飞入" forState:UIControlStateNormal];
+    }];
+    
+    UIAlertAction *sliderDownAction = [UIAlertAction actionWithTitle:@"从下飞入" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+        [weakSelf.dynamicScrollView.selectedTypes replaceObjectAtIndex:index withObject:@(PLSTransitionTypeSliderDown)];
+        [button setTitle:@"从下飞入" forState:UIControlStateNormal];
+    }];
+    
+    UIAlertAction *sliderLeftAction = [UIAlertAction actionWithTitle:@"从左飞入" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+        [weakSelf.dynamicScrollView.selectedTypes replaceObjectAtIndex:index withObject:@(PLSTransitionTypeSliderLeft)];
+        [button setTitle:@"从左飞入" forState:UIControlStateNormal];
+    }];
+    
+    UIAlertAction *sliderRightAction = [UIAlertAction actionWithTitle:@"从右飞入" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+        [weakSelf.dynamicScrollView.selectedTypes replaceObjectAtIndex:index withObject:@(PLSTransitionTypeSliderRight)];
+        [button setTitle:@"从右飞入" forState:UIControlStateNormal];
+    }];
+    
+    [alert addAction:sliderUpAction];
+    [alert addAction:sliderDownAction];
+    [alert addAction:sliderLeftAction];
+    [alert addAction:sliderRightAction];
+          
+    // 擦除 上下左右
+    UIAlertAction *wipeUpAction = [UIAlertAction actionWithTitle:@"从上擦除" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+        [weakSelf.dynamicScrollView.selectedTypes replaceObjectAtIndex:index withObject:@(PLSTransitionTypeWipeUp)];
+        [button setTitle:@"从上擦除" forState:UIControlStateNormal];
+    }];
+    
+    UIAlertAction *wipeDownAction = [UIAlertAction actionWithTitle:@"从下擦除" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+        [weakSelf.dynamicScrollView.selectedTypes replaceObjectAtIndex:index withObject:@(PLSTransitionTypeWipeDown)];
+        [button setTitle:@"从下擦除" forState:UIControlStateNormal];
+    }];
+    
+    UIAlertAction *wipeLeftAction = [UIAlertAction actionWithTitle:@"从左擦除" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+        [weakSelf.dynamicScrollView.selectedTypes replaceObjectAtIndex:index withObject:@(PLSTransitionTypeWipeLeft)];
+        [button setTitle:@"从左擦除" forState:UIControlStateNormal];
+    }];
+    
+    UIAlertAction *wipeRightAction = [UIAlertAction actionWithTitle:@"从右擦除" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+        [weakSelf.dynamicScrollView.selectedTypes replaceObjectAtIndex:index withObject:@(PLSTransitionTypeWipeRight)];
+        [button setTitle:@"从右擦除" forState:UIControlStateNormal];
+    }];
+    
+    [alert addAction:wipeUpAction];
+    [alert addAction:wipeDownAction];
+    [alert addAction:wipeLeftAction];
+    [alert addAction:wipeRightAction];
+    
+    UIAlertAction *noneAction = [UIAlertAction actionWithTitle:@"无" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+        [weakSelf.dynamicScrollView.selectedTypes replaceObjectAtIndex:index withObject:@(PLSTransitionTypeNone)];
+        [button setTitle:@"无" forState:UIControlStateNormal];
+    }];
+        
+    [alert addAction:noneAction];
+    
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"取消" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+        
+    }];
+    
+    [alert addAction:cancelAction];
+
+    [self presentViewController:alert animated:YES completion:nil];
 }
 
 // 使用 PLSImageVideoComposer
@@ -938,75 +1112,70 @@ static NSString * const reuseIdentifier = @"Cell";
     self.imageVideoComposer.videoFramerate = 30;
     self.imageVideoComposer.mediaArrays = mediaItems;
     self.imageVideoComposer.videoSize = outputVideoSize;
-    self.imageVideoComposer.disableTransition = NO;
     
-    self.imageVideoComposer.musicURL = [[NSBundle mainBundle] URLForResource:@"Whistling_Down_the_Road" withExtension:@"m4a"];
-    self.imageVideoComposer.musicVolume = 1.0;
-    self.imageVideoComposer.movieVolume = 1.0;
+    self.imageVideoComposer.useGobalTransition = NO;
+    [self configureDisableTransition:NO];
+    [self startPreview];
+}
+
+// 图片合成为视频
+- (void)imageToMovieEvent {
+    /*
+    // 使用 PLSImageToMovieComposer 实现  deprecated in v1.16.0
+    [self.urls removeAllObjects];
+    for (PHAsset *asset in self.dynamicScrollView.selectedAssets) {
+#ifdef USE_IMAGE
+        UIImage *image = [asset imageURL:asset targetSize:CGSizeMake(544, 960)];
+        [self.urls addObject:image];
+#else
+        NSURL *url = [asset getImageURL:asset];
+        if (url) {
+            [self.urls addObject:url];
+        }
+#endif
+    }
     
     [self loadActivityIndicatorView];
-        
+    
     __weak typeof(self)weakSelf = self;
-
-    [self.imageVideoComposer setProcessingBlock:^(float progress) {
-        NSLog(@"process = %f", progress);
-        weakSelf.progressLabel.text = [NSString stringWithFormat:@"合成进度%d%%", (int)(progress * 100)];
-    }];
+#ifdef USE_IMAGE
+    self.imageToMovieComposer = [[PLSImageToMovieComposer alloc] initWithImages:self.urls];
+#else
+    self.imageToMovieComposer = [[PLSImageToMovieComposer alloc] initWithImageURLs:self.urls];
+#endif
+    if (self.isMovieLandscapeOrientation) {
+        self.imageToMovieComposer.videoSize = CGSizeMake(960, 544);
+    } else {
+        self.imageToMovieComposer.videoSize = CGSizeMake(544, 960);
+    }
+    
+    // Warning：在这之前一定要给 self.imageDuration 赋值，不然就会 crash。
+    // 在 - (void)setupEditToolboxView 里设置了 self.imageDuration = 2.0f;，self.imageDuration 的值的改变通过 - (void)imageDurationButtonClicked:(UIButton *)sender 事件。
+    self.imageToMovieComposer.imageDuration = self.imageDuration;
+    
+    [self.imageToMovieComposer setCompletionBlock:^(NSURL *url) {
+        NSLog(@"imageToMovieComposer ur: %@", url);
         
-    [self.imageVideoComposer setCompletionBlock:^(NSURL * _Nonnull url) {
-        NSLog(@"completion");
         [weakSelf removeActivityIndicatorView];
         weakSelf.progressLabel.text = @"";
         
         [weakSelf joinEditViewController:url];
     }];
-    
-    [self.imageVideoComposer setFailureBlock:^(NSError * _Nonnull error) {
+    [self.imageToMovieComposer setFailureBlock:^(NSError *error) {
+        NSLog(@"imageToMovieComposer failed");
+        AlertViewShow(error);
+
         [weakSelf removeActivityIndicatorView];
         weakSelf.progressLabel.text = @"";
-
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"错误" message:error.localizedDescription delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil];
-        [alert show];
     }];
-
-    if (self.imageVideoComposer.disableTransition) {
+    [self.imageToMovieComposer setProcessingBlock:^(float progress) {
+        NSLog(@"imageToMovieComposer progress: %f", progress);
         
-        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"选择拼接模式" message:@"同步优先：优先考虑拼接之后音视频的同步性，但是可能造个各个视频的拼接处播放的时候出现音频或者视频卡顿\n流畅优先：优先考虑拼接之后播放的流畅性，各个视频的拼接处不会出现音视频卡顿现象，但是可能造成音视频不同步\n视频优先：以每一段视频数据长度来决定每一段音频数据长度\n 音频优先：以每一段音频数据长度来决定每一段视频数据长度" preferredStyle:(UIAlertControllerStyleAlert)];
-        
-        UIAlertAction *syncAction = [UIAlertAction actionWithTitle:@"同步模式" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
-            [weakSelf removeActivityIndicatorView];
-            self.imageVideoComposer.composerPriorityType = PLSComposerPriorityTypeSync;
-            [self.imageVideoComposer startComposing];
-        }];
-        
-        UIAlertAction *smoothAction = [UIAlertAction actionWithTitle:@"流畅模式" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
-            [weakSelf removeActivityIndicatorView];
-            self.imageVideoComposer.composerPriorityType = PLSComposerPriorityTypeSmooth;
-            [self.imageVideoComposer startComposing];
-        }];
-        
-        UIAlertAction *videoAction = [UIAlertAction actionWithTitle:@"视频优先" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
-            [weakSelf removeActivityIndicatorView];
-            self.imageVideoComposer.composerPriorityType = PLSComposerPriorityTypeVideo;
-            [self.imageVideoComposer startComposing];
-        }];
-        
-        UIAlertAction *audioAction = [UIAlertAction actionWithTitle:@"音频优先" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
-            [weakSelf removeActivityIndicatorView];
-            self.imageVideoComposer.composerPriorityType = PLSComposerPriorityTypeAudio;
-            [self.imageVideoComposer startComposing];
-        }];
-        
-        [alert addAction:syncAction];
-        [alert addAction:smoothAction];
-        [alert addAction:videoAction];
-        [alert addAction:audioAction];
-        
-        [self presentViewController:alert animated:YES completion:nil];
-        
-    } else {
-        [self.imageVideoComposer startComposing];
-    }
+        weakSelf.progressLabel.text = [NSString stringWithFormat:@"合成进度%d%%", (int)(progress * 100)];
+    }];
+    
+    [self.imageToMovieComposer startComposing];
+    */
 }
 
 // view 录制
@@ -1023,6 +1192,58 @@ static NSString * const reuseIdentifier = @"Cell";
     transCodeViewController.url = self.urls[0];
     transCodeViewController.modalPresentationStyle = UIModalPresentationFullScreen;
     [self presentViewController:transCodeViewController animated:YES completion:nil];
+}
+
+// 多个视频拼接 或者 单个视频转码 都可以用 PLSMovieComposer
+- (void)movieComposerEvent:(PLSComposerPriorityType)type {
+    [self.urls removeAllObjects];
+    
+    [self loadActivityIndicatorView];
+    
+    for (PHAsset *asset in self.dynamicScrollView.selectedAssets) {
+        NSURL *url = [asset movieURL];
+        [self.urls addObject:url];
+    }
+    
+    __weak typeof(self)weakSelf = self;
+    self.movieComposer = [[PLSMovieComposer alloc] initWithUrls:self.urls];
+    self.movieComposer.composerPriorityType = type;
+#if 1
+    if (self.isMovieLandscapeOrientation) {
+        self.movieComposer.videoSize = CGSizeMake(960, 540);
+    } else {
+        self.movieComposer.videoSize = CGSizeMake(540, 960);
+    }
+#else
+    // 不设置 videoSize 的情形下，以第1个视频的分辨率为参照进行拼接
+#endif
+    
+    self.movieComposer.videoFrameRate = 25;
+    self.movieComposer.outputFileType = PLSFileTypeMPEG4;
+    
+    [self.movieComposer setCompletionBlock:^(NSURL *url) {
+        NSLog(@"movieComposer ur: %@", url);
+        
+        [weakSelf removeActivityIndicatorView];
+        weakSelf.progressLabel.text = @"";
+        
+        [weakSelf joinEditViewController:url];
+    }];
+    [self.movieComposer setFailureBlock:^(NSError *error) {
+        NSLog(@"movieComposer failed");
+        AlertViewShow(error);
+
+        [weakSelf removeActivityIndicatorView];
+        weakSelf.progressLabel.text = @"";
+        
+    }];
+    [self.movieComposer setProcessingBlock:^(float progress){
+        NSLog(@"movieComposer progress: %f", progress);
+        
+        weakSelf.progressLabel.text = [NSString stringWithFormat:@"拼接进度%d%%", (int)(progress * 100)];
+    }];
+    
+    [self.movieComposer startComposing];
 }
 
 // 加载拼接视频的动画
@@ -1066,8 +1287,9 @@ static NSString * const reuseIdentifier = @"Cell";
         [self.activityIndicatorView stopAnimating];
         self.activityIndicatorView = nil;
     }
-
-    self.imageVideoComposer = nil;
+    
+    self.imageToMovieComposer = nil;
+    self.movieComposer = nil;
     
     [self.dynamicScrollView clear];
     self.dynamicScrollView = nil;

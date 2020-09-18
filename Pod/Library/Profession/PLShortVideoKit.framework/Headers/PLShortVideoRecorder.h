@@ -56,7 +56,7 @@
  
  @since      v1.6.0
  */
-- (void)shortVideoRecorderDidFocusAtPoint:(CGPoint)point __deprecated_msg("Method deprecated in v1.9.0. Use `shortVideoRecorder: didFocusAtPoint:`");;
+- (void)shortVideoRecorderDidFocusAtPoint:(CGPoint)point __deprecated_msg("Method deprecated in v1.9.0. Use `shortVideoRecorder: didFocusAtPoint:`");
 
 /*!
  @method shortVideoRecorder:didFocusAtPoint:

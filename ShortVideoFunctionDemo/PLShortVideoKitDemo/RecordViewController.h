@@ -9,5 +9,4 @@
 #import <UIKit/UIKit.h>
 
 @interface RecordViewController : UIViewController
-@property (nonatomic, assign) BOOL screenRecord;
 @end

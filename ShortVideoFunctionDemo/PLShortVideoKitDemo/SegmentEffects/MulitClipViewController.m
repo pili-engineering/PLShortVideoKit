@@ -335,8 +335,6 @@ static int KVOcontext = 0;
         transitionController.backgroundVideoURL = [(AVURLAsset *)asset URL];
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:transitionController];
         transitionController.delegate = self;
-        transitionController.modalPresentationStyle = UIModalPresentationFullScreen;
-        navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
         [self presentViewController:navigationController animated:YES completion:nil];
     }];
     

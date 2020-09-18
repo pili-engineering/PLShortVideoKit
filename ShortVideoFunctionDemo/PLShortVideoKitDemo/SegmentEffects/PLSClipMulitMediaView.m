@@ -280,6 +280,7 @@
     while (controller.presentedViewController) {
         controller = controller.presentedViewController;
     }
+    controller.modalPresentationStyle = UIModalPresentationFullScreen;
     [controller presentViewController:alert animated:YES completion:nil];
 }
 

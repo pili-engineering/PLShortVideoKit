@@ -17,6 +17,7 @@
 #import "MultiVideoViewController.h"
 #import "ImageRotateViewController.h"
 #import "VersionViewController.h"
+#import "ScreenRecordViewController.h"
 
 
 @interface ViewController ()
@@ -83,16 +84,14 @@ UITableViewDataSource
             if (indexPath.row == 0) {
                 // 拍摄录制
                 RecordViewController *recordViewController = [[RecordViewController alloc] init];
-                recordViewController.screenRecord = NO;
                 recordViewController.modalPresentationStyle = UIModalPresentationFullScreen;
                 [self presentViewController:recordViewController animated:YES completion:nil];
             }
             if (indexPath.row == 1) {
                 // 录屏
-                RecordViewController *recordViewController = [[RecordViewController alloc] init];
-                recordViewController.screenRecord = YES;
-                recordViewController.modalPresentationStyle = UIModalPresentationFullScreen;
-                [self presentViewController:recordViewController animated:YES completion:nil];
+                ScreenRecordViewController *screenRecordViewController = [[ScreenRecordViewController alloc] init];
+                screenRecordViewController.modalPresentationStyle = UIModalPresentationFullScreen;
+                [self presentViewController:screenRecordViewController animated:YES completion:nil];
             }
             if (indexPath.row == 2) {
                 // 素材导入编辑

@@ -165,7 +165,7 @@ PLSClipMovieViewDelegate
 // 贴图工具
 @property (nonatomic, strong) PLSStickerBar *stickerBar;
 // 涂鸦工具
-@property (nonatomic, strong) PLSDrawView *currnetDrawView;
+@property (nonatomic, strong) PLSDrawView *currentDrawView;
 @property (nonatomic, strong) PLSDrawBar *drawBar;
 // GIF 动图工具
 @property (nonatomic, strong) PLSGifStickerBar *gifStickerBar;
@@ -239,7 +239,7 @@ PLSClipMovieViewDelegate
     self.watermarkSettingsArray = [[NSMutableArray alloc] init];
     self.stickerSettingsArray = [[NSMutableArray alloc] init];
     self.audioSettingsArray = [[NSMutableArray alloc] init];
-
+    
     self.outputSettings[PLSMovieSettingsKey] = self.movieSettings;
     self.outputSettings[PLSWatermarkSettingsKey] = self.watermarkSettingsArray;
     self.outputSettings[PLSStickerSettingsKey] = self.stickerSettingsArray;
@@ -272,7 +272,7 @@ PLSClipMovieViewDelegate
     
     // 视频编辑类
     AVAsset *asset = self.movieSettings[PLSAssetKey];
-
+    
     if (self.playerItem) {
         self.shortVideoEditor = [[PLShortVideoEditor alloc] initWithPlayerItem:self.playerItem videoSize:CGSizeZero];
     } else {
@@ -301,7 +301,7 @@ PLSClipMovieViewDelegate
     self.watermarkSetting1[PLSAlphaKey] = [NSNumber numberWithFloat:1.0];
     self.watermarkSetting1[PLSTypeKey] = [NSNumber numberWithInteger:PLSWaterMarkTypeStatic];
     self.watermarkSetting1[PLSRotationKey] = [NSNumber numberWithFloat:0];
-
+    
     self.watermarkSetting2 = [[NSMutableDictionary alloc] init];
     self.watermarkSetting2[PLSURLKey] = self.watermarkURL;
     self.watermarkSetting2[PLSSizeKey] = [NSValue valueWithCGSize:self.watermarkSize];
@@ -311,7 +311,7 @@ PLSClipMovieViewDelegate
     self.watermarkSetting2[PLSAlphaKey] = [NSNumber numberWithFloat:0.5];
     self.watermarkSetting2[PLSTypeKey] = [NSNumber numberWithInteger:PLSWaterMarkTypeStatic];
     self.watermarkSetting2[PLSRotationKey] = [NSNumber numberWithFloat:0];
-
+    
     [self.watermarkSettingsArray addObject:self.watermarkSetting1];
     [self.watermarkSettingsArray addObject:self.watermarkSetting2];
     
@@ -340,7 +340,7 @@ PLSClipMovieViewDelegate
     self.stickerOverlayView = [[PLSStickerOverlayView alloc] initWithFrame:self.editDisplayView.bounds layoutView:self.editDisplayView];
     self.stickerOverlayView.delegate = self;
     self.stickerOverlayView.backgroundColor = [UIColor clearColor];
-    [self updateStickerOverlayView:self.movieSettings[PLSAssetKey]];
+    [self updateStickerOverlayView:self.videoSize];
     
     // 添加点击手势
     self.tapGes = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onTouchBGView:)];
@@ -352,7 +352,7 @@ PLSClipMovieViewDelegate
 // 基础工具视图
 - (void)setupBaseToolboxView {
     self.view.backgroundColor = PLS_RGBCOLOR(25, 24, 36);
-
+    
     self.baseToolboxView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, PLS_SCREEN_WIDTH, PLS_BaseToolboxView_HEIGHT)];
     self.baseToolboxView.backgroundColor = PLS_RGBCOLOR(25, 24, 36);
     [self.view addSubview:self.baseToolboxView];
@@ -607,9 +607,9 @@ PLSClipMovieViewDelegate
     
     for (NSURL *url in self.filesURLArray) {
         NSDictionary *dic = @{
-                              @"url"        : url,
-                              @"name"       : [url absoluteString],
-                              };
+            @"url"        : url,
+            @"name"       : [url absoluteString],
+        };
         
         [listArray addObject:dic];
     }
@@ -649,16 +649,16 @@ PLSClipMovieViewDelegate
         NSString *name = [filterInfoDic objectForKey:@"name"];
         NSString *coverImagePath = [filterInfoDic objectForKey:@"coverImagePath"];
         NSString *coverImage = [filterInfoDic objectForKey:@"coverImage"];
-
+        
         NSDictionary *dic = @{
-                              @"name"            : name,
-                              @"coverImagePath"  : coverImagePath,
-                              @"coverImage"      : coverImage
-                              };
+            @"name"            : name,
+            @"coverImagePath"  : coverImagePath,
+            @"coverImage"      : coverImage
+        };
         
         [array addObject:dic];
     }
- 
+    
     return array;
 }
 
@@ -677,9 +677,9 @@ PLSClipMovieViewDelegate
     
     
     NSDictionary *dic = @{
-                          @"audioName"  : @"无",
-                          @"audioUrl"   : @"NULL",
-                          };
+        @"audioName"  : @"无",
+        @"audioUrl"   : @"NULL",
+    };
     [array addObject:dic];
     
     for (int i = 0; i < jsonArray.count; i++) {
@@ -688,9 +688,9 @@ PLSClipMovieViewDelegate
         NSURL *musicUrl = [[NSBundle mainBundle] URLForResource:musicName withExtension:nil];
         
         NSDictionary *dic = @{
-                              @"audioName"  : musicName,
-                              @"audioUrl"   : musicUrl,
-                              };
+            @"audioName"  : musicName,
+            @"audioUrl"   : musicUrl,
+        };
         [array addObject:dic];
     }
     
@@ -706,15 +706,15 @@ PLSClipMovieViewDelegate
     NSData *data = [NSData dataWithContentsOfFile:jsonPath];
     NSError *error;
     NSDictionary *dicFromJson = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
-//    NSLog(@"load internal filters json error: %@", error);
+    //    NSLog(@"load internal filters json error: %@", error);
     
     NSArray *jsonArray = [dicFromJson objectForKey:@"musics"];
     
     
     NSDictionary *dic = @{
-                          @"audioName"  : @"无",
-                          @"audioUrl"   : @"NULL",
-                          };
+        @"audioName"  : @"无",
+        @"audioUrl"   : @"NULL",
+    };
     [array addObject:dic];
     
     for (int i = 0; i < jsonArray.count; i++) {
@@ -723,9 +723,9 @@ PLSClipMovieViewDelegate
         NSURL *musicUrl = [[NSBundle mainBundle] URLForResource:musicName withExtension:nil];
         
         NSDictionary *dic = @{
-                              @"audioName"  : musicName,
-                              @"audioUrl"   : musicUrl,
-                              };
+            @"audioName"  : musicName,
+            @"audioUrl"   : musicUrl,
+        };
         [array addObject:dic];
     }
     
@@ -751,11 +751,11 @@ PLSClipMovieViewDelegate
     NSString *colorDir = @"NULL";
     NSString *alphaDir = @"NULL";
     NSDictionary *dic = @{
-                          @"name"     : name,
-                          @"coverDir" : coverDir,
-                          @"colorDir" : colorDir,
-                          @"alphaDir" : alphaDir
-                          };
+        @"name"     : name,
+        @"coverDir" : coverDir,
+        @"colorDir" : colorDir,
+        @"alphaDir" : alphaDir
+    };
     [array addObject:dic];
     
     for (int i = 0; i < jsonArray.count; i++) {
@@ -766,11 +766,11 @@ PLSClipMovieViewDelegate
         NSString *alphaDir = [[NSBundle mainBundle] pathForResource:[mv objectForKey:@"alphaDir"] ofType:@"mp4"];
         
         NSDictionary *dic = @{
-                              @"name"     : name,
-                              @"coverDir" : coverDir,
-                              @"colorDir" : colorDir,
-                              @"alphaDir" : alphaDir
-                              };
+            @"name"     : name,
+            @"coverDir" : coverDir,
+            @"colorDir" : colorDir,
+            @"alphaDir" : alphaDir
+        };
         [array addObject:dic];
     }
     
@@ -780,18 +780,18 @@ PLSClipMovieViewDelegate
 // 视频倍速
 - (NSMutableArray *)videoSpeedArray {
     NSMutableArray *array = [[NSMutableArray alloc] init];
-
+    
     NSArray *nameArray = @[@"极慢", @"慢", @"正常", @"快", @"极快", @"多段变速"];
     NSArray *dirArray = @[@"jiman", @"man", @"zhengchang", @"kuai", @"jikuai", @"mulitRate"];
-
+    
     for (int i = 0; i < nameArray.count; i++) {
         NSString *name = nameArray[i];
         NSString *coverDir = [[NSBundle mainBundle] pathForResource:dirArray[i] ofType:@"png"];
         
         NSDictionary *dic = @{
-                              @"name"     : name,
-                              @"coverDir" : coverDir,
-                              };
+            @"name"     : name,
+            @"coverDir" : coverDir,
+        };
         [array addObject:dic];
     }
     
@@ -814,12 +814,14 @@ PLSClipMovieViewDelegate
             CGSize naturalSize = videoTrack.naturalSize;
             self.videoSize = CGSizeMake(naturalSize.width, naturalSize.height);
             self.shortVideoEditor.videoSize = self.videoSize;
-            [self updateStickerOverlayView:asset];
+            [self updateStickerOverlayView:self.videoSize];
         }
     } else {
-        self.videoSize = CGSizeZero;
+//        self.videoSize = CGSizeZero;
+        AVAsset *movieAsset = self.movieSettings[PLSAssetKey];
+        self.videoSize = movieAsset.pls_videoSize;
         self.shortVideoEditor.videoSize = self.videoSize;
-        [self updateStickerOverlayView:self.movieSettings[PLSAssetKey]];
+        [self updateStickerOverlayView:self.videoSize];
     }
     
     [self.shortVideoEditor addMVLayerWithColor:self.colorURL alpha:self.alphaURL timeRange:kCMTimeRangeZero loopEnable:YES];
@@ -834,26 +836,26 @@ PLSClipMovieViewDelegate
     
     [self.shortVideoEditor addFilter:self.colorImagePath];
 }
-     
- - (void)addMusic:(NSURL *)musicURL timeRange:(CMTimeRange)timeRange volume:(NSNumber *)volume {
-     if (!self.shortVideoEditor.isEditing) {
-         [self.shortVideoEditor startEditing];
-         self.playButton.selected = NO;
-     }
-     
+
+- (void)addMusic:(NSURL *)musicURL timeRange:(CMTimeRange)timeRange volume:(NSNumber *)volume {
+    if (!self.shortVideoEditor.isEditing) {
+        [self.shortVideoEditor startEditing];
+        self.playButton.selected = NO;
+    }
+    
     self.backgroundAudioLoopEnable = YES;
     // 添加／移除 背景音乐
     [self.shortVideoEditor addMusic:musicURL timeRange:timeRange volume:volume loopEnable:self.backgroundAudioLoopEnable];
-     
-     if (self.backgroundAudioLoopEnable) {
-         // 设置背景音乐循环插入到视频中
-         self.backgroundAudioSettings[PLSLocationStartTimeKey] = [NSNumber numberWithFloat:0.f];
-         self.backgroundAudioSettings[PLSLocationDurationKey] = self.movieSettings[PLSDurationKey];
-     } else {
-         // 设置背景音乐只插入一次到视频中
-         self.backgroundAudioSettings[PLSLocationStartTimeKey] = [NSNumber numberWithFloat:0.f];
-         self.backgroundAudioSettings[PLSLocationDurationKey] = self.backgroundAudioSettings[PLSDurationKey];
-     }
+    
+    if (self.backgroundAudioLoopEnable) {
+        // 设置背景音乐循环插入到视频中
+        self.backgroundAudioSettings[PLSLocationStartTimeKey] = [NSNumber numberWithFloat:0.f];
+        self.backgroundAudioSettings[PLSLocationDurationKey] = self.movieSettings[PLSDurationKey];
+    } else {
+        // 设置背景音乐只插入一次到视频中
+        self.backgroundAudioSettings[PLSLocationStartTimeKey] = [NSNumber numberWithFloat:0.f];
+        self.backgroundAudioSettings[PLSLocationDurationKey] = self.backgroundAudioSettings[PLSDurationKey];
+    }
 }
 
 - (void)updateMusic:(CMTimeRange)timeRange volume:(NSNumber *)volume {
@@ -951,10 +953,10 @@ PLSClipMovieViewDelegate
 
 - (CVPixelBufferRef)shortVideoEditor:(PLShortVideoEditor *)editor didGetOriginPixelBuffer:(CVPixelBufferRef)pixelBuffer timestamp:(CMTime)timestamp {
     //此处可以做美颜/滤镜等处理
-//    NSLog(@"%s, line:%d, timestamp:%f", __FUNCTION__, __LINE__, CMTimeGetSeconds(timestamp));
+    //    NSLog(@"%s, line:%d, timestamp:%f", __FUNCTION__, __LINE__, CMTimeGetSeconds(timestamp));
     
     CVPixelBufferRef tempPixelBuffer = pixelBuffer;
-
+    
     // 更新时间线视图
     CGFloat time = CMTimeGetSeconds(timestamp);
     [self.timelineView seekToTime:time];
@@ -1047,8 +1049,8 @@ PLSClipMovieViewDelegate
 
 - (CVPixelBufferRef)assetExportSession:(PLSAVAssetExportSession *)assetExportSession didOutputPixelBuffer:(CVPixelBufferRef)pixelBuffer timestamp:(CMTime)timestamp {
     // 视频数据可用来做滤镜处理，将滤镜效果写入视频文件中
-//    NSLog(@"%s, line:%d, timestamp:%f", __FUNCTION__, __LINE__, CMTimeGetSeconds(timestamp));
-
+    //    NSLog(@"%s, line:%d, timestamp:%f", __FUNCTION__, __LINE__, CMTimeGetSeconds(timestamp));
+    
     CVPixelBufferRef tempPixelBuffer = pixelBuffer;
     
     return tempPixelBuffer;
@@ -1059,7 +1061,7 @@ PLSClipMovieViewDelegate
 - (void)showSourceCollectionView {
     
     [self hideAllBottomViews];
-
+    
     if (!self.editCollectionView) {
         // 展示滤镜、音乐、MV列表效果的 UICollectionView
         UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
@@ -1313,7 +1315,7 @@ PLSClipMovieViewDelegate
         self.watermarkSetting1[PLSSizeKey] = [NSValue valueWithCGSize:self.watermarkSize];
         self.watermarkSetting1[PLSPointKey] = [NSValue valueWithCGPoint:self.watermarkPosition1];
         self.watermarkSetting1[PLSTypeKey] = [NSNumber numberWithInteger:PLSWaterMarkTypeStatic];
-
+        
         self.watermarkSetting2[PLSURLKey] = self.watermarkURL;
         self.watermarkSetting2[PLSSizeKey] = [NSValue valueWithCGSize:self.watermarkSize];
         self.watermarkSetting2[PLSPointKey] = [NSValue valueWithCGPoint:self.watermarkPosition2];
@@ -1334,7 +1336,7 @@ PLSClipMovieViewDelegate
         self.watermarkSetting1[PLSPointKey] = [NSValue valueWithCGPoint:self.watermarkPosition1];
         
         CGPoint point2 = CGPointMake(self.videoSize.width - self.gifWatermarkSize.width - 10, self.videoSize.height - self.gifWatermarkSize.height - 65);
-
+        
         self.watermarkSetting2[PLSURLKey] = [NSNull null];
         self.watermarkSetting2[PLSSizeKey] = [NSValue valueWithCGSize:self.watermarkSize];
         self.watermarkSetting2[PLSPointKey] = [NSValue valueWithCGPoint:point2];
@@ -1348,7 +1350,7 @@ PLSClipMovieViewDelegate
         self.watermarkSetting1[PLSSizeKey] = [NSValue valueWithCGSize:self.gifWatermarkSize];
         self.watermarkSetting1[PLSPointKey] = [NSValue valueWithCGPoint:self.watermarkPosition1];
         self.watermarkSetting1[PLSTypeKey] = [NSNumber numberWithInteger:PLSWaterMarkTypeGif];
-
+        
         CGPoint point2 = CGPointMake(self.videoSize.width - self.gifWatermarkSize.width - 10, self.videoSize.height - self.gifWatermarkSize.height - 65);
         
         self.watermarkSetting2[PLSURLKey] = self.gifWatermarkURL;
@@ -1407,7 +1409,7 @@ PLSClipMovieViewDelegate
 // 背景音乐
 - (void)musicButtonClick:(id)sender {
     [self showSourceCollectionView];
-
+    
     if (self.selectionViewIndex == 1) {
         return;
     }
@@ -1418,7 +1420,7 @@ PLSClipMovieViewDelegate
 // MV 特效
 - (void)mvButtonClick:(id)sender {
     [self showSourceCollectionView];
-
+    
     if (self.selectionViewIndex == 2) {
         return;
     }
@@ -1435,7 +1437,7 @@ PLSClipMovieViewDelegate
 - (void)formatGifThumbEvent:(id)sender {
     AVAsset *asset = self.movieSettings[PLSAssetKey];
     [self loadActivityIndicatorView];
-
+    
     __weak typeof(self) weakSelf = self;
     CGSize size = [asset pls_videoSize];
     float startTime = [self.movieSettings[PLSStartTimeKey] floatValue];
@@ -1479,7 +1481,7 @@ PLSClipMovieViewDelegate
         }];
         
         [gifComposer composeGif];
-    }]; 
+    }];
 }
 
 // 时光倒流
@@ -1506,7 +1508,7 @@ PLSClipMovieViewDelegate
 - (void)volumeChangeEvent:(id)sender {
     NSNumber *movieVolume = self.movieSettings[PLSVolumeKey];
     NSNumber *musicVolume = self.backgroundAudioSettings[PLSVolumeKey];
-
+    
     PLSAudioVolumeView *volumeView = [[PLSAudioVolumeView alloc] initWithMovieVolume:[movieVolume floatValue] musicVolume:[musicVolume floatValue]];
     volumeView.delegate = self;
     [volumeView showAtView:self.view];
@@ -1536,6 +1538,7 @@ PLSClipMovieViewDelegate
     }
     
     self.videoLayerOrientation = [self.shortVideoEditor rotateVideoLayer];
+    [self updateStickerOverlayView:self.videoSize];
     NSLog(@"videoLayerOrientation: %ld", (long)self.videoLayerOrientation);
 }
 
@@ -1543,7 +1546,7 @@ PLSClipMovieViewDelegate
 
 - (void)addTextButtonEvent:(UIButton *)button {
     self.playButton.selected = YES;
-
+    
     button.selected = !button.selected;
     if (button.selected) {
         [self showTextbar];
@@ -1591,7 +1594,7 @@ PLSClipMovieViewDelegate
     
     NSString *imgName = @"sticker_t_0";
     UIImage *image = [UIImage imageNamed:imgName];
-
+    
     CGRect frame = CGRectMake((self.stickerOverlayView.frame.size.width - image.size.width * 0.5) * 0.5,
                               (self.stickerOverlayView.frame.size.height - image.size.height * 0.5) * 0.5,
                               image.size.width * 0.5,
@@ -1625,7 +1628,7 @@ PLSClipMovieViewDelegate
 // sticker bar show/hide
 - (void)showStickerbar {
     [self hideAllBottomViews];
-
+    
     if (!self.stickerBar) {
         self.stickerBar = [[PLSStickerBar alloc] initWithFrame:CGRectMake(0, PLS_SCREEN_HEIGHT - PLS_EditToolboxView_HEIGHT - 175 - [self bottomFixSpace], PLS_SCREEN_WIDTH, 175) resourcePath:self.stickerPath];
         self.stickerBar.backgroundColor = PLS_RGBCOLOR(25, 24, 36);
@@ -1673,7 +1676,7 @@ PLSClipMovieViewDelegate
         self.drawBar.backgroundColor = PLS_RGBCOLOR(25, 24, 36);
         self.drawBar.delegate = self;
         // 1. 创建涂鸦
-        if (!_currnetDrawView) {
+        if (!_currentDrawView) {
             PLSDrawModel *drawModel = [[PLSDrawModel alloc] init];
             // 这里开始位置及结束位置，只是固定为整个音视频文件的时长，可调节配置
             drawModel.startPositionTime = kCMTimeZero;
@@ -1684,23 +1687,23 @@ PLSClipMovieViewDelegate
             PLSDrawView *drawView = [[PLSDrawView alloc] initWithFrame:self.stickerOverlayView.bounds duration:timeDuration];
             drawView.lineWidth = drawModel.lineWidth;
             drawView.lineColor = drawModel.lineColor;
-            _currnetDrawView = drawView;
-            _currnetDrawView.drawModel = drawModel;
+            _currentDrawView = drawView;
+            _currentDrawView.drawModel = drawModel;
             // 2. 添加至stickerOverlayView上
-            [self.stickerOverlayView addSubview:_currnetDrawView];
+            [self.stickerOverlayView addSubview:_currentDrawView];
         }
     }
     if(!self.drawBar.superview) {
         [self.view addSubview:self.drawBar];
     }
-    if (!_currnetDrawView.userInteractionEnabled) {
-        _currnetDrawView.userInteractionEnabled = YES;
+    if (!_currentDrawView.userInteractionEnabled) {
+        _currentDrawView.userInteractionEnabled = YES;
     }
 }
 
 - (void)hideDrawbar {
     [self.drawBar removeFromSuperview];
-    _currnetDrawView.userInteractionEnabled = NO;
+    _currentDrawView.userInteractionEnabled = NO;
 }
 
 #pragma mark - 配音的回调 DubViewControllerDelegate
@@ -1817,38 +1820,38 @@ PLSClipMovieViewDelegate
 
 - (void)editorDrawViewDone:(PLSDrawBar *)editorDrawView {
     [self hideDrawbar];
-    _currnetDrawView.userInteractionEnabled = NO;
+    _currentDrawView.userInteractionEnabled = NO;
     if (!self.shortVideoEditor.isEditing) {
         [self.shortVideoEditor startEditing];
     }
 }
 
 - (void)editorDrawViewClear:(PLSDrawBar *)editorDrawView {
-    if ([_currnetDrawView canUndo]) {
-        [_currnetDrawView clear];
+    if ([_currentDrawView canUndo]) {
+        [_currentDrawView clear];
     }
 }
 
 - (void)editorDrawViewCancel:(PLSDrawBar *)editorDrawView {
-    if ([_currnetDrawView canUndo]) {
-        [_currnetDrawView undo];
+    if ([_currentDrawView canUndo]) {
+        [_currentDrawView undo];
     }
 }
 
 - (void)editorDrawView:(PLSDrawBar *)editorDrawView addDrawModel:(PLSDrawModel *)model {
     // 1. 创建涂鸦
-    if (!_currnetDrawView) {
+    if (!_currentDrawView) {
         PLSDrawView *drawView = [[PLSDrawView alloc] initWithFrame:self.stickerOverlayView.bounds duration:self.playerItem.asset.duration];
         drawView.lineWidth = model.lineWidth;
         drawView.lineColor = model.lineColor;
-        _currnetDrawView = drawView;
+        _currentDrawView = drawView;
         // 2. 添加至stickerOverlayView上
-        [self.stickerOverlayView addSubview:_currnetDrawView];
+        [self.stickerOverlayView addSubview:_currentDrawView];
     } else{
-        _currnetDrawView.lineWidth = model.lineWidth;
-        _currnetDrawView.lineColor = model.lineColor;
+        _currentDrawView.lineWidth = model.lineWidth;
+        _currentDrawView.lineColor = model.lineColor;
     }
-    _currnetDrawView.drawModel = model;
+    _currentDrawView.drawModel = model;
 }
 
 #pragma mark - PLSStickerBarDelegate
@@ -1934,7 +1937,7 @@ PLSClipMovieViewDelegate
 
 - (void)videoSpeedButtonEvent:(UIButton *)button {
     [self showSourceCollectionView];
-
+    
     if (self.selectionViewIndex == 3) {
         return;
     }
@@ -1967,12 +1970,12 @@ PLSClipMovieViewDelegate
             rateType = PLSVideoRecoderRateNormal;
             break;
     }
-
+    
     AVAsset *outputAsset = nil;
     // PLShortVideoAsset 初始化
     AVAsset *asset = self.originMovieSettings[PLSAssetKey];
     PLShortVideoAsset *shortVideoAsset = [[PLShortVideoAsset alloc] initWithAsset:asset];
-
+    
     if (titleIndex < 5) {
         self.currentRateType = rateType;
         
@@ -1989,13 +1992,13 @@ PLSClipMovieViewDelegate
         CMTime duration = CMTimeMake([self.movieSettings[PLSDurationKey] floatValue] * 1000, 1000);
         
         self.shortVideoEditor.timeRange = CMTimeRangeMake(start, duration);
-
+        
     } else {
         NSArray *rateArray = @[@(PLSVideoRecoderRateTopSlow),
                                @(PLSVideoRecoderRateSlow),
                                @(PLSVideoRecoderRateFast),
                                @(PLSVideoRecoderRateTopFast)
-                               ];
+        ];
         CGFloat duration = [self.originMovieSettings[PLSDurationKey] floatValue];
         CMTimeRange topSlowTimeRange = CMTimeRangeMake(kCMTimeZero, CMTimeMake(1000 * duration / 5, 1000));
         CMTimeRange slowTimeRange = CMTimeRangeMake(CMTimeMake(1000 * duration / 5, 1000), CMTimeMake(1000 * duration / 5, 1000));
@@ -2006,7 +2009,7 @@ PLSClipMovieViewDelegate
                                     [NSValue valueWithCMTimeRange:slowTimeRange],
                                     [NSValue valueWithCMTimeRange:fastTimeRange],
                                     [NSValue valueWithCMTimeRange:topFastTimeRange]
-                                    ];
+        ];
         outputAsset = [shortVideoAsset scaleTimeRanges:timeRangeArray toRateTypes:rateArray];
         
         // 这里做了改变之后，计算开始时间，时长比较麻烦，Demo 就直接将开始改为 0，时长改为整个 duration
@@ -2066,143 +2069,151 @@ PLSClipMovieViewDelegate
 - (void)nextButtonClick {
     [self.shortVideoEditor stopEditing];
     self.playButton.selected = YES;
-
+    
     [self loadActivityIndicatorView];
     if (self.reverserButton.isSelected) {
         [self doReserverEffect:NO];
     }else{
-    // 贴纸信息
-    [self.stickerSettingsArray removeAllObjects];
+        // 贴纸信息
+        [self.stickerSettingsArray removeAllObjects];
+        
+        CGSize outputsize = self.videoSize;
+        if (self.videoLayerOrientation == PLSPreviewOrientationLandscapeLeft || self.videoLayerOrientation == PLSPreviewOrientationLandscapeRight) {
+            outputsize = CGSizeMake(outputsize.height, outputsize.width);
+        }
         
         // 涂鸦
-        if (_currnetDrawView) {
+        if (_currentDrawView) {
             float duration = 0;
             for (NSURL *url in self.filesURLArray) {
                 duration += [self getFileDuration:url];
             }
-
+            
             NSLog(@"duration - %f", duration);
-
+            
             NSMutableDictionary *stickerSettings = [[NSMutableDictionary alloc] init];
-            stickerSettings[PLSSizeKey] = [NSValue valueWithCGSize:_currnetDrawView.bounds.size];
+            UIImage* image = [self convertViewToImage:_currentDrawView];
             stickerSettings[PLSPointKey] = [NSValue valueWithCGPoint:CGPointZero];
             stickerSettings[PLSStartTimeKey] = [NSNumber numberWithFloat:CMTimeGetSeconds(kCMTimeZero)];
             stickerSettings[PLSDurationKey] = [NSNumber numberWithFloat:duration];
             stickerSettings[PLSVideoPreviewSizeKey] = [NSValue valueWithCGSize:self.stickerOverlayView.frame.size];
-            stickerSettings[PLSVideoOutputSizeKey] = [NSValue valueWithCGSize:self.videoSize];
-            stickerSettings[PLSStickerKey] = [self convertViewToImage:_currnetDrawView];
+            stickerSettings[PLSVideoOutputSizeKey] = [NSValue valueWithCGSize:outputsize];
+            stickerSettings[PLSStickerKey] = image;
+            stickerSettings[PLSSizeKey] = [NSValue valueWithCGSize:image.size];
             [self.stickerSettingsArray addObject:stickerSettings];
         }
         
-    if ([self.timelineView getAllAddedItems].count != 0) {
-        for (int i = 0; i < [self.timelineView getAllAddedItems].count; i++) {
-            PLSTimeLineItem *item = [self.timelineView getAllAddedItems][i];
-            
-            NSMutableDictionary *stickerSettings = [[NSMutableDictionary alloc] init];
-            PLSStickerView *stickerView = (PLSStickerView *)item.target;
-            
-            CGAffineTransform transform = stickerView.transform;
-            CGFloat widthScale = sqrt(transform.a * transform.a + transform.c * transform.c);
-            CGFloat heightScale = sqrt(transform.b * transform.b + transform.d * transform.d);
-            CGSize viewSize = CGSizeMake(stickerView.bounds.size.width * widthScale, stickerView.bounds.size.height * heightScale);
-            CGPoint viewCenter =  CGPointMake(stickerView.frame.origin.x + stickerView.frame.size.width / 2, stickerView.frame.origin.y + stickerView.frame.size.height / 2);
-            CGPoint viewPoint = CGPointMake(viewCenter.x - viewSize.width / 2, viewCenter.y - viewSize.height / 2);
-            
-            stickerSettings[PLSSizeKey] = [NSValue valueWithCGSize:viewSize];
-            stickerSettings[PLSPointKey] = [NSValue valueWithCGPoint:viewPoint];
-            
-            CGFloat rotation = atan2f(transform.b, transform.a);
-            rotation = rotation * (180 / M_PI);
-            stickerSettings[PLSRotationKey] = [NSNumber numberWithFloat:rotation];
-            
-            stickerSettings[PLSStartTimeKey] = [NSNumber numberWithFloat:item.startTime];
-            stickerSettings[PLSDurationKey] = [NSNumber numberWithFloat:(item.endTime - item.startTime)];
-            stickerSettings[PLSVideoPreviewSizeKey] = [NSValue valueWithCGSize:self.stickerOverlayView.frame.size];
-            stickerSettings[PLSVideoOutputSizeKey] = [NSValue valueWithCGSize:self.videoSize];
-            
-            if (StickerType_Gif == stickerView.stickerType) {
-                // 如果贴纸是 GIF 类型，PLSStickerKey 的 value 必须是下列三种中的某一种:
-                int type = arc4random() % 3;
-                if (0 == type) {
-                    // value = GIF URL
-                    stickerSettings[PLSStickerKey] = stickerView.stickerURL;
-                } else if (1 == type) {
-                    // value = GIF path
-                    stickerSettings[PLSStickerKey] = stickerView.stickerURL.path;
-                } else if (2 == type) {
-                    // value = GIF data
-                    stickerSettings[PLSStickerKey] = [NSData dataWithContentsOfFile:stickerView.stickerURL.path];
-                }
+        if ([self.timelineView getAllAddedItems].count != 0) {
+            for (int i = 0; i < [self.timelineView getAllAddedItems].count; i++) {
+                PLSTimeLineItem *item = [self.timelineView getAllAddedItems][i];
                 
-            } else {
-#if 0
-                // v2.0.0 及之前的版本添加静态贴纸的方式, 传入的是 stickerView。如果传入的是 stickerView，添加了滤镜或者特效，这些效果会作用到贴纸上。如果不希望贴纸被滤镜和特效作用，则需要使用新的添加贴纸的方式
-                stickerView.hidden = NO;
-                stickerSettings[PLSStickerKey] = stickerView;
-#else
-                //  ===== 新的静态贴纸添加方式，v2.1.0 之后生效，建议所有用户换成新的添加贴纸方式 ======
-                if (StickerType_Image == stickerView.stickerType) {
-                    
-                    int type = arc4random() % 4;
+                NSMutableDictionary *stickerSettings = [[NSMutableDictionary alloc] init];
+                PLSStickerView *stickerView = (PLSStickerView *)item.target;
+                
+                CGAffineTransform transform = stickerView.transform;
+                CGFloat widthScale = sqrt(transform.a * transform.a + transform.c * transform.c);
+                CGFloat heightScale = sqrt(transform.b * transform.b + transform.d * transform.d);
+                CGSize viewSize = CGSizeMake(stickerView.bounds.size.width * widthScale, stickerView.bounds.size.height * heightScale);
+                CGPoint viewCenter =  CGPointMake(stickerView.frame.origin.x + stickerView.frame.size.width / 2, stickerView.frame.origin.y + stickerView.frame.size.height / 2);
+                CGPoint viewPoint = CGPointMake(viewCenter.x - viewSize.width / 2, viewCenter.y - viewSize.height / 2);
+                
+                stickerSettings[PLSSizeKey] = [NSValue valueWithCGSize:viewSize];
+                stickerSettings[PLSPointKey] = [NSValue valueWithCGPoint:viewPoint];
+                
+                CGFloat rotation = atan2f(transform.b, transform.a);
+                rotation = rotation * (180 / M_PI);
+                stickerSettings[PLSRotationKey] = [NSNumber numberWithFloat:rotation];
+                
+                stickerSettings[PLSStartTimeKey] = [NSNumber numberWithFloat:item.startTime];
+                stickerSettings[PLSDurationKey] = [NSNumber numberWithFloat:(item.endTime - item.startTime)];
+                stickerSettings[PLSVideoPreviewSizeKey] = [NSValue valueWithCGSize:self.stickerOverlayView.frame.size];
+                stickerSettings[PLSVideoOutputSizeKey] = [NSValue valueWithCGSize:outputsize];
+                
+                if (StickerType_Gif == stickerView.stickerType) {
+                    // 如果贴纸是 GIF 类型，PLSStickerKey 的 value 必须是下列三种中的某一种:
+                    int type = arc4random() % 3;
                     if (0 == type) {
-                        // value = image URL
+                        // value = GIF URL
                         stickerSettings[PLSStickerKey] = stickerView.stickerURL;
                     } else if (1 == type) {
-                        // value = image path
+                        // value = GIF path
                         stickerSettings[PLSStickerKey] = stickerView.stickerURL.path;
                     } else if (2 == type) {
-                        // value = image data
-                        // 如果贴纸含 alpha 通道，使用 UIImageJPEGRepresentation(stickerView.image, 1) 得到的是没有 alpha 的图片，建议使用 UIImagePNGRepresentation(stickerView.image) 来获取 data
-                        stickerSettings[PLSStickerKey] = UIImagePNGRepresentation(stickerView.stickerImage);
-                    } else {
-                        // value = image
-                        stickerSettings[PLSStickerKey] = stickerView.stickerImage;
+                        // value = GIF data
+                        stickerSettings[PLSStickerKey] = [NSData dataWithContentsOfFile:stickerView.stickerURL.path];
                     }
-                } else if (StickerType_Text == stickerView.stickerType) {
-                    // 文字
+                    
+                } else {
+#if 0
+                    // v2.0.0 及之前的版本添加静态贴纸的方式, 传入的是 stickerView。如果传入的是 stickerView，添加了滤镜或者特效，这些效果会作用到贴纸上。如果不希望贴纸被滤镜和特效作用，则需要使用新的添加贴纸的方式
                     stickerView.hidden = NO;
-                    stickerSettings[PLSStickerKey] = [self convertViewToImage:stickerView];
-                }
+                    stickerSettings[PLSStickerKey] = stickerView;
+#else
+                    //  ===== 新的静态贴纸添加方式，v2.1.0 之后生效，建议所有用户换成新的添加贴纸方式 ======
+                    if (StickerType_Image == stickerView.stickerType) {
+                        
+                        int type = arc4random() % 4;
+                        if (0 == type) {
+                            // value = image URL
+                            stickerSettings[PLSStickerKey] = stickerView.stickerURL;
+                        } else if (1 == type) {
+                            // value = image path
+                            stickerSettings[PLSStickerKey] = stickerView.stickerURL.path;
+                        } else if (2 == type) {
+                            // value = image data
+                            // 如果贴纸含 alpha 通道，使用 UIImageJPEGRepresentation(stickerView.image, 1) 得到的是没有 alpha 的图片，建议使用 UIImagePNGRepresentation(stickerView.image) 来获取 data
+                            stickerSettings[PLSStickerKey] = UIImagePNGRepresentation(stickerView.stickerImage);
+                        } else {
+                            // value = image
+                            stickerSettings[PLSStickerKey] = stickerView.stickerImage;
+                        }
+                    } else if (StickerType_Text == stickerView.stickerType) {
+                        // 文字
+                        stickerView.hidden = NO;
+                        stickerSettings[PLSStickerKey] = [self convertViewToImage:stickerView];
+                    }
 #endif
+                }
+                [self.stickerSettingsArray addObject:stickerSettings];
             }
-            [self.stickerSettingsArray addObject:stickerSettings];
         }
-    }
-    
-    // 添加背景音乐信息
-    if (self.backgroundAudioSettings[PLSURLKey] && ![self.audioSettingsArray containsObject:self.backgroundAudioSettings]) {
-        [self.audioSettingsArray insertObject:self.backgroundAudioSettings atIndex:0];
-    }
-    
-    AVAsset *asset = self.movieSettings[PLSAssetKey];
-    PLSAVAssetExportSession *exportSession = [[PLSAVAssetExportSession alloc] initWithAsset:asset];
-    exportSession.outputFileType = PLSFileTypeMPEG4;
-    exportSession.shouldOptimizeForNetworkUse = YES;
-    exportSession.outputSettings = self.outputSettings;
-    exportSession.delegate = self;
-    exportSession.isExportMovieToPhotosAlbum = YES;
-    exportSession.audioChannel = 2;
-    exportSession.audioBitrate = PLSAudioBitRate_128Kbps;
-    exportSession.outputVideoFrameRate = MIN(60, asset.pls_normalFrameRate);
-//    // 设置视频的码率
-//    exportSession.bitrate = 3000*1000;
-//    // 设置视频的输出路径
-//    exportSession.outputURL = [self getFileURL:@"outputMovie"];
-    
-    // 设置视频的导出分辨率，会将原视频缩放
-    exportSession.outputVideoSize = self.videoSize;
-    
-    // 旋转视频
-    exportSession.videoLayerOrientation = self.videoLayerOrientation;
-    if (self.colorImagePath) {
-        [exportSession addFilter:self.colorImagePath];
-    }
-    if (self.colorURL && self.alphaURL) {
-        [exportSession addMVLayerWithColor:self.colorURL alpha:self.alphaURL timeRange:kCMTimeRangeZero loopEnable:YES];
-    }
-    
-    __weak typeof(self) weakSelf = self;
-   
+        
+        // 添加背景音乐信息
+        if (self.backgroundAudioSettings[PLSURLKey] && ![self.audioSettingsArray containsObject:self.backgroundAudioSettings]) {
+            [self.audioSettingsArray insertObject:self.backgroundAudioSettings atIndex:0];
+        }
+        
+        AVAsset *asset = self.movieSettings[PLSAssetKey];
+        PLSAVAssetExportSession *exportSession = [[PLSAVAssetExportSession alloc] initWithAsset:asset];
+        exportSession.outputFileType = PLSFileTypeMPEG4;
+        exportSession.shouldOptimizeForNetworkUse = YES;
+        exportSession.outputSettings = self.outputSettings;
+        exportSession.delegate = self;
+        exportSession.isExportMovieToPhotosAlbum = YES;
+        exportSession.audioChannel = 2;
+        exportSession.audioBitrate = PLSAudioBitRate_128Kbps;
+        exportSession.outputVideoFrameRate = MIN(60, asset.pls_normalFrameRate);
+        //    exportSession.videoHardwareType = PLSVideoHardwareTypeHEVC;
+        
+        //    // 设置视频的码率
+        //    exportSession.bitrate = 3000*1000;
+        //    // 设置视频的输出路径
+        //    exportSession.outputURL = [self getFileURL:@"outputMovie"];
+        
+        // 设置视频的导出分辨率，会将原视频缩放
+        exportSession.outputVideoSize = self.videoSize;
+        
+        // 旋转视频
+        exportSession.videoLayerOrientation = self.videoLayerOrientation;
+        if (self.colorImagePath) {
+            [exportSession addFilter:self.colorImagePath];
+        }
+        if (self.colorURL && self.alphaURL) {
+            [exportSession addMVLayerWithColor:self.colorURL alpha:self.alphaURL timeRange:kCMTimeRangeZero loopEnable:YES];
+        }
+        
+        __weak typeof(self) weakSelf = self;
+        
         [exportSession setCompletionBlock:^(NSURL *url) {
             NSLog(@"Asset Export Completed");
             
@@ -2269,8 +2280,8 @@ PLSClipMovieViewDelegate
         NSLog(@"reverser effect, url: %@", url);
         // 贴纸信息
         [weakSelf.stickerSettingsArray removeAllObjects];
-        if ([self.timelineView getAllAddedItems].count != 0) {
-            for (int i = 0; i < [self.timelineView getAllAddedItems].count; i++) {
+        if ([weakSelf.timelineView getAllAddedItems].count != 0) {
+            for (int i = 0; i < [weakSelf.timelineView getAllAddedItems].count; i++) {
                 PLSTimeLineItem *item = [weakSelf.timelineView getAllAddedItems][i];
                 
                 NSMutableDictionary *stickerSettings = [[NSMutableDictionary alloc] init];
@@ -2290,10 +2301,15 @@ PLSClipMovieViewDelegate
                 rotation = rotation * (180 / M_PI);
                 stickerSettings[PLSRotationKey] = [NSNumber numberWithFloat:rotation];
                 
+                CGSize outputsize = weakSelf.videoSize;
+                if (weakSelf.videoLayerOrientation == PLSPreviewOrientationLandscapeLeft || weakSelf.videoLayerOrientation == PLSPreviewOrientationLandscapeRight) {
+                    outputsize = CGSizeMake(outputsize.height, outputsize.width);
+                }
+                
                 stickerSettings[PLSStartTimeKey] = [NSNumber numberWithFloat:item.startTime];
                 stickerSettings[PLSDurationKey] = [NSNumber numberWithFloat:(item.endTime - item.startTime)];
                 stickerSettings[PLSVideoPreviewSizeKey] = [NSValue valueWithCGSize:weakSelf.stickerOverlayView.frame.size];
-                stickerSettings[PLSVideoOutputSizeKey] = [NSValue valueWithCGSize:self.videoSize];
+                stickerSettings[PLSVideoOutputSizeKey] = [NSValue valueWithCGSize:outputsize];
                 
                 if (StickerType_Gif == stickerView.stickerType) {
                     // 如果贴纸是 GIF 类型，PLSStickerKey 的 value 必须是下列三种中的某一种:
@@ -2335,44 +2351,46 @@ PLSClipMovieViewDelegate
                     } else if (StickerType_Text == stickerView.stickerType) {
                         // 文字
                         stickerView.hidden = NO;
-                        stickerSettings[PLSStickerKey] = [self convertViewToImage:stickerView];
+                        stickerSettings[PLSStickerKey] = [weakSelf convertViewToImage:stickerView];
                     }
 #endif
                 }
-                [self.stickerSettingsArray addObject:stickerSettings];
+                [weakSelf.stickerSettingsArray addObject:stickerSettings];
             }
         }
         
         // 添加背景音乐信息
-        if (self.backgroundAudioSettings[PLSURLKey] && ![self.audioSettingsArray containsObject:self.backgroundAudioSettings]) {
-            [self.audioSettingsArray insertObject:self.backgroundAudioSettings atIndex:0];
+        if (weakSelf.backgroundAudioSettings[PLSURLKey] && ![weakSelf.audioSettingsArray containsObject:weakSelf.backgroundAudioSettings]) {
+            [weakSelf.audioSettingsArray insertObject:weakSelf.backgroundAudioSettings atIndex:0];
         }
         
         AVAsset *asset = [AVAsset assetWithURL:url];
         PLSAVAssetExportSession *exportSession = [[PLSAVAssetExportSession alloc] initWithAsset:asset];
         exportSession.outputFileType = PLSFileTypeMPEG4;
         exportSession.shouldOptimizeForNetworkUse = YES;
-        exportSession.outputSettings = self.outputSettings;
-        exportSession.delegate = self;
+        exportSession.outputSettings = weakSelf.outputSettings;
+        exportSession.delegate = weakSelf;
         exportSession.isExportMovieToPhotosAlbum = YES;
         exportSession.audioChannel = 2;
         exportSession.audioBitrate = PLSAudioBitRate_128Kbps;
         exportSession.outputVideoFrameRate = MIN(60, asset.pls_normalFrameRate);
+        //        exportSession.videoHardwareType = PLSVideoHardwareTypeHEVC;
+        
         //    // 设置视频的码率
         //    exportSession.bitrate = 3000*1000;
         //    // 设置视频的输出路径
         //    exportSession.outputURL = [self getFileURL:@"outputMovie"];
         
         // 设置视频的导出分辨率，会将原视频缩放
-        exportSession.outputVideoSize = self.videoSize;
+        exportSession.outputVideoSize = weakSelf.videoSize;
         
         // 旋转视频
-        exportSession.videoLayerOrientation = self.videoLayerOrientation;
-        if (self.colorImagePath) {
-            [exportSession addFilter:self.colorImagePath];
+        exportSession.videoLayerOrientation = weakSelf.videoLayerOrientation;
+        if (weakSelf.colorImagePath) {
+            [exportSession addFilter:weakSelf.colorImagePath];
         }
-        if (self.colorURL && self.alphaURL) {
-            [exportSession addMVLayerWithColor:self.colorURL alpha:self.alphaURL timeRange:kCMTimeRangeZero loopEnable:YES];
+        if (weakSelf.colorURL && weakSelf.alphaURL) {
+            [exportSession addMVLayerWithColor:weakSelf.colorURL alpha:weakSelf.alphaURL timeRange:kCMTimeRangeZero loopEnable:YES];
         }
         
         [exportSession setCompletionBlock:^(NSURL *url) {
@@ -2589,9 +2607,11 @@ PLSClipMovieViewDelegate
 }
 
 // 更新 stickerOverlayView 的 frame
-- (void)updateStickerOverlayView:(AVAsset *)asset {
+- (void)updateStickerOverlayView:(CGSize)vSize {
     // 视频分辨率
-    CGSize vSize = asset.pls_videoSize;
+    if (self.videoLayerOrientation == PLSPreviewOrientationLandscapeLeft || self.videoLayerOrientation == PLSPreviewOrientationLandscapeRight) {
+        vSize = CGSizeMake(vSize.height, vSize.width);
+    }
     
     CGFloat x = 0;
     CGFloat y = 0;
@@ -2610,6 +2630,7 @@ PLSClipMovieViewDelegate
         y = (displayViewHeight - height) * 0.5;
     }
     self.stickerOverlayView.frame = CGRectMake(x, y, width, height);
+    _currentDrawView.frame = self.stickerOverlayView.bounds;
 }
 
 - (UIColor *)colorWithName:(NSString *)name {
@@ -2698,7 +2719,7 @@ PLSClipMovieViewDelegate
     self.shortVideoEditor = nil;
     
     self.reverser = nil;
-
+    
     self.editCollectionView.dataSource = nil;
     self.editCollectionView.delegate = nil;
     self.editCollectionView = nil;

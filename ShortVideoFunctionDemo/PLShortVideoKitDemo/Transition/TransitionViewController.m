@@ -417,7 +417,7 @@ PLSTransitionMakerDelegate
 }
 
 - (void)transitionMaker:(PLSTransitionMaker *)transitionMaker exportMediaSucceed:(NSURL *)outURL {
-    
+
     [self hideWaiting];
     
     if (self.delegate) {

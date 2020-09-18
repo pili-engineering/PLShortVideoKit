@@ -23,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface PLScreenRecorderManager : NSObject
 
 @property (weak, nonatomic) id<PLScreenRecorderManagerDelegate> delegate;
+@property (readonly, nonatomic) BOOL isStartRunning;
 
 - (void)startRecording;
 

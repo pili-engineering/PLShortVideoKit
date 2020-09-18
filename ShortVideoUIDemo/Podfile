@@ -6,8 +6,8 @@ target 'ShortVideo' do
   # use_frameworks!
 
   # Pods for ShortVideo
-
-  pod "PLShortVideoKit", :path => "../"
+  pod "PLShortVideoKit"
+  pod "TZImagePickerController"
 
   pod 'Masonry'
   pod 'MMMaterialDesignSpinner'

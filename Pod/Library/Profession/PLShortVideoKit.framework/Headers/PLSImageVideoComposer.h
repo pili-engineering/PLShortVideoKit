@@ -43,6 +43,22 @@
 @property (copy, nonatomic) void(^ _Nullable processingBlock)(float progress);
 
 /*!
+ @property previewBlock
+ @abstract 预览视频 block
+ 
+ @since      v3.2.0
+ */
+@property (copy, nonatomic) void(^ _Nullable previewBlock)(AVPlayerItem* playerItem);
+
+/*!
+ @property previewFailureBlock
+ @abstract 预览视频失败的 block
+ 
+ @since      v3.2.0
+ */
+@property (copy, nonatomic) void(^ _Nullable previewFailureBlock)(NSError* error);
+
+/*!
  @property isExportMovieToPhotosAlbum
  @brief 将视频导出到相册，默认为 NO
  
@@ -102,9 +118,19 @@
  @property transitionType
  @abstract 转场类型，默认为渐入渐出。仅当 disableTransition 为 NO 的时候，transitionType 才生效
  
+ @warnig 注意除 PLSTransitionTypeFade 及 PLSTransitionTypeNone 外的其他转场动画，目前在 mediaArrays 包含类型为 PLSMediaTypeVideo 时，不支持
+ 
  @since      v1.16.0
  */
 @property (assign, nonatomic) PLSTransitionType transitionType;
+
+/*!
+ @property  useGobalTransition
+ @brief     是否使用全局转场，默认是 YES，以 PLSImageVideoComposer 的 transitionType 为准；设置为 NO 时，则以每个 PLSComposeMediaItem 的 transitionType 为准
+ 
+ @since      v3.2.0
+ */
+@property (assign, nonatomic) BOOL useGobalTransition;
 
 /*!
  @property composerPriorityType
@@ -147,17 +173,11 @@
 @property (assign, nonatomic) PLSFileType outputFileType;
 
 /*!
- @property videoHardwareType
- @brief 视频编码格式，默认是 PLSVideoHardwareTypeH264，iOS 11.0 及以上版本可配置为 PLSVideoHardwareTypeHEVC。
- 
- @since      v3.1.1
- */
-@property (assign, nonatomic) PLSVideoHardwareType videoHardwareType;
-
-/*!
  @property mediaArrays
  @brief 合并的文件数组，按照数组顺序拼接
  
+ @warnig 若 mediaArrays 包含类型为 PLSMediaTypeVideo 时，除 PLSTransitionTypeFade 及 PLSTransitionTypeNone 外的其他转场动画，不支持
+
  @since      v1.16.0
  */
 @property (strong, nonatomic) NSMutableArray <PLSComposeMediaItem *> *_Nullable mediaArrays;
@@ -179,6 +199,25 @@
  @since      v1.16.0
  */
 - (void)stopComposing;
+
+/*!
+@method previewVideoByPlayerItem
+@brief 调用预览接口，从 previewBlock 获取 playerItem 用于预览播放
+
+@since      v3.2.0
+*/
+- (void)previewVideoByPlayerItem;
+
+/*!
+@method updatePreviewTransitionMedias:transitionType:
+@brief 在 useGobalTransition 为 NO 时，需要调用刷新 mediaArrays 中某个转场效果的预览，将从 previewBlock 自动更新 playerItem 用于预览播放
+ 
+@param index 对应 mediaArrays 的下标
+@param transitionType 重设的转场特效
+
+@since      v3.2.0
+*/
+- (void)updatePreviewTransitionMedias:(NSInteger)index transitionType:(PLSTransitionType)transitionType;
 
 @end
 
