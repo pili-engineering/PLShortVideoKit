@@ -12,6 +12,15 @@
 
 #define PLS_BaseToolboxView_HEIGHT 64
 
+BOOL hasNotch() {
+    if (@available(iOS 11.0, *)) {
+        if (UIApplication.sharedApplication.keyWindow.safeAreaInsets.bottom > 0) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
 @interface BaseViewController ()
 @end
 

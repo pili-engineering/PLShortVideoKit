@@ -9,12 +9,12 @@
 Pod::Spec.new do |s|
 
   s.name         = "PLShortVideoKit"
-  s.version      = "3.2.0"
+  s.version      = "3.2.1"
   s.summary      = "PILI iOS short video record SDK"
   s.homepage     = "https://github.com/pili-engineering/PLShortVideoKit"
   s.license      = "Apache License 2.0"
   s.author       = { "pili" => "pili@qiniu.com" }
-  s.source       = { :http => "https://sdk-release.qnsdk.com/PLShortVideoKit-advanced-v3.2.0.zip"}
+  s.source       = { :http => "https://sdk-release.qnsdk.com/PLShortVideoKit-advanced-v#{s.version}.zip"}
   s.platform     = :ios
   s.requires_arc = true
 

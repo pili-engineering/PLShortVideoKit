@@ -9,7 +9,9 @@
 
 #import <UIKit/UIKit.h>
 
-#define iPhoneX_SERIES (enumDeviceTypeIPhoneXR == [BaseViewController deviceType] || enumDeviceTypeIPhoneX == [BaseViewController deviceType] || enumDeviceTypeIPhoneXS == [BaseViewController deviceType] || enumDeviceTypeIPhoneXSMax == [BaseViewController deviceType])
+BOOL hasNotch();
+
+#define iPhoneX_SERIES hasNotch()
 
 
 typedef enum : NSUInteger {

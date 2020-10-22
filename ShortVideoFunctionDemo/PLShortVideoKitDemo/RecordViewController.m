@@ -927,6 +927,10 @@ PLScreenRecorderManagerDelegate
     return pixelBuffer;
 }
 
+- (void)shortVideoRecorder:(PLShortVideoRecorder *)recorder cameraSourceDidGetSampleBuffer:(CMSampleBufferRef)sampleBuffer {
+    
+}
+
 #pragma mark -- PLShortVideoRecorderDelegate 视频录制回调
 
 // 开始录制一段视频时
