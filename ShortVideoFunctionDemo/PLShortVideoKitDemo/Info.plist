@@ -17,7 +17,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
-	<string>$(MARKETING_VERSION).git-2020-07-17-610bd88</string>
+	<string>$(MARKETING_VERSION).git-2020-09-18-dd1de68</string>
 	<key>Fabric</key>
 	<dict>
 		<key>APIKey</key>

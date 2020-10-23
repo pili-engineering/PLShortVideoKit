@@ -2200,8 +2200,24 @@ PLSClipMovieViewDelegate
         //    // 设置视频的输出路径
         //    exportSession.outputURL = [self getFileURL:@"outputMovie"];
         
+        /*
+         7及以下机型导出 4K 分辨率有较大的可能性会导致内存过大而导致应用被系统杀死
+         由于源视频是 4K 视频，限制导出分辨率仍然会有较高的内存使用，若要支持老设备建议编辑之前提前转换为 1080p
+         */
+        CGSize outsize = self.videoSize;
+        const CGSize limit = CGSizeMake(1280, 1280);
+        if (outsize.width > limit.width || outsize.height > limit.height) {
+            float wratio = limit.width / outsize.width;
+            float hratio = limit.height / outsize.height;
+            float ratio = wratio < hratio ? wratio : hratio;
+
+            outsize = CGSizeMake(ceil(outsize.width * ratio), ceil(outsize.height * ratio));
+            outsize.width = ((int)outsize.width) & (~1);
+            outsize.height = ((int)outsize.height) & (~1);
+        }
+        
         // 设置视频的导出分辨率，会将原视频缩放
-        exportSession.outputVideoSize = self.videoSize;
+        exportSession.outputVideoSize = outsize;
         
         // 旋转视频
         exportSession.videoLayerOrientation = self.videoLayerOrientation;
@@ -2235,7 +2251,7 @@ PLSClipMovieViewDelegate
             // 更新进度 UI
             NSLog(@"Asset Export Progress: %f", progress);
             dispatch_async(dispatch_get_main_queue(), ^{
-                weakSelf.progressLabel.text = [NSString stringWithFormat:@"%d%%", (int)(progress * 50)];
+                weakSelf.progressLabel.text = [NSString stringWithFormat:@"%d%%", (int)(progress * 100)];
             });
         }];
         
@@ -2381,8 +2397,20 @@ PLSClipMovieViewDelegate
         //    // 设置视频的输出路径
         //    exportSession.outputURL = [self getFileURL:@"outputMovie"];
         
+        CGSize outsize = weakSelf.videoSize;
+        const CGSize limit = CGSizeMake(1280, 1280);
+        if (outsize.width > limit.width || outsize.height > limit.height) {
+            float wratio = limit.width / outsize.width;
+            float hratio = limit.height / outsize.height;
+            float ratio = wratio < hratio ? wratio : hratio;
+
+            outsize = CGSizeMake(ceil(outsize.width * ratio), ceil(outsize.height * ratio));
+            outsize.width = ((int)outsize.width) & (~1);
+            outsize.height = ((int)outsize.height) & (~1);
+        }
+        
         // 设置视频的导出分辨率，会将原视频缩放
-        exportSession.outputVideoSize = weakSelf.videoSize;
+        exportSession.outputVideoSize = outsize;
         
         // 旋转视频
         exportSession.videoLayerOrientation = weakSelf.videoLayerOrientation;
@@ -2413,9 +2441,9 @@ PLSClipMovieViewDelegate
         //        __weak typeof(self)weaksSelf = weakSelf;
         [exportSession setProcessingBlock:^(float progress) {
             // 更新进度 UI
-            NSLog(@"Asset Export Progress: %f %d", progress,(int)(50+(progress * 50)));
+            NSLog(@"Asset Export Progress: %f", progress * 50 + 50);
             dispatch_async(dispatch_get_main_queue(), ^{
-                weakSelf.progressLabel.text = [NSString stringWithFormat:@"%d%%", (int)(50+(progress * 50))];
+                weakSelf.progressLabel.text = [NSString stringWithFormat:@"%d%%", (int)progress * 50 + 50];
             });
         }];
         
