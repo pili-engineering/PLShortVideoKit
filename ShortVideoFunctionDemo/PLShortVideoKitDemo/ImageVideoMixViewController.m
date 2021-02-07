@@ -333,6 +333,7 @@ PLSScrollViewDelegate
     transitionPreviewController.imageVideoComposer = self.imageVideoComposer;
     transitionPreviewController.images = self.dynamicScrollView.images;
     transitionPreviewController.types = self.dynamicScrollView.selectedTypes;
+    transitionPreviewController.modalPresentationStyle = UIModalPresentationFullScreen;
     [self presentViewController:transitionPreviewController animated:YES completion:nil];
 }
 

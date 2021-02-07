@@ -97,7 +97,7 @@ PLShortVideoEditorDelegate
     self.asset = asset;
     
     // 视频编辑类
-    self.shortVideoEditor = [[PLShortVideoEditor alloc] initWithAsset:asset videoSize:CGSizeZero];
+    self.shortVideoEditor = [[PLShortVideoEditor alloc] initWithAsset:asset videoSize:self.asset.pls_videoSize];
     self.shortVideoEditor.delegate = self;
     self.shortVideoEditor.loopEnabled = YES;
     
@@ -119,6 +119,12 @@ PLShortVideoEditorDelegate
     self.baseToolboxView.backgroundColor = PLS_RGBCOLOR(25, 24, 36);
     [self.view addSubview:self.baseToolboxView];
     
+    CGFloat topSpace = 20;
+    if (PL_iPhoneX || PL_iPhoneXR || PL_iPhoneXSMAX ||
+        PL_iPhone12Min || PL_iPhone12Pro || PL_iPhone12PMax) {
+        topSpace = 26;
+    }
+
     // 关闭按钮
     UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [backButton setImage:[UIImage imageNamed:@"btn_bar_back_a"] forState:UIControlStateNormal];
@@ -126,7 +132,7 @@ PLShortVideoEditorDelegate
     [backButton setTitle:@"返回" forState:UIControlStateNormal];
     [backButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [backButton setTitleColor:PLS_RGBCOLOR(141, 141, 142) forState:UIControlStateHighlighted];
-    backButton.frame = CGRectMake(0, 20, 80, 44);
+    backButton.frame = CGRectMake(0, topSpace, 80, 44);
     backButton.titleEdgeInsets = UIEdgeInsetsMake(0, 7, 0, 0);
     backButton.titleLabel.font = [UIFont systemFontOfSize:16];
     [backButton addTarget:self action:@selector(backButtonClick) forControlEvents:UIControlEventTouchUpInside];
@@ -135,7 +141,7 @@ PLShortVideoEditorDelegate
     // 标题
     UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(100, 20, 100, 44)];
     if (iPhoneX_SERIES) {
-        titleLabel.center = CGPointMake(PLS_SCREEN_WIDTH / 2, 58);
+        titleLabel.center = CGPointMake(PLS_SCREEN_WIDTH / 2, 48);
     } else {
         titleLabel.center = CGPointMake(PLS_SCREEN_WIDTH / 2, 42);
     }
@@ -152,7 +158,7 @@ PLShortVideoEditorDelegate
     [nextButton setTitle:@"下一步" forState:UIControlStateNormal];
     [nextButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [nextButton setTitleColor:PLS_RGBCOLOR(141, 141, 142) forState:UIControlStateHighlighted];
-    nextButton.frame = CGRectMake(PLS_SCREEN_WIDTH - 80, 20, 80, 44);
+    nextButton.frame = CGRectMake(PLS_SCREEN_WIDTH - 80, topSpace, 80, 44);
     nextButton.titleEdgeInsets = UIEdgeInsetsMake(0, -40, 0, 0);
     nextButton.imageEdgeInsets = UIEdgeInsetsMake(0, 50, 0, 0);
     nextButton.titleLabel.font = [UIFont systemFontOfSize:16];

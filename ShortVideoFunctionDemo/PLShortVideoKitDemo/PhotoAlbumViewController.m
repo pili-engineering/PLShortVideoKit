@@ -538,10 +538,16 @@ static NSString * const reuseIdentifier = @"Cell";
     self.baseToolboxView.backgroundColor = PLS_RGBCOLOR(25, 24, 36);
     [self.view addSubview:self.baseToolboxView];
     
+    CGFloat topSpace = 20;
+    if (PL_iPhoneX || PL_iPhoneXR || PL_iPhoneXSMAX ||
+        PL_iPhone12Min || PL_iPhone12Pro || PL_iPhone12PMax) {
+        topSpace = 26;
+    }
+
     // 标题
     UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(100, 20, 100, 44)];
     if (iPhoneX_SERIES) {
-        titleLabel.center = CGPointMake(PLS_SCREEN_WIDTH / 2, 58);
+        titleLabel.center = CGPointMake(PLS_SCREEN_WIDTH / 2, 48);
     } else {
         titleLabel.center = CGPointMake(PLS_SCREEN_WIDTH / 2, 42);
     }
@@ -556,7 +562,7 @@ static NSString * const reuseIdentifier = @"Cell";
     [cancelButton setTitle:@"取消" forState:UIControlStateNormal];
     [cancelButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [cancelButton setTitleColor:PLS_RGBCOLOR(141, 141, 142) forState:UIControlStateHighlighted];
-    cancelButton.frame = CGRectMake(PLS_SCREEN_WIDTH - 80, 20, 80, 44);
+    cancelButton.frame = CGRectMake(PLS_SCREEN_WIDTH - 80, topSpace, 80, 44);
     cancelButton.titleLabel.font = [UIFont systemFontOfSize:16];
     [cancelButton addTarget:self action:@selector(cancelButtonClick:) forControlEvents:UIControlEventTouchUpInside];
     [self.baseToolboxView addSubview:cancelButton];
@@ -940,6 +946,7 @@ static NSString * const reuseIdentifier = @"Cell";
     transitionPreviewController.imageVideoComposer = self.imageVideoComposer;
     transitionPreviewController.images = self.dynamicScrollView.images;
     transitionPreviewController.types = self.dynamicScrollView.selectedTypes;
+    transitionPreviewController.modalPresentationStyle = UIModalPresentationFullScreen;
     [self presentViewController:transitionPreviewController animated:YES completion:nil];
 }
 

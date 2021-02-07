@@ -131,6 +131,7 @@ UITableViewDataSource
         }else if (indexPath.section == 2) {
             // 查看版本信息
             VersionViewController *versionViewController = [[VersionViewController alloc] init];
+            versionViewController.modalPresentationStyle = UIModalPresentationFullScreen;
             [self presentViewController:versionViewController animated:YES completion:nil];
         }
     });

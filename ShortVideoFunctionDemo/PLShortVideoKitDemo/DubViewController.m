@@ -93,6 +93,11 @@ PLSEditPlayerDelegate
     self.baseToolboxView.backgroundColor = PLS_RGBCOLOR(25, 24, 36);
     [self.view addSubview:self.baseToolboxView];
     
+    CGFloat topSpace = 0;
+    if (PL_iPhoneX || PL_iPhoneXR || PL_iPhoneXSMAX ||
+        PL_iPhone12Min || PL_iPhone12Pro || PL_iPhone12PMax) {
+        topSpace = 16;
+    }
     // 关闭按钮
     UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [backButton setImage:[UIImage imageNamed:@"btn_bar_back_a"] forState:UIControlStateNormal];
@@ -100,7 +105,7 @@ PLSEditPlayerDelegate
     [backButton setTitle:@"返回" forState:UIControlStateNormal];
     [backButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [backButton setTitleColor:PLS_RGBCOLOR(141, 141, 142) forState:UIControlStateHighlighted];
-    backButton.frame = CGRectMake(0, 0, 80, 64);
+    backButton.frame = CGRectMake(0, topSpace, 80, 64);
     backButton.titleEdgeInsets = UIEdgeInsetsMake(0, 7, 0, 0);
     backButton.titleLabel.font = [UIFont systemFontOfSize:16];
     [backButton addTarget:self action:@selector(backButtonClick) forControlEvents:UIControlEventTouchUpInside];
@@ -124,7 +129,7 @@ PLSEditPlayerDelegate
     self.saveButton.hidden = YES;
     [self.saveButton setTitle:@"保存" forState:UIControlStateNormal];
     [self.saveButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    self.saveButton.frame = CGRectMake(PLS_SCREEN_WIDTH - 60, 0, 60, 64);
+    self.saveButton.frame = CGRectMake(PLS_SCREEN_WIDTH - 60, topSpace, 60, 64);
     self.saveButton.titleLabel.font = [UIFont systemFontOfSize:16];
     [self.saveButton addTarget:self action:@selector(saveButtonClick) forControlEvents:UIControlEventTouchUpInside];
     [self.baseToolboxView addSubview:_saveButton];
