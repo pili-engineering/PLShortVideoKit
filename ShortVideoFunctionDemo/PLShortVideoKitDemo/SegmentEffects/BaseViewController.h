@@ -34,7 +34,15 @@ typedef enum : NSUInteger {
     enumDeviceTypeIPhoneXS,
     enumDeviceTypeIPhoneXR,
     enumDeviceTypeIPhoneXSMax,
-    
+    enumDeviceTypeIPhone11,
+    enumDeviceTypeIPhone11Pro,
+    enumDeviceTypeIPhone11ProMax,
+    enumDeviceTypeIPhoneSE2,
+    enumDeviceTypeIPhone12Mini,
+    enumDeviceTypeIPhone12,
+    enumDeviceTypeIPhone12Pro,
+    enumDeviceTypeIPhone12ProMax,
+
     //iPad
     //......
     

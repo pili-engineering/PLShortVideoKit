@@ -236,9 +236,15 @@ UICollectionViewDelegateFlowLayout
     self.baseToolboxView.backgroundColor = [UIColor clearColor];
     [self.view addSubview:self.baseToolboxView];
     
+    CGFloat topSpace = 10;
+    if (PL_iPhoneX || PL_iPhoneXR || PL_iPhoneXSMAX ||
+        PL_iPhone12Min || PL_iPhone12Pro || PL_iPhone12PMax) {
+        topSpace = 40;
+    }
+    
     // 返回
     UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    backButton.frame = CGRectMake(10, 10, 35, 35);
+    backButton.frame = CGRectMake(10, topSpace, 35, 35);
     [backButton setBackgroundImage:[UIImage imageNamed:@"btn_camera_cancel_a"] forState:UIControlStateNormal];
     [backButton setBackgroundImage:[UIImage imageNamed:@"btn_camera_cancel_b"] forState:UIControlStateHighlighted];
     [backButton addTarget:self action:@selector(backButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
@@ -246,7 +252,7 @@ UICollectionViewDelegateFlowLayout
     
     // 七牛滤镜
     UIButton *filterButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    filterButton.frame = CGRectMake(10, 55, 35, 35);
+    filterButton.frame = CGRectMake(10, topSpace + 45, 35, 35);
     [filterButton setTitle:@"滤镜" forState:UIControlStateNormal];
     [filterButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     filterButton.titleLabel.font = [UIFont systemFontOfSize:14];
@@ -255,7 +261,7 @@ UICollectionViewDelegateFlowLayout
 
     // 闪光灯
     UIButton *flashButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    flashButton.frame = CGRectMake(10, 100, 35, 35);
+    flashButton.frame = CGRectMake(10, topSpace + 90, 35, 35);
     [flashButton setBackgroundImage:[UIImage imageNamed:@"flash_close"] forState:UIControlStateNormal];
     [flashButton setBackgroundImage:[UIImage imageNamed:@"flash_open"] forState:UIControlStateSelected];
     [flashButton addTarget:self action:@selector(flashButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
@@ -263,7 +269,7 @@ UICollectionViewDelegateFlowLayout
     
     // 美颜
     UIButton *beautyFaceButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    beautyFaceButton.frame = CGRectMake(10, 145, 30, 30);
+    beautyFaceButton.frame = CGRectMake(10, topSpace + 135, 30, 30);
     [beautyFaceButton setTitle:@"美颜" forState:UIControlStateNormal];
     [beautyFaceButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     beautyFaceButton.titleLabel.font = [UIFont systemFontOfSize:14];
@@ -273,14 +279,14 @@ UICollectionViewDelegateFlowLayout
     
     // 切换摄像头
     UIButton *toggleCameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    toggleCameraButton.frame = CGRectMake(10, 190, 35, 35);
+    toggleCameraButton.frame = CGRectMake(10, topSpace + 180, 35, 35);
     [toggleCameraButton setBackgroundImage:[UIImage imageNamed:@"toggle_camera"] forState:UIControlStateNormal];
     [toggleCameraButton addTarget:self action:@selector(toggleCameraButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
     [self.baseToolboxView addSubview:toggleCameraButton];
     
     // 录制的视频文件的存储路径设置
     self.filePathButton = [[UIButton alloc] init];
-    self.filePathButton.frame = CGRectMake(10, 235, 35, 35);
+    self.filePathButton.frame = CGRectMake(10, topSpace + 225, 35, 35);
     [self.filePathButton setImage:[UIImage imageNamed:@"file_path"] forState:UIControlStateNormal];
     [self.filePathButton addTarget:self action:@selector(filePathButtonClickedEvent:) forControlEvents:UIControlEventTouchUpInside];
     [self.baseToolboxView addSubview:self.filePathButton];
@@ -297,7 +303,7 @@ UICollectionViewDelegateFlowLayout
     // 回音消除开关
     self.acousticEchoCancellationSwitch = [[UISwitch alloc] init];
     CGRect frame = self.acousticEchoCancellationSwitch.frame;
-    frame = CGRectMake(self.view.bounds.size.width - frame.size.width - 20, 30, frame.size.width, frame.size.height);
+    frame = CGRectMake(self.view.bounds.size.width - frame.size.width - 20, topSpace, frame.size.width, frame.size.height);
     self.acousticEchoCancellationSwitch.frame = frame;
     [self.acousticEchoCancellationSwitch setOn:_audioConfiguration.acousticEchoCancellationEnable];
     [self.acousticEchoCancellationSwitch addTarget:self action:@selector(acousticEchoCancellationSwitchChange:) forControlEvents:(UIControlEventValueChanged)];

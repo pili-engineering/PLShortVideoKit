@@ -42,6 +42,12 @@
     self.baseToolboxView.backgroundColor = [UIColor clearColor];
     [self.view addSubview:self.baseToolboxView];
     
+    CGFloat topSpace = 0;
+    if (PL_iPhoneX || PL_iPhoneXR || PL_iPhoneXSMAX ||
+        PL_iPhone12Min || PL_iPhone12Pro || PL_iPhone12PMax) {
+        topSpace = 26;
+    }
+    
     // 关闭按钮
     UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [backButton setImage:[UIImage imageNamed:@"btn_bar_back_a"] forState:UIControlStateNormal];
@@ -49,7 +55,7 @@
     [backButton setTitle:@"返回" forState:UIControlStateNormal];
     [backButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [backButton setTitleColor:PLS_RGBCOLOR(141, 141, 142) forState:UIControlStateHighlighted];
-    backButton.frame = CGRectMake(0, 0, 80, 64);
+    backButton.frame = CGRectMake(0, topSpace, 80, 64);
     backButton.titleEdgeInsets = UIEdgeInsetsMake(0, 7, 0, 0);
     backButton.titleLabel.font = [UIFont systemFontOfSize:16];
     [backButton addTarget:self action:@selector(backButtonClick) forControlEvents:UIControlEventTouchUpInside];
@@ -76,7 +82,7 @@
     [self.nextButton setTitle:@"下一步" forState:UIControlStateNormal];
     [self.nextButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [self.nextButton setTitleColor:PLS_RGBCOLOR(141, 141, 142) forState:UIControlStateDisabled];
-    self.nextButton.frame = CGRectMake(PLS_SCREEN_WIDTH - 80, 0, 80, 64);
+    self.nextButton.frame = CGRectMake(PLS_SCREEN_WIDTH - 80, topSpace, 80, 64);
     self.nextButton.titleEdgeInsets = UIEdgeInsetsMake(0, -40, 0, 0);
     self.nextButton.imageEdgeInsets = UIEdgeInsetsMake(0, 50, 0, 0);
     self.nextButton.titleLabel.font = [UIFont systemFontOfSize:16];

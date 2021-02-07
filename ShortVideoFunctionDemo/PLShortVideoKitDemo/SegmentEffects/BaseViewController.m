@@ -264,8 +264,23 @@ BOOL hasNotch() {
         return enumDeviceTypeIPhoneXSMax;
     } else if ([modelName isEqualToString:@"iPhone11,8"]) {
         return enumDeviceTypeIPhoneXR;
+    } else if ([modelName isEqualToString:@"iPhone12,1"]) {
+        return enumDeviceTypeIPhone11;
+    } else if ([modelName isEqualToString:@"iPhone12,3"]) {
+        return enumDeviceTypeIPhone11Pro;
+    } else if ([modelName isEqualToString:@"iPhone12,5"]) {
+        return enumDeviceTypeIPhone11ProMax;
+    } else if ([modelName isEqualToString:@"iPhone12,8"]) {
+        return enumDeviceTypeIPhoneSE2;
+    } else if ([modelName isEqualToString:@"iPhone13,1"]) {
+        return enumDeviceTypeIPhone12Mini;
+    } else if ([modelName isEqualToString:@"iPhone13,2"]) {
+        return enumDeviceTypeIPhone12;
+    } else if ([modelName isEqualToString:@"iPhone13,3"]) {
+        return enumDeviceTypeIPhone12Pro;
+    } else if ([modelName isEqualToString:@"iPhone13,4"]) {
+        return enumDeviceTypeIPhone12ProMax;
     }
-    
     return enumDeviceTypeIPhone8;
 }
 @end

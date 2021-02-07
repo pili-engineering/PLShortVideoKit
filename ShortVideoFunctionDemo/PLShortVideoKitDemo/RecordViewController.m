@@ -240,7 +240,13 @@ PLScreenRecorderManagerDelegate
 }
 
 - (void)setupBaseToolboxView {
-    UIView *topToolView = [[UIView alloc] initWithFrame:CGRectMake(10, 10, 176, 35)];
+    CGFloat topSpace = 10;
+    if (PL_iPhoneX || PL_iPhoneXR || PL_iPhoneXSMAX ||
+        PL_iPhone12Min || PL_iPhone12Pro || PL_iPhone12PMax) {
+        topSpace = 34;
+    }
+    
+    UIView *topToolView = [[UIView alloc] initWithFrame:CGRectMake(10, topSpace, 176, 35)];
     topToolView.backgroundColor = [UIColor clearColor];
     [self.view addSubview:topToolView];
     
@@ -276,7 +282,7 @@ PLScreenRecorderManagerDelegate
     [flashButton addTarget:self action:@selector(flashButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
     [topToolView addSubview:flashButton];
     
-    UIView *leftToolView = [[UIView alloc] initWithFrame:CGRectMake(10, 60, 72, 228)];
+    UIView *leftToolView = [[UIView alloc] initWithFrame:CGRectMake(10, topSpace + 50, 72, 228)];
     leftToolView.backgroundColor = [UIColor clearColor];
     [self.view addSubview:leftToolView];
     
@@ -376,9 +382,15 @@ PLScreenRecorderManagerDelegate
     
     UIColor *backgroundColor = [UIColor whiteColor];
     
+    CGFloat topSpace = 20;
+    if (PL_iPhoneX || PL_iPhoneXR || PL_iPhoneXSMAX ||
+        PL_iPhone12Min || PL_iPhone12Pro || PL_iPhone12PMax) {
+        topSpace = 34;
+    }
+
     int index = 0;
     // 加载草稿视频
-    self.draftButton = [[UIButton alloc] initWithFrame:CGRectMake(0, index * 46 + 20, 46, 32)];
+    self.draftButton = [[UIButton alloc] initWithFrame:CGRectMake(0, index * 46 + topSpace, 46, 32)];
     self.draftButton.layer.cornerRadius = 3;
     self.draftButton.backgroundColor = backgroundColor;
     [self.draftButton setTitle:@"片段" forState:UIControlStateNormal];
@@ -389,7 +401,7 @@ PLScreenRecorderManagerDelegate
     
     index ++;
     // 是否使用背景音乐
-    self.musicButton = [[UIButton alloc] initWithFrame:CGRectMake(0, index * 46 + 20, 46, 32)];
+    self.musicButton = [[UIButton alloc] initWithFrame:CGRectMake(0, index * 46 + topSpace, 46, 32)];
     self.musicButton.layer.cornerRadius = 3;
     self.musicButton.backgroundColor = backgroundColor;
     [self.musicButton setTitle:@"音乐" forState:UIControlStateNormal];
