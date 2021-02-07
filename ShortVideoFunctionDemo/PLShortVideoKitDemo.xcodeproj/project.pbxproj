@@ -1595,7 +1595,7 @@
 					"$(PROJECT_DIR)",
 					"$(PROJECT_DIR)/PLShortVideoKitDemo/Librarys",
 				);
-				MARKETING_VERSION = 3.2.2;
+				MARKETING_VERSION = 3.2.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.qbox.PLShortVideoKitDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = 1;
@@ -1629,7 +1629,7 @@
 					"$(PROJECT_DIR)",
 					"$(PROJECT_DIR)/PLShortVideoKitDemo/Librarys",
 				);
-				MARKETING_VERSION = 3.2.2;
+				MARKETING_VERSION = 3.2.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.qbox.PLShortVideoKitDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = 1;
