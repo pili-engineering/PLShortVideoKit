@@ -30,7 +30,7 @@
  
 @since v3.2.0
 */
-@property (nonatomic, copy, readonly) NSString * _Nullable xClientId;
+@property (nonatomic, copy, readonly) NSString * _Nullable xClientId __deprecated_msg("Method deprecated in v3.2.3.");
 
 /*!
  @property xlog
@@ -60,7 +60,7 @@
  @property duration
  @brief 请求消耗的时间，单位 秒
  */
-@property (nonatomic, readonly) double duration;
+@property (nonatomic, readonly) double duration __deprecated_msg("Method deprecated in v3.2.3.");
 
 /*!
  @property serverIp
@@ -149,5 +149,25 @@
                                     canceled:(BOOL)canceled
                                           ok:(BOOL)ok
                                       broken:(BOOL)broken
-                                    notQiniu:(BOOL)notQiniu;
+                                    notQiniu:(BOOL)notQiniu __deprecated_msg("Method deprecated in v3.2.3. Use `initWithStatusCode:reqId:xlog:xvia:error:host:id:timeStamp:canceled:ok:broken:notQiniu:`");
+
+/*!
+ @method initWithStatusCode:reqId:xlog:xvia:error:host:id:timeStamp:canceled:ok:broken:notQiniu:
+ @abstract   PLSUploaderResponInfo 初始化方法
+ 
+ @return PLSUploaderResponseInfo 实例
+ @since      v3.2.0
+ */
+- (instancetype _Nullable)initWithStatusCode:(int)statusCode
+                                       reqId:(NSString *_Nullable)reqId
+                                        xlog:(NSString *_Nullable)xlog
+                                        xvia:(NSString *_Nullable)xvia
+                                       error:(NSError *_Nullable)error
+                                        host:(NSString *_Nullable)host
+                                          id:(NSString *_Nullable)id
+                                   timeStamp:(UInt64)timeStamp
+                                    canceled:(BOOL)canceled
+                                          ok:(BOOL)ok
+                                      broken:(BOOL)broken
+                                    notQiniu:(BOOL)notQiniu ;
 @end
