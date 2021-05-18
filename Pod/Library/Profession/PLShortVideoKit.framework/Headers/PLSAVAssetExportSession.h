@@ -122,6 +122,7 @@
  */
 @property (assign, nonatomic) float bitrate;
 
+
 /*!
  @property gopSize
  @brief 最大关键帧间隔, 仅对h264有效, 设为 0 将由编码器自行决定
@@ -164,6 +165,15 @@
  */
 @property (assign, nonatomic) float outputVideoFrameRate;
 
+
+/*!
+ @property shouldPassthroughAudio  是否跳过音频参数设置，默认 YES，
+ @brief 默认保留所有音频帧和音频样本，如确实需要自定义 audioBitrate，audioChannel ，请先将 shouldPassthroughAudio 设置 NO
+
+ @since      v3.2.5
+ */
+@property (assign, nonatomic) BOOL shouldPassthroughAudio;
+
 /*!
  @property audioBitrate
  @brief 导出视频的音频码率，默认：PLSAudioBitRate_128Kbps
@@ -171,6 +181,7 @@
  @discussion 音频的码率设置应该根据音频采样率和声道数来设置，如果设置的码率值和标准值相差太大，可能引起音频编码失败，导致导出视频文件失败。推荐的码率设置请查看 PLSAudioSampleRate 和 PLSAudioBitRate
  @see PLSAudioSampleRate
  @see PLSAudioBitRate
+ @see  shouldPassthroughAudio
 
  @since      v1.16.0
  */
