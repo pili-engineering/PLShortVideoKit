@@ -16,8 +16,11 @@
 #define PLS_BaseToolboxView_HEIGHT 64
 #define PLS_EditToolboxView_HEIGHT 50
 
-static NSString *const kUploadToken = @"QxZugR8TAhI38AiJ_cptTl3RbzLyca3t-AAiH-Hh:3hK7jJJQKwmemseSwQ1duO5AXOw=:eyJzY29wZSI6InNhdmUtc2hvcnQtdmlkZW8tZnJvbS1kZW1vIiwiZGVhZGxpbmUiOjM1NTk2OTU4NzYsInVwaG9zdHMiOlsiaHR0cDovL3VwLXoyLnFpbml1LmNvbSIsImh0dHA6Ly91cGxvYWQtejIucWluaXUuY29tIiwiLUggdXAtejIucWluaXUuY29tIGh0dHA6Ly8xNC4xNTIuMzcuNCJdfQ==";
-static NSString *const kURLPrefix = @"http://panm32w98.bkt.clouddn.com";
+// 如何生成 TOKEN：https://developer.qiniu.com/kodo/1208/upload-token
+#warning 填写自己的请求上传 token，上传自己的空间
+
+static NSString *const kUploadToken = @"YOUR TOKEN";
+static NSString *const kURLPrefix = @"YOUR URL";
 
 @interface PlayViewController ()
 <
