@@ -16,6 +16,9 @@
 #define PLS_BaseToolboxView_HEIGHT 64
 #define PLS_EditToolboxView_HEIGHT 50
 
+// 如何生成 TOKEN：https://developer.qiniu.com/kodo/1208/upload-token
+#warning 填写自己的请求上传 token，上传自己的空间
+
 static NSString *const kUploadToken = @"YOUR TOKEN";
 static NSString *const kURLPrefix = @"YOUR URL";
 
