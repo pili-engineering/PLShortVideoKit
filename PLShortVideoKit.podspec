@@ -9,7 +9,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "PLShortVideoKit"
-  s.version      = "3.2.4"
+  s.version      = "3.2.5"
   s.summary      = "PILI iOS short video record SDK"
   s.homepage     = "https://github.com/pili-engineering/PLShortVideoKit"
   s.license      = "Apache License 2.0"
