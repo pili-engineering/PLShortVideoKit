@@ -9,7 +9,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "PLShortVideoKit"
-  s.version      = "3.2.4"
+  s.version      = "3.2.5"
   s.summary      = "PILI iOS short video record SDK"
   s.homepage     = "https://github.com/pili-engineering/PLShortVideoKit"
   s.license      = "Apache License 2.0"
@@ -22,6 +22,8 @@ Pod::Spec.new do |s|
  
   s.dependency 'Qiniu', '8.2.0'
 
+  s.pod_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
+  s.user_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
 
   s.subspec "ex-libMuseProcessor" do |ss1|
     ss1.vendored_framework		= "Pod/Library/Smart/PLShortVideoKit.framework"
