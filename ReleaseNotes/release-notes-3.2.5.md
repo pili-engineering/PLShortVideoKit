@@ -7,8 +7,8 @@ PLShortVideoKit 是七牛推出的一款适用于 iOS 平台的短视频 SDK，�
 - 更新 PLShortVideoKit.framework
 
 ### 缺陷
-- 更新内部上传 sdk，修复偶现上传异常
-- 修复超高清视频编辑有色差 bug
+- PLSAVAssetExportSession 设置音频码率无效
+- PLShortVideoEditor 添加 bgm，loop 为 no 时 bgm 超过设定 duration 不停止偶现鉴权异常导致的 crash
   
 ### 注意事项
 - 七牛短视频 SDK 自 v3.0.0 版本起, 划分为精简版、基础版、进阶版、专业版 。不同版本 SDK 可以使用的功能点数量有差别，请按照购买的 License 版本使用对应的短视频 SDK 版本。
