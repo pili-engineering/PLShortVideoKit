@@ -2955,7 +2955,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.1;
+				CURRENT_PROJECT_VERSION = 1.4;
 				DEVELOPMENT_TEAM = W2TP34G2MM;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2983,7 +2983,7 @@
 					"$(PROJECT_DIR)/ShortVideo/Effects",
 					"$(PROJECT_DIR)/ShortVideo/Effects/FaceUnity/FaceUnity-SDK-iOS",
 				);
-				MARKETING_VERSION = 2.0;
+				MARKETING_VERSION = 2.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.qiniu.shortvideo.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = 1;
@@ -2996,7 +2996,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.1;
+				CURRENT_PROJECT_VERSION = 1.4;
 				DEVELOPMENT_TEAM = W2TP34G2MM;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -3024,7 +3024,7 @@
 					"$(PROJECT_DIR)/ShortVideo/Effects",
 					"$(PROJECT_DIR)/ShortVideo/Effects/FaceUnity/FaceUnity-SDK-iOS",
 				);
-				MARKETING_VERSION = 2.0;
+				MARKETING_VERSION = 2.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.qiniu.shortvideo.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = 1;
